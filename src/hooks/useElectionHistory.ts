@@ -26,6 +26,11 @@ function readStoredState(dataset: ElectionDataset) {
   }
 }
 
+/**
+ * Estado da camada de eleições. Tolera snapshot pendente (`contests: []`): o
+ * estado nasce neutro e todos os setters viram no-op em vez de quebrar — a
+ * camada some da tela, o resto do aplicativo continua inteiro.
+ */
 export function useElectionHistory(dataset: ElectionDataset) {
   const [state, setState] = useState<ElectionState>(() => readStoredState(dataset));
 
@@ -55,6 +60,8 @@ export function useElectionHistory(dataset: ElectionDataset) {
           dataset.contests.find(
             (item) => item.id === current.comparisonContestId,
           ) ?? dataset.contests[0];
+        // Snapshot pendente: sem pleito nenhum não há candidatura a comparar.
+        if (!contest) return current;
         const candidate = contest.candidates.find(
           (item) => item.id === candidateId,
         );

@@ -73,6 +73,7 @@ import { buildTerritorialDataset } from "../utils/socioeconomic";
 import {
   buildElectionModel,
   formatElectionMetricValue,
+  isElectionDatasetPendente,
 } from "../utils/elections";
 import {
   buildRegistrationModel,
@@ -105,6 +106,10 @@ const electorateData = buildTerritorialDataset(
   literacyJson as LiteracyDataset,
 );
 const electionData = electionHistoryJson as unknown as ElectionDataset;
+// Histórico do TSE ainda não gerado: a camada de eleições fica indisponível —
+// sem legenda, sem pintura no mapa e sem virar camada ativa. O resto do
+// aplicativo (eleitorado, espectro, locais, cadastros) segue funcionando.
+const electionPendente = isElectionDatasetPendente(electionData);
 const spectrumRegistry = partySpectrumJson as unknown as PartySpectrumRegistry;
 const spectrumIndex = buildPartySpectrumIndex(spectrumRegistry);
 const spectrumContests = buildSpectrumContests(
@@ -433,6 +438,15 @@ export function MunicipalityLayer() {
   const [activeLayer, setActiveLayer] = useState<
     "analysis" | "election" | "registration" | "spectrum" | "polling"
   >("analysis");
+  // Com o histórico do TSE pendente, o pedido pela camada "election" cai para a
+  // camada padrão (eleitorado): melhor mostrar o dado que existe do que pintar
+  // o mapa com uma série que ninguém gerou ainda.
+  const changeActiveLayer = useCallback(
+    (layer: "analysis" | "election" | "registration" | "spectrum" | "polling") => {
+      setActiveLayer(layer === "election" && electionPendente ? "analysis" : layer);
+    },
+    [],
+  );
   // Carregamento sob demanda: os arquivos da camada submunicipal só descem
   // quando ela vira a camada ativa pela primeira vez.
   const polling = usePollingPlaces(spectrumContests, activeLayer === "polling");
@@ -517,12 +531,12 @@ export function MunicipalityLayer() {
   const electionItemById = useMemo(
     () =>
       new Map(
-        electionModel.allItems.map((item) => [
+        (electionModel?.allItems ?? []).map((item) => [
           item.municipality.ibgeCode,
           item,
         ]),
       ),
-    [electionModel.allItems],
+    [electionModel],
   );
   const registrationItemById = useMemo(
     () =>
@@ -1184,7 +1198,7 @@ export function MunicipalityLayer() {
         className="active-layer active-layer--interactive"
         type="button"
         aria-label={
-          activeLayer === "election"
+          activeLayer === "election" && electionModel
             ? `Abrir histórico da camada ${electionModel.candidate.ballotName}`
             : activeLayer === "registration"
               ? `Abrir cadastros da camada ${registrationModel.metricLabel}`
@@ -1214,7 +1228,7 @@ export function MunicipalityLayer() {
         <div>
           <span>Camada ativa</span>
           <strong>
-            {activeLayer === "election"
+            {activeLayer === "election" && electionModel
               ? `${electionModel.candidate.ballotName} · ${electionModel.metricShortLabel}`
               : activeLayer === "registration"
                 ? registrationModel.metricShortLabel
@@ -1224,7 +1238,7 @@ export function MunicipalityLayer() {
                 ? `Locais · ${pollingModel.viewMode === "neighborhoods" ? "bairros" : "locais de votação"}`
               : analysisModel.metric.shortLabel}
           </strong>
-          {activeLayer === "election" ? (
+          {activeLayer === "election" && electionModel ? (
             <small>
               TSE {electionModel.contest.electionYear} · {electionModel.contest.officeName} · {electionModel.contest.round}º turno
             </small>
@@ -1261,7 +1275,7 @@ export function MunicipalityLayer() {
         <div className="municipality-tooltip" aria-live="polite">
           <strong>{hovered.name}</strong>
           <span>
-            {activeLayer === "election"
+            {activeLayer === "election" && electionModel
               ? formatElectionMetricValue(
                   electionModel.metricId,
                   electionItemById.get(hovered.id)?.value ?? 0,
@@ -1308,7 +1322,9 @@ export function MunicipalityLayer() {
         </div>
       )}
 
-      {activeLayer === "election" ? (
+      {/* Sem modelo (histórico pendente) a legenda não aparece: faixa nenhuma
+          é melhor do que faixas calculadas sobre dado inexistente. */}
+      {activeLayer === "election" && electionModel ? (
         <ElectionLegend
           metricId={electionModel.metricId}
           metricLabel={
@@ -1458,7 +1474,7 @@ export function MunicipalityLayer() {
         onPollingShowAllBands={polling.showAllBands}
         onPollingSortChange={polling.setSortDirection}
         onPollingReset={polling.reset}
-        onMapLayerChange={setActiveLayer}
+        onMapLayerChange={changeActiveLayer}
         onSelectionSetMapMode={territorialSelection.setMapMode}
         onSelectionToggleId={territorialSelection.toggleId}
         onSelectionAddIds={territorialSelection.addIds}

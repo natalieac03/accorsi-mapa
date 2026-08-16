@@ -100,6 +100,8 @@ test("modelo calcula participação, quintis, ranking e evolução em pontos per
   const base = getDefaultElectionState(elections);
   const state = { ...base, metricId: "swing" as const };
   const model = buildElectionModel(elections, municipalities, state);
+  // Com snapshot oficial o modelo nunca é nulo (nulo = dado ainda não gerado).
+  assert.ok(model);
   assert.equal(model.allItems.length, 246);
   assert.equal(model.bandCounts.reduce((total, count) => total + count, 0), 246);
   const portoAlegre = model.allItems.find(
@@ -127,9 +129,9 @@ test("troca de pleito escolhe uma candidatura comparável e exporta a série mun
   assert.ok(target);
   const changed = changeElectionContest(initial, target.id, elections);
   assert.ok(target.candidates.some((candidate) => candidate.id === changed.candidateId));
-  const csv = createElectionCsv(
-    buildElectionModel(elections, municipalities, changed),
-  );
+  const modelTrocado = buildElectionModel(elections, municipalities, changed);
+  assert.ok(modelTrocado);
+  const csv = createElectionCsv(modelTrocado);
   assert.equal(csv.startsWith("\uFEFF"), true);
   assert.match(csv, /"participacao_pct"/);
   assert.match(csv, /"diferenca_pontos_percentuais"/);
@@ -177,6 +179,7 @@ test("sem candidatura equivalente a comparação é nula e a evolução fica ind
     comparisonContestId: target.id,
     comparisonCandidateId: null,
   });
+  assert.ok(model);
   assert.equal(model.comparisonCandidate, null);
   assert.equal(model.metricId, "share");
   assert.equal(model.metricShortLabel, "% dos votos válidos");

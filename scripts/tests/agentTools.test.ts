@@ -231,6 +231,7 @@ test("paridade chat↔mapa: resultado_eleicao repete buildElectionModel", { skip
     activeBands: [...ALL_ANALYSIS_BANDS],
     sortDirection: "desc",
   });
+  assert.ok(modelo);
   assert.equal(resposta.resumo?.votosNoEstado, candidato.stateVotes);
   assert.equal(resposta.resumo?.municipiosVencidos, candidato.municipalitiesWon);
   resposta.dados.forEach((linha, indice) => {

@@ -138,9 +138,11 @@ CANDIDATA_NOME="${CANDIDATA_NOME:-ADRIANA ACCORSI}"
 CANDIDATA_PARTIDO="${CANDIDATA_PARTIDO:-PT}"
 
 echo
-echo "=== PASSO 0 de 5: base territorial (eleitorado, IBGE e histórico) ========"
-echo "  Este passo NÃO existia na versão do Rio Grande do Sul: lá esses três"
+echo "=== PASSO 0 de 5: base territorial (eleitorado e indicadores do IBGE) ==="
+echo "  Este passo NÃO existia na versão do Rio Grande do Sul: lá esses"
 echo "  arquivos já vinham prontos no repositório. Em Goiás eles nascem aqui."
+echo "  (O histórico eleitoral também nasce aqui, mas no PASSO 1c: ele depende"
+echo "   de pacotes que só são baixados nos passos 1 e 1b.)"
 
 # --- Eleitorado e correspondência TSE/IBGE ---------------------------------
 baixar "$CDN/perfil_eleitorado/perfil_eleitorado_2026.zip" \
@@ -244,6 +246,30 @@ $PYTHON scripts/process_candidato_foco.py \
   --anos 2014 2016 2018 2020 2022 2024
 
 echo
+echo "=== PASSO 1c de 5: histórico de Presidente e Governador (2018 e 2022) ===="
+echo "  É o que alimenta a aba Eleições. Reaproveita quase tudo que já foi"
+echo "  baixado: só o pacote nacional de 2018 (Presidente) falta, porque o"
+echo "  PASSO 1 baixa o nacional de 2022 e o PASSO 1b, os estaduais."
+
+# Presidente é eleição nacional: os votos vêm no pacote BR, não no de Goiás.
+baixar "$CDN/votacao_secao/votacao_secao_2018_BR.zip" \
+  dados_tse/secoes/votacao_secao_2018_BR.zip
+
+if [[ ! -s src/data/election-history-go.json ]] || \
+   grep -q '"status": *"pendente"' src/data/election-history-go.json; then
+  echo "  Processando (pode levar vários minutos)..."
+  $PYTHON scripts/process_tse_history.py \
+    --section-2018 dados_tse/secoes/votacao_secao_2018_GO.zip \
+    --section-2022 dados_tse/secoes/votacao_secao_2022_GO.zip \
+    --president-2018 dados_tse/secoes/votacao_secao_2018_BR.zip \
+    --president-2022 dados_tse/secoes/votacao_secao_2022_BR.zip \
+    --candidates-2018 dados_tse/candidaturas/consulta_cand_2018.zip \
+    --candidates-2022 dados_tse/candidaturas/consulta_cand_2022.zip
+else
+  echo "  [ok] histórico eleitoral já gerado."
+fi
+
+echo
 echo "=== PASSO 2 de 5: eleições municipais 2020 e 2024 por partido ============"
 for ano in 2020 2024; do
   destino="dados_tse/munzona/votacao_partido_munzona_${ano}_GO.zip"
@@ -316,6 +342,25 @@ n_alfa = alfa.get("metadata", {}).get("municipalityCount", 0)
 if n_alfa != 246:
     erros.append(f"literacy-go.json cobre {n_alfa} municípios (esperado 246)")
 
+# Histórico de Presidente/Governador: a ausência dele já subiu para produção
+# uma vez, calada, porque esta verificação não olhava para ele. O app tolera o
+# arquivo pendente (a aba Eleições explica e o resto funciona), mas subir sem
+# ele é decisão consciente, não acidente — então aqui é erro.
+hist = json.loads(Path("src/data/election-history-go.json").read_text(encoding="utf-8"))
+n_hist = len(hist.get("contests") or [])
+if n_hist == 0 or hist.get("metadata", {}).get("status") == "pendente":
+    erros.append("election-history-go.json continua pendente (aba Eleições vazia)")
+
+# Trajetória da candidatura em foco: mesma lógica.
+foco = sorted(Path("src/data/candidato").glob("*.json"))
+foco = [p for p in foco if p.name != "LEIAME.md"]
+n_foco = 0
+for arquivo in foco:
+    dados_foco = json.loads(arquivo.read_text(encoding="utf-8"))
+    n_foco = max(n_foco, len(dados_foco.get("contests") or []))
+if n_foco == 0:
+    erros.append("nenhuma trajetória gerada em src/data/candidato/ (aba da candidata vazia)")
+
 if erros:
     print("FALHOU NA VERIFICAÇÃO:")
     for e in erros:
@@ -327,6 +372,8 @@ print(f"  Arquivos de votos por pleito: {len(votos)} ({', '.join(v.name for v in
 print(f"  Pleitos municipais 2020/2024: {n_pleitos}")
 print(f"  Estrutura etária: {n_idade} municípios")
 print(f"  Alfabetização 15+: {n_alfa} municípios")
+print(f"  Histórico Presidente/Governador: {n_hist} pleitos")
+print(f"  Trajetória da candidatura: {n_foco} pleitos")
 print("  Tudo gerado e validado.")
 PY
 

@@ -40,7 +40,7 @@ import {
   getAnalysisMetricValue,
   buildAnalysisModel,
 } from "./analysis.ts";
-import { buildElectionModel } from "./elections.ts";
+import { buildElectionModel, isElectionDatasetPendente } from "./elections.ts";
 import {
   buildPollingModel,
   getPollingContestId,
@@ -1130,8 +1130,16 @@ async function executarResultadoEleicao(
 ): Promise<RespostaFerramenta> {
   const avisos: string[] = [];
   const eleicoes = contexto.eleicoes;
-  if (eleicoes.contests.length === 0) {
-    return { ok: false, motivo: "Nenhum pleito disponível no histórico do TSE." };
+  // Histórico do TSE ainda não gerado: a ferramenta declara a indisponibilidade
+  // em vez de responder com números que não existem.
+  if (isElectionDatasetPendente(eleicoes)) {
+    return {
+      ok: false,
+      motivo:
+        "Histórico eleitoral indisponível: o snapshot do TSE (Presidente e " +
+        "Governador de Goiás) ainda não foi gerado. Rode `bash gerar_dados.sh` " +
+        "na raiz do projeto para baixar e processar os arquivos.",
+    };
   }
   const termo = String(argumentos.candidato).trim();
   const alvo = normalizeSearchText(termo) || termo;
@@ -1192,6 +1200,15 @@ async function executarResultadoEleicao(
     activeBands: [...ALL_ANALYSIS_BANDS],
     sortDirection: direcaoDaOrdem(ordem),
   });
+  // Só acontece com snapshot placeholder; sem modelo não há resposta possível.
+  if (modelo === null) {
+    return {
+      ok: false,
+      motivo:
+        "Histórico eleitoral indisponível: o snapshot do TSE ainda não foi " +
+        "gerado. Rode `bash gerar_dados.sh` na raiz do projeto.",
+    };
+  }
 
   let itens = modelo.filteredItems;
   if (Array.isArray(argumentos.municipios)) {

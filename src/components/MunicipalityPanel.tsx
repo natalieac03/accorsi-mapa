@@ -86,7 +86,8 @@ type MunicipalityPanelProps = {
   analysisOpenRequest: number;
   electionDataset: ElectionDataset;
   electionState: ElectionState;
-  electionModel: ElectionModel;
+  /** null enquanto o histórico do TSE for placeholder ("pendente"). */
+  electionModel: ElectionModel | null;
   electionOpenRequest: number;
   registrationState: RegistrationState;
   registrationModel: RegistrationModel;
@@ -303,6 +304,10 @@ export function MunicipalityPanel({
 }: MunicipalityPanelProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Histórico do TSE ainda não gerado: a aba continua acessível (é onde a
+  // pessoa lê o porquê e o que rodar), mas não pede a camada de eleições ao
+  // mapa — camada sem dado não é camada.
+  const electionsPendente = electionModel === null;
   // Nonce > 0 exibe o aviso de limite da comparação; cada tentativa reinicia
   // o cronômetro de ocultação (por isso um contador, não um booleano).
   const [compareLimitNotice, setCompareLimitNotice] = useState(0);
@@ -458,7 +463,7 @@ export function MunicipalityPanel({
 
   const openTab = (tab: SidebarTab) => {
     if (tab === "analysis") onMapLayerChange("analysis");
-    if (tab === "elections") onMapLayerChange("election");
+    if (tab === "elections" && !electionsPendente) onMapLayerChange("election");
     if (tab === "registrations") onMapLayerChange("registration");
     if (tab === "spectrum") onMapLayerChange("spectrum");
     if (tab === "polling") onMapLayerChange("polling");
@@ -568,6 +573,11 @@ export function MunicipalityPanel({
                   role="tab"
                   aria-selected={activeTab === tab.id}
                   aria-controls={`sidebar-${tab.id}-panel`}
+                  title={
+                    tab.id === "elections" && electionsPendente
+                      ? "Histórico do TSE ainda não gerado — rode bash gerar_dados.sh"
+                      : undefined
+                  }
                   onClick={() => openTab(tab.id)}
                 >
                   <Icon size={15} />

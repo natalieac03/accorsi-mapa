@@ -3,6 +3,8 @@ import type { MunicipalityProfile } from "./electorate";
 
 export type ElectionMetadata = {
   state: "GO";
+  /** "pendente" no placeholder inicial, ausente depois de gerar os dados. */
+  status?: string;
   years: number[];
   offices: string[];
   rounds: number[];
@@ -61,6 +63,10 @@ export type ElectionDataset = {
 
 export type ElectionMetricId = "share" | "votes" | "swing";
 
+/**
+ * Estado da camada de eleições. Com o snapshot ainda pendente (nenhum pleito)
+ * os identificadores ficam VAZIOS — nunca apontando para um pleito inventado.
+ */
 export type ElectionState = {
   contestId: string;
   candidateId: string;

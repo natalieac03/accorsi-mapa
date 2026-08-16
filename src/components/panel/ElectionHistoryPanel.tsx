@@ -38,7 +38,8 @@ import { ELECTORATE_COLORS, formatInteger, formatPercent } from "../../utils/ele
 
 type ElectionHistoryPanelProps = {
   dataset: ElectionDataset;
-  model: ElectionModel;
+  /** null enquanto o snapshot do TSE for placeholder ("pendente"). */
+  model: ElectionModel | null;
   state: ElectionState;
   /** geometrias do map.data; null enquanto o mapa não carregou */
   mapShapes: MapExportShape[] | null;
@@ -93,6 +94,35 @@ export function ElectionHistoryPanel({
     () => Array.from(new Set(dataset.contests.map((item) => item.officeName))),
     [dataset.contests],
   );
+  // Histórico ainda não gerado: o painel declara a ausência e diz o que rodar.
+  // Nada de pleito, candidato ou percentual inventado para preencher a tela.
+  if (model === null) {
+    return (
+      <div
+        className="sidebar-view election-view"
+        role="tabpanel"
+        id="sidebar-elections-panel"
+      >
+        <div className="workspace-view-header">
+          <div>
+            <span className="panel-eyebrow">Resultados oficiais agregados</span>
+            <h2>Histórico de votação</h2>
+          </div>
+        </div>
+        <div className="workspace-empty-state">
+          <Vote size={26} aria-hidden />
+          <strong>Histórico ainda não gerado</strong>
+          <span>
+            Esta camada lê os resultados de Presidente e Governador de Goiás,
+            município por município, direto dos dados abertos do TSE — que ainda
+            não foram baixados nesta instalação. Rode{" "}
+            <code>bash gerar_dados.sh</code> na raiz do projeto e volte aqui.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   const comparableContests = getComparableContests(dataset, model.contest);
   const comparisonMissing =
     state.metricId === "swing" && !model.comparisonCandidate;

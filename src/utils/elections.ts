@@ -95,9 +95,40 @@ export function findComparableCandidate(
   );
 }
 
+/**
+ * `true` enquanto o histórico do TSE for o placeholder do repositório: sem
+ * nenhum pleito OU marcado como "pendente" nos metadados. A camada inteira de
+ * eleições é opcional — quem consome este arquivo decide se some da tela, e
+ * nada aqui inventa pleito, candidatura ou voto para "preencher" a ausência.
+ */
+export function isElectionDatasetPendente(dataset: ElectionDataset): boolean {
+  return dataset.metadata.status === "pendente" || dataset.contests.length === 0;
+}
+
+/**
+ * Estado neutro: usado quando não há pleito nenhum no snapshot. Todos os
+ * identificadores ficam vazios/nulos — ausência declarada, jamais um pleito
+ * fabricado com votos zerados.
+ */
+function getEmptyElectionState(): ElectionState {
+  return {
+    contestId: "",
+    candidateId: "",
+    metricId: "share",
+    comparisonContestId: "",
+    comparisonCandidateId: null,
+    activeBands: [...ALL_ANALYSIS_BANDS],
+    sortDirection: "desc",
+  };
+}
+
 export function getDefaultElectionState(dataset: ElectionDataset): ElectionState {
   const contest = dataset.contests[0];
+  // Snapshot pendente (contests: []) não derruba o app: devolve estado neutro
+  // em vez de acessar o índice 0 de uma lista vazia.
+  if (!contest) return getEmptyElectionState();
   const candidate = contest.candidates[0];
+  if (!candidate) return getEmptyElectionState();
   const comparisonContest = getComparableContests(dataset, contest)[0] ?? contest;
   const comparisonCandidate = findComparableCandidate(candidate, comparisonContest);
   return {
@@ -116,6 +147,8 @@ export function sanitizeElectionState(
   dataset: ElectionDataset,
 ): ElectionState {
   const fallback = getDefaultElectionState(dataset);
+  // Sem pleito no snapshot não existe estado a sanear: só o estado neutro.
+  if (dataset.contests.length === 0) return fallback;
   if (!value || typeof value !== "object") return fallback;
   const raw = value as Record<string, unknown>;
   const contest =
@@ -139,6 +172,8 @@ export function sanitizeElectionState(
       ? comparisonContestCandidate
       : getComparableContests(dataset, contest)[0] ?? contest;
   const primaryCandidate = candidate ?? contest.candidates[0];
+  // Pleito sem candidaturas no arquivo: nada a exibir, volta ao estado padrão.
+  if (!primaryCandidate) return fallback;
   const comparisonCandidate =
     typeof raw.comparisonCandidateId === "string"
       ? getCandidate(comparisonContest, raw.comparisonCandidateId) ??
@@ -174,11 +209,15 @@ export function changeElectionContest(
   dataset: ElectionDataset,
 ): ElectionState {
   const currentContest = getContest(dataset, state.contestId) ?? dataset.contests[0];
+  // Snapshot pendente: não há para onde trocar, o estado segue como está.
+  if (!currentContest) return state;
   const currentCandidate =
     getCandidate(currentContest, state.candidateId) ?? currentContest.candidates[0];
   const contest = getContest(dataset, contestId) ?? currentContest;
   const candidate =
-    findComparableCandidate(currentCandidate, contest) ?? contest.candidates[0];
+    (currentCandidate ? findComparableCandidate(currentCandidate, contest) : null) ??
+    contest.candidates[0];
+  if (!candidate) return state;
   const comparisonContest = getComparableContests(dataset, contest)[0] ?? contest;
   const comparisonCandidate = findComparableCandidate(candidate, comparisonContest);
   return {
@@ -196,7 +235,10 @@ export function changeElectionCandidate(
   dataset: ElectionDataset,
 ): ElectionState {
   const contest = getContest(dataset, state.contestId) ?? dataset.contests[0];
+  // Snapshot pendente: sem pleito não há candidatura a selecionar.
+  if (!contest) return state;
   const candidate = getCandidate(contest, candidateId) ?? contest.candidates[0];
+  if (!candidate) return state;
   const comparisonContest =
     getContest(dataset, state.comparisonContestId) ?? contest;
   const comparisonCandidate = findComparableCandidate(candidate, comparisonContest);
@@ -213,6 +255,8 @@ export function changeElectionComparisonContest(
   dataset: ElectionDataset,
 ): ElectionState {
   const primaryContest = getContest(dataset, state.contestId) ?? dataset.contests[0];
+  // Snapshot pendente: sem pleito não existe comparação possível.
+  if (!primaryContest) return state;
   const primaryCandidate =
     getCandidate(primaryContest, state.candidateId) ?? primaryContest.candidates[0];
   const alternatives = getComparableContests(dataset, primaryContest);
@@ -220,7 +264,9 @@ export function changeElectionComparisonContest(
     alternatives.find((item) => item.id === contestId) ??
     alternatives[0] ??
     primaryContest;
-  const candidate = findComparableCandidate(primaryCandidate, contest);
+  const candidate = primaryCandidate
+    ? findComparableCandidate(primaryCandidate, contest)
+    : null;
   return {
     ...state,
     comparisonContestId: contest.id,
@@ -239,14 +285,22 @@ function getMetricValue(
   return sharePct;
 }
 
+/**
+ * Devolve `null` quando o histórico ainda é placeholder (nenhum pleito ou
+ * pleito sem candidaturas). Ausência de dado é AUSÊNCIA: quem chama esconde a
+ * camada e explica o porquê — nada de mapa pintado com zeros inventados.
+ */
 export function buildElectionModel(
   dataset: ElectionDataset,
   municipalities: MunicipalityProfile[],
   state: ElectionState,
-): ElectionModel {
+): ElectionModel | null {
+  if (isElectionDatasetPendente(dataset)) return null;
   const sanitized = sanitizeElectionState(state, dataset);
   const contest = getContest(dataset, sanitized.contestId) ?? dataset.contests[0];
+  if (!contest) return null;
   const candidate = getCandidate(contest, sanitized.candidateId) ?? contest.candidates[0];
+  if (!candidate) return null;
   const comparisonContest =
     getContest(dataset, sanitized.comparisonContestId) ?? contest;
   const comparisonCandidate = sanitized.comparisonCandidateId
