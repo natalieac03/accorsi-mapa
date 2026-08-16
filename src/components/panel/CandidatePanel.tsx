@@ -473,9 +473,9 @@ export function CandidatePanel() {
                 {contestAnterior.electionYear} → {contestRecente.electionYear},
                 variação sobre o pleito mais antigo.
               </p>
-              {/* Duas séries do MESMO tom (antes escuro, depois vivo): é um
+              {/* Duas séries do MESMO tom (antes claro, depois cheio): é um
                   antes/depois por bairro, não duas identidades — validado como
-                  rampa ordinal de 2 passos sobre o fundo #0f0809. */}
+                  rampa ordinal de 2 passos sobre a superfície branca. */}
               <div className="candidate-bairro-legend" aria-hidden="true">
                 <span>
                   <i className="candidate-swatch candidate-swatch--anterior" />

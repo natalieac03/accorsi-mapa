@@ -1,0 +1,19 @@
+{
+ "metadata": {
+  "state": "GO",
+  "status": "pendente",
+  "year": 0,
+  "source": "TSE",
+  "dataset": "Perfil do eleitorado",
+  "profileGeneratedAt": "1970-01-01T00:00:00+00:00",
+  "mappingGeneratedAt": "1970-01-01T00:00:00+00:00",
+  "processedAtUtc": "1970-01-01T00:00:00+00:00",
+  "processedRows": 0,
+  "municipalityCount": 0,
+  "stateElectorate": 0,
+  "electorateThresholds": [],
+  "inputFiles": {},
+  "note": "Dados de Goiás ainda não gerados. Rode `bash gerar_dados.sh` na raiz do projeto para baixar do TSE/IBGE e preencher este arquivo."
+ },
+ "municipalities": {}
+}

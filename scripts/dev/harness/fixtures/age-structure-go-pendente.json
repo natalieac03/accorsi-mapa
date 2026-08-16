@@ -1,0 +1,10 @@
+{
+ "metadata": {
+  "schemaVersion": 1,
+  "referenceYear": 2022,
+  "municipalityCount": 0,
+  "status": "pendente",
+  "note": "Dados de Goiás ainda não gerados. Rode `bash gerar_dados.sh` na raiz do projeto para baixar do TSE/IBGE e preencher este arquivo."
+ },
+ "municipalities": {}
+}

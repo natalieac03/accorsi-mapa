@@ -148,9 +148,9 @@ test("exporta somente agregados e importa o modelo sem persistir CEP completo", 
 
   const parsed = parseRegistrationImportCsv(createRegistrationImportTemplateCsv());
   assert.equal(parsed.length, 1);
-  assert.equal(parsed[0].cep, "90010000");
+  assert.equal(parsed[0].cep, "74003010");
   const local = toLocalRegistration(parsed[0], "local-1");
-  assert.equal(local.cepPrefix, "90010");
+  assert.equal(local.cepPrefix, "74003");
   assert.equal("cep" in local, false);
 });
 

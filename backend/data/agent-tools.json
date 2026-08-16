@@ -60,7 +60,7 @@
     },
     {
       "name": "perfil_municipio",
-      "description": "Use quando a pergunta for sobre UM município específico ('como é Pelotas?', 'qual o eleitorado de Caxias do Sul?', 'fale sobre Porto Alegre'). Devolve o retrato completo: eleitorado e composição do cadastro (biometria, deficiência, mulheres, nome social, zonas), todos os indicadores socioeconômicos e etários do IBGE com a posição do município no ranking estadual de cada um, o índice ideológico 0–10 no pleito mais recente e o número de locais de votação. Indicadores sem dado voltam como null e são listados nos avisos — nunca zero.",
+      "description": "Use quando a pergunta for sobre UM município específico ('como é Rio Verde?', 'qual o eleitorado de Anápolis?', 'fale sobre Goiânia'). Devolve o retrato completo: eleitorado e composição do cadastro (biometria, deficiência, mulheres, nome social, zonas), todos os indicadores socioeconômicos e etários do IBGE com a posição do município no ranking estadual de cada um, o índice ideológico 0–10 no pleito mais recente e o número de locais de votação. Indicadores sem dado voltam como null e são listados nos avisos — nunca zero.",
       "parameters": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -110,7 +110,7 @@
     },
     {
       "name": "espectro_submunicipal",
-      "description": "Use para perguntas DENTRO de um município: 'em Porto Alegre, em quais regiões teve mais gente votando na direita', 'quais bairros de Pelotas são mais à esquerda', 'qual local de votação de Canoas votou mais à direita'. Devolve o índice ideológico 0–10 por BAIRRO ou por LOCAL DE VOTAÇÃO dentro de um município e um pleito, com eleitorado, votos apurados, cobertura e blocos. O bairro é a soma dos votos dos locais daquele bairro (não é polígono de bairro), e a medida é do LOCAL ONDE SE VOTA, não do endereço de quem vota — diga isso na resposta. Se a camada submunicipal ainda não tiver sido gerada pelo ETL, a ferramenta responde com aviso explicando a pendência e nenhuma linha.",
+      "description": "Use para perguntas DENTRO de um município: 'em Goiânia, em quais regiões teve mais gente votando na esquerda', 'quais bairros de Aparecida de Goiânia são mais à esquerda', 'qual local de votação de Anápolis votou mais à direita'. Devolve o índice ideológico 0–10 por BAIRRO ou por LOCAL DE VOTAÇÃO dentro de um município e um pleito, com eleitorado, votos apurados, cobertura e blocos. O bairro é a soma dos votos dos locais daquele bairro (não é polígono de bairro), e a medida é do LOCAL ONDE SE VOTA, não do endereço de quem vota — diga isso na resposta. Se a camada submunicipal ainda não tiver sido gerada pelo ETL, a ferramenta responde com aviso explicando a pendência e nenhuma linha.",
       "parameters": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -146,7 +146,7 @@
     },
     {
       "name": "resultado_eleicao",
-      "description": "Use para a votação de UM candidato: 'onde fulano foi melhor', 'quantos votos beltrano teve em Santa Maria', 'em quais municípios ciclano ganhou'. Devolve, por município, os votos nominais do candidato, os votos válidos do município, a participação em percentual dos válidos e se ele liderou ali, além do total estadual. Só existem os pleitos presentes em 'fonte'; se o candidato não estiver no pleito, a ferramenta devolve ok:false explicando.",
+      "description": "Use para a votação de UM candidato: 'onde fulano foi melhor', 'quantos votos beltrano teve em Catalão', 'em quais municípios ciclano ganhou'. Devolve, por município, os votos nominais do candidato, os votos válidos do município, a participação em percentual dos válidos e se ele liderou ali, além do total estadual. Só existem os pleitos presentes em 'fonte'; se o candidato não estiver no pleito, a ferramenta devolve ok:false explicando.",
       "parameters": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -184,7 +184,7 @@
     },
     {
       "name": "comparar_municipios",
-      "description": "Use quando a pergunta comparar cidades: 'Porto Alegre ou Caxias tem eleitorado mais jovem?', 'compare Pelotas, Rio Grande e Bagé'. Devolve até 3 municípios lado a lado nos principais indicadores (eleitorado, participação em Goiás, biometria, mulheres, população estimada e do Censo, PIB per capita, densidade, população 16+, penetração eleitoral, 16–24, 60+, alfabetização 15+) com a posição de cada um no ranking estadual, mais o índice ideológico no pleito mais recente. Indicador sem dado vem como null, nunca zero.",
+      "description": "Use quando a pergunta comparar cidades: 'Goiânia ou Aparecida de Goiânia tem eleitorado mais jovem?', 'compare Anápolis, Rio Verde e Luziânia'. Devolve até 3 municípios lado a lado nos principais indicadores (eleitorado, participação em Goiás, biometria, mulheres, população estimada e do Censo, PIB per capita, densidade, população 16+, penetração eleitoral, 16–24, 60+, alfabetização 15+) com a posição de cada um no ranking estadual, mais o índice ideológico no pleito mais recente. Indicador sem dado vem como null, nunca zero.",
       "parameters": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",

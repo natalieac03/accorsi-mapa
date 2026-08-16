@@ -69,7 +69,7 @@ export type MapExportData = {
 };
 
 export const MAP_EXPORT_WIDTH = 2000;
-export const MAP_EXPORT_BACKGROUND = "#070d0d";
+export const MAP_EXPORT_BACKGROUND = "#ffffff";
 export const MAP_EXPORT_ATTRIBUTION =
   "Elaborado com dados públicos TSE/IBGE · Malha: IBGE";
 
@@ -78,11 +78,11 @@ const HEADER_HEIGHT = 168;
 const LEGEND_COLUMNS = 2;
 const LEGEND_ROW_HEIGHT = 56;
 const FOOTER_HEIGHT = 72;
-const STROKE_COLOR = "#0b1514";
-const TITLE_COLOR = "#f2f6f5";
-const SUBTITLE_COLOR = "#a7b3b1";
-const LABEL_COLOR = "#dde5e3";
-const MUTED_TEXT_COLOR = "#8b9694";
+const STROKE_COLOR = "#ffffff";
+const TITLE_COLOR = "#201b1a";
+const SUBTITLE_COLOR = "#554e4c";
+const LABEL_COLOR = "#201b1a";
+const MUTED_TEXT_COLOR = "#6e6560";
 
 export function computeShapeBounds(
   shapes: MapExportShape[],

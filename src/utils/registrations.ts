@@ -536,12 +536,12 @@ export function createRegistrationImportTemplateCsv() {
     [
       [
         "CRM-0001",
-        "90010-000",
-        "4314902",
-        "Porto Alegre",
-        "Centro Histórico",
-        "-30,030",
-        "-51,230",
+        "74003-010",
+        "5208707",
+        "Goiânia",
+        "Setor Central",
+        "-16,679",
+        "-49,255",
         "field",
         "pending",
         "2026-08-14T12:00:00Z",

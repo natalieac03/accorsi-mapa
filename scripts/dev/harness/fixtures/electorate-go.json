@@ -1,0 +1,334 @@
+{
+ "metadata": {
+  "state": "GO",
+  "status": "sintetico-harness",
+  "year": 2026,
+  "source": "FIXTURE SINTÉTICA — apenas harness visual"
+ },
+ "municipalities": {
+  "5200258": {
+   "name": "Águas de São João",
+   "electorate": 3400,
+   "gender": {
+    "female": 1613,
+    "male": 1780,
+    "notInformed": 7
+   }
+  },
+  "5201108": {
+   "name": "Anápolis",
+   "electorate": 270000,
+   "gender": {
+    "female": 146663,
+    "male": 122797,
+    "notInformed": 540
+   }
+  },
+  "5201405": {
+   "name": "Aparecida de Goiânia",
+   "electorate": 380000,
+   "gender": {
+    "female": 194402,
+    "male": 184838,
+    "notInformed": 760
+   }
+  },
+  "5201801": {
+   "name": "Águas Lindas de Goiás",
+   "electorate": 120000,
+   "gender": {
+    "female": 63019,
+    "male": 56741,
+    "notInformed": 240
+   }
+  },
+  "5203302": {
+   "name": "Bela Vista de Goiás",
+   "electorate": 20000,
+   "gender": {
+    "female": 10941,
+    "male": 9019,
+    "notInformed": 40
+   }
+  },
+  "5204656": {
+   "name": "Campos Verdes",
+   "electorate": 3800,
+   "gender": {
+    "female": 1943,
+    "male": 1849,
+    "notInformed": 8
+   }
+  },
+  "5204904": {
+   "name": "Ceres",
+   "electorate": 15000,
+   "gender": {
+    "female": 7591,
+    "male": 7379,
+    "notInformed": 30
+   }
+  },
+  "5205109": {
+   "name": "Catalão",
+   "electorate": 80000,
+   "gender": {
+    "female": 37914,
+    "male": 41926,
+    "notInformed": 160
+   }
+  },
+  "5205802": {
+   "name": "Cidade Ocidental",
+   "electorate": 42000,
+   "gender": {
+    "female": 20872,
+    "male": 21044,
+    "notInformed": 84
+   }
+  },
+  "5208608": {
+   "name": "Goianira",
+   "electorate": 40000,
+   "gender": {
+    "female": 21073,
+    "male": 18847,
+    "notInformed": 80
+   }
+  },
+  "5208707": {
+   "name": "Goiânia",
+   "electorate": 1050000,
+   "gender": {
+    "female": 542414,
+    "male": 505486,
+    "notInformed": 2100
+   }
+  },
+  "5209101": {
+   "name": "Goianésia",
+   "electorate": 45000,
+   "gender": {
+    "female": 22185,
+    "male": 22725,
+    "notInformed": 90
+   }
+  },
+  "5210000": {
+   "name": "Inhumas",
+   "electorate": 38000,
+   "gender": {
+    "female": 20307,
+    "male": 17617,
+    "notInformed": 76
+   }
+  },
+  "5211909": {
+   "name": "Itumbiara",
+   "electorate": 72000,
+   "gender": {
+    "female": 35460,
+    "male": 36396,
+    "notInformed": 144
+   }
+  },
+  "5212303": {
+   "name": "Jussara",
+   "electorate": 14000,
+   "gender": {
+    "female": 6709,
+    "male": 7263,
+    "notInformed": 28
+   }
+  },
+  "5212501": {
+   "name": "Luziânia",
+   "electorate": 130000,
+   "gender": {
+    "female": 68932,
+    "male": 60808,
+    "notInformed": 260
+   }
+  },
+  "5213103": {
+   "name": "Jataí",
+   "electorate": 75000,
+   "gender": {
+    "female": 36608,
+    "male": 38242,
+    "notInformed": 150
+   }
+  },
+  "5213509": {
+   "name": "Itaberaí",
+   "electorate": 28000,
+   "gender": {
+    "female": 14881,
+    "male": 13063,
+    "notInformed": 56
+   }
+  },
+  "5215009": {
+   "name": "Niquelândia",
+   "electorate": 30000,
+   "gender": {
+    "female": 16120,
+    "male": 13820,
+    "notInformed": 60
+   }
+  },
+  "5215306": {
+   "name": "Novo Gama",
+   "electorate": 68000,
+   "gender": {
+    "female": 35612,
+    "male": 32252,
+    "notInformed": 136
+   }
+  },
+  "5216809": {
+   "name": "Planaltina",
+   "electorate": 60000,
+   "gender": {
+    "female": 29937,
+    "male": 29943,
+    "notInformed": 120
+   }
+  },
+  "5217302": {
+   "name": "Piracanjuba",
+   "electorate": 18000,
+   "gender": {
+    "female": 8526,
+    "male": 9438,
+    "notInformed": 36
+   }
+  },
+  "5217609": {
+   "name": "Pirenópolis",
+   "electorate": 17000,
+   "gender": {
+    "female": 8677,
+    "male": 8289,
+    "notInformed": 34
+   }
+  },
+  "5218003": {
+   "name": "Quirinópolis",
+   "electorate": 32000,
+   "gender": {
+    "female": 15696,
+    "male": 16240,
+    "notInformed": 64
+   }
+  },
+  "5218508": {
+   "name": "Rialma",
+   "electorate": 8000,
+   "gender": {
+    "female": 4304,
+    "male": 3680,
+    "notInformed": 16
+   }
+  },
+  "5218805": {
+   "name": "Rio Verde",
+   "electorate": 160000,
+   "gender": {
+    "female": 84144,
+    "male": 75536,
+    "notInformed": 320
+   }
+  },
+  "5219002": {
+   "name": "Rubiataba",
+   "electorate": 13000,
+   "gender": {
+    "female": 6907,
+    "male": 6067,
+    "notInformed": 26
+   }
+  },
+  "5219100": {
+   "name": "Sanclerlândia",
+   "electorate": 5600,
+   "gender": {
+    "female": 2753,
+    "male": 2836,
+    "notInformed": 11
+   }
+  },
+  "5219308": {
+   "name": "Santo Antônio do Descoberto",
+   "electorate": 44000,
+   "gender": {
+    "female": 24190,
+    "male": 19722,
+    "notInformed": 88
+   }
+  },
+  "5219738": {
+   "name": "Senador Canedo",
+   "electorate": 85000,
+   "gender": {
+    "female": 40982,
+    "male": 43848,
+    "notInformed": 170
+   }
+  },
+  "5220108": {
+   "name": "São Domingos",
+   "electorate": 7500,
+   "gender": {
+    "female": 4029,
+    "male": 3456,
+    "notInformed": 15
+   }
+  },
+  "5220280": {
+   "name": "São João d'Aliança",
+   "electorate": 9200,
+   "gender": {
+    "female": 4524,
+    "male": 4658,
+    "notInformed": 18
+   }
+  },
+  "5220454": {
+   "name": "São Luís de Montes Belos",
+   "electorate": 22000,
+   "gender": {
+    "female": 10524,
+    "male": 11432,
+    "notInformed": 44
+   }
+  },
+  "5221007": {
+   "name": "Três Ranchos",
+   "electorate": 2200,
+   "gender": {
+    "female": 1148,
+    "male": 1048,
+    "notInformed": 4
+   }
+  },
+  "5221403": {
+   "name": "Trindade",
+   "electorate": 90000,
+   "gender": {
+    "female": 46052,
+    "male": 43768,
+    "notInformed": 180
+   }
+  },
+  "5221601": {
+   "name": "Uruaçu",
+   "electorate": 26000,
+   "gender": {
+    "female": 14091,
+    "male": 11857,
+    "notInformed": 52
+   }
+  }
+ }
+}

@@ -15,10 +15,16 @@ import type { EntradaContextoAgente } from "../utils/agentTools";
  * segue funcionando sem o agente.
  */
 
+/*
+ * Sugestões prontas: só perguntas de GOIÁS e só o que as ferramentas do
+ * contrato (shared/agent-tools.json) sabem responder — retrato de município,
+ * espectro submunicipal por bairro, comparação de até 3 municípios e ranking
+ * do índice ideológico estadual.
+ */
 const SUGESTOES = [
-  "Em Porto Alegre, quais bairros votaram mais à direita em 2022?",
-  "Quais os 10 municípios com maior penetração eleitoral?",
-  "Compare Porto Alegre, Caxias do Sul e Pelotas",
+  "Em Goiânia, quais bairros votaram mais à esquerda no último pleito?",
+  "Qual o retrato de Aparecida de Goiânia?",
+  "Compare Goiânia, Anápolis e Rio Verde",
   "Onde o índice ideológico é mais à esquerda em Goiás?",
 ];
 
@@ -115,10 +121,11 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
             {mensagens.length === 0 && (
               <div className="agent-empty">
                 <p>
-                  Respondo com base nos dados já carregados: TSE, IBGE, espectro
-                  ideológico, locais de votação e cadastros agregados. Todo número
-                  sai do mesmo cálculo que desenha o mapa — e cadastros aparecem
-                  só em grupos de cinco ou mais.
+                  Pergunte sobre o eleitorado de Goiás: respondo só com os
+                  dados públicos já carregados na plataforma (TSE e IBGE), e
+                  cada número sai do mesmo cálculo que desenha o mapa.
+                  Cadastros de apoiadores aparecem apenas agregados, em grupos
+                  de cinco ou mais.
                 </p>
                 <ul className="agent-suggestions">
                   {SUGESTOES.map((sugestao) => (
@@ -172,7 +179,7 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
                   enviar();
                 }
               }}
-              placeholder="Ex.: em Porto Alegre, quais bairros votaram mais à direita?"
+              placeholder="Ex.: em Goiânia, quais bairros votaram mais à esquerda?"
               rows={2}
               disabled={pensando}
               aria-label="Sua pergunta"

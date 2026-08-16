@@ -1,0 +1,885 @@
+{
+ "metadata": {
+  "schemaVersion": 1,
+  "state": "GO",
+  "slug": "adriana-accorsi",
+  "nomeConsultado": "FIXTURE SINTÉTICA — apenas harness visual",
+  "pleitos": 4,
+  "anos": [
+   2018,
+   2022,
+   2024
+  ],
+  "cargos": [
+   "Deputada Federal",
+   "Prefeita"
+  ],
+  "source": "sintético"
+ },
+ "contests": [
+  {
+   "id": "2018-6-1",
+   "electionYear": 2018,
+   "officeCode": 6,
+   "officeName": "Deputada Federal",
+   "round": 1,
+   "candidatura": {
+    "sqCandidato": "000000000000",
+    "nomeCompleto": "ADRIANA ACCORSI (FIXTURE)",
+    "nomeUrna": "Adriana Accorsi",
+    "partido": "PT",
+    "numero": "1313",
+    "situacaoCandidatura": "APTO",
+    "resultado": "ELEITA"
+   },
+   "votosNoEstado": 143478,
+   "posicaoNoEstado": 4,
+   "candidaturasNoPleito": 320,
+   "municipiosComVoto": 36,
+   "concentracaoPercentual": {
+    "top5": 62.4,
+    "top10": 74.9,
+    "top20": 88.2
+   },
+   "votosSemLocalDeVotacao": 0,
+   "temRecorteSubmunicipal": false,
+   "municipios": {
+    "5200258": {
+     "nome": "Águas de São João",
+     "votos": 71,
+     "validos": 2264,
+     "percentualValidos": 3.14,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201108": {
+     "nome": "Anápolis",
+     "votos": 19813,
+     "validos": 199909,
+     "percentualValidos": 9.91,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201405": {
+     "nome": "Aparecida de Goiânia",
+     "votos": 17981,
+     "validos": 270191,
+     "percentualValidos": 6.65,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201801": {
+     "nome": "Águas Lindas de Goiás",
+     "votos": 6251,
+     "validos": 94027,
+     "percentualValidos": 6.65,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5203302": {
+     "nome": "Bela Vista de Goiás",
+     "votos": 1325,
+     "validos": 15319,
+     "percentualValidos": 8.65,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5204656": {
+     "nome": "Campos Verdes",
+     "votos": 127,
+     "validos": 2375,
+     "percentualValidos": 5.35,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5204904": {
+     "nome": "Ceres",
+     "votos": 741,
+     "validos": 10628,
+     "percentualValidos": 6.97,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5205109": {
+     "nome": "Catalão",
+     "votos": 1052,
+     "validos": 48411,
+     "percentualValidos": 2.17,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5205802": {
+     "nome": "Cidade Ocidental",
+     "votos": 1411,
+     "validos": 29285,
+     "percentualValidos": 4.82,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5208608": {
+     "nome": "Goianira",
+     "votos": 2404,
+     "validos": 30455,
+     "percentualValidos": 7.89,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5208707": {
+     "nome": "Goiânia",
+     "votos": 43641,
+     "validos": 630579,
+     "percentualValidos": 6.92,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5209101": {
+     "nome": "Goianésia",
+     "votos": 1476,
+     "validos": 29929,
+     "percentualValidos": 4.93,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5210000": {
+     "nome": "Inhumas",
+     "votos": 2344,
+     "validos": 27984,
+     "percentualValidos": 8.38,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5211909": {
+     "nome": "Itumbiara",
+     "votos": 2139,
+     "validos": 49303,
+     "percentualValidos": 4.34,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5212303": {
+     "nome": "Jussara",
+     "votos": 396,
+     "validos": 10539,
+     "percentualValidos": 3.76,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5212501": {
+     "nome": "Luziânia",
+     "votos": 7752,
+     "validos": 99734,
+     "percentualValidos": 7.77,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5213103": {
+     "nome": "Jataí",
+     "votos": 2141,
+     "validos": 59056,
+     "percentualValidos": 3.63,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5213509": {
+     "nome": "Itaberaí",
+     "votos": 1581,
+     "validos": 17352,
+     "percentualValidos": 9.11,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5215009": {
+     "nome": "Niquelândia",
+     "votos": 1785,
+     "validos": 20130,
+     "percentualValidos": 8.87,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5215306": {
+     "nome": "Novo Gama",
+     "votos": 3151,
+     "validos": 49232,
+     "percentualValidos": 6.4,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5216809": {
+     "nome": "Planaltina",
+     "votos": 1648,
+     "validos": 39233,
+     "percentualValidos": 4.2,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5217302": {
+     "nome": "Piracanjuba",
+     "votos": 227,
+     "validos": 12296,
+     "percentualValidos": 1.85,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5217609": {
+     "nome": "Pirenópolis",
+     "votos": 835,
+     "validos": 13001,
+     "percentualValidos": 6.42,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218003": {
+     "nome": "Quirinópolis",
+     "votos": 1388,
+     "validos": 24960,
+     "percentualValidos": 5.56,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218508": {
+     "nome": "Rialma",
+     "votos": 369,
+     "validos": 4915,
+     "percentualValidos": 7.51,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218805": {
+     "nome": "Rio Verde",
+     "votos": 8450,
+     "validos": 122009,
+     "percentualValidos": 6.93,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219002": {
+     "nome": "Rubiataba",
+     "votos": 769,
+     "validos": 9768,
+     "percentualValidos": 7.87,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219100": {
+     "nome": "Sanclerlândia",
+     "votos": 209,
+     "validos": 3684,
+     "percentualValidos": 5.67,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219308": {
+     "nome": "Santo Antônio do Descoberto",
+     "votos": 3239,
+     "validos": 32852,
+     "percentualValidos": 9.86,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219738": {
+     "nome": "Senador Canedo",
+     "votos": 1889,
+     "validos": 51299,
+     "percentualValidos": 3.68,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220108": {
+     "nome": "São Domingos",
+     "votos": 388,
+     "validos": 4720,
+     "percentualValidos": 8.22,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220280": {
+     "nome": "São João d'Aliança",
+     "votos": 315,
+     "validos": 6596,
+     "percentualValidos": 4.78,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220454": {
+     "nome": "São Luís de Montes Belos",
+     "votos": 586,
+     "validos": 14252,
+     "percentualValidos": 4.11,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221007": {
+     "nome": "Três Ranchos",
+     "votos": 86,
+     "validos": 1423,
+     "percentualValidos": 6.04,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221403": {
+     "nome": "Trindade",
+     "votos": 4026,
+     "validos": 69236,
+     "percentualValidos": 5.81,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221601": {
+     "nome": "Uruaçu",
+     "votos": 1472,
+     "validos": 16752,
+     "percentualValidos": 8.79,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    }
+   },
+   "locais": null,
+   "bairros": null
+  },
+  {
+   "id": "2022-6-1",
+   "electionYear": 2022,
+   "officeCode": 6,
+   "officeName": "Deputada Federal",
+   "round": 1,
+   "candidatura": {
+    "sqCandidato": "000000000000",
+    "nomeCompleto": "ADRIANA ACCORSI (FIXTURE)",
+    "nomeUrna": "Adriana Accorsi",
+    "partido": "PT",
+    "numero": "1313",
+    "situacaoCandidatura": "APTO",
+    "resultado": "ELEITA"
+   },
+   "votosNoEstado": 222989,
+   "posicaoNoEstado": 4,
+   "candidaturasNoPleito": 320,
+   "municipiosComVoto": 36,
+   "concentracaoPercentual": {
+    "top5": 62.4,
+    "top10": 74.9,
+    "top20": 88.2
+   },
+   "votosSemLocalDeVotacao": 0,
+   "temRecorteSubmunicipal": false,
+   "municipios": {
+    "5200258": {
+     "nome": "Águas de São João",
+     "votos": 77,
+     "validos": 2634,
+     "percentualValidos": 2.92,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201108": {
+     "nome": "Anápolis",
+     "votos": 28231,
+     "validos": 196750,
+     "percentualValidos": 14.35,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201405": {
+     "nome": "Aparecida de Goiânia",
+     "votos": 26442,
+     "validos": 263351,
+     "percentualValidos": 10.04,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5201801": {
+     "nome": "Águas Lindas de Goiás",
+     "votos": 9635,
+     "validos": 93706,
+     "percentualValidos": 10.28,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5203302": {
+     "nome": "Bela Vista de Goiás",
+     "votos": 1756,
+     "validos": 13805,
+     "percentualValidos": 12.72,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5204656": {
+     "nome": "Campos Verdes",
+     "votos": 273,
+     "validos": 2828,
+     "percentualValidos": 9.65,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5204904": {
+     "nome": "Ceres",
+     "votos": 989,
+     "validos": 10639,
+     "percentualValidos": 9.3,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5205109": {
+     "nome": "Catalão",
+     "votos": 2340,
+     "validos": 56615,
+     "percentualValidos": 4.13,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5205802": {
+     "nome": "Cidade Ocidental",
+     "votos": 1597,
+     "validos": 28074,
+     "percentualValidos": 5.69,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5208608": {
+     "nome": "Goianira",
+     "votos": 3071,
+     "validos": 28189,
+     "percentualValidos": 10.89,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5208707": {
+     "nome": "Goiânia",
+     "votos": 82875,
+     "validos": 804579,
+     "percentualValidos": 10.3,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5209101": {
+     "nome": "Goianésia",
+     "votos": 2916,
+     "validos": 35538,
+     "percentualValidos": 8.21,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5210000": {
+     "nome": "Inhumas",
+     "votos": 3203,
+     "validos": 28649,
+     "percentualValidos": 11.18,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5211909": {
+     "nome": "Itumbiara",
+     "votos": 3037,
+     "validos": 52439,
+     "percentualValidos": 5.79,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5212303": {
+     "nome": "Jussara",
+     "votos": 339,
+     "validos": 8557,
+     "percentualValidos": 3.96,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5212501": {
+     "nome": "Luziânia",
+     "votos": 8986,
+     "validos": 89885,
+     "percentualValidos": 10,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5213103": {
+     "nome": "Jataí",
+     "votos": 2676,
+     "validos": 59258,
+     "percentualValidos": 4.52,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5213509": {
+     "nome": "Itaberaí",
+     "votos": 2230,
+     "validos": 18923,
+     "percentualValidos": 11.78,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5215009": {
+     "nome": "Niquelândia",
+     "votos": 3128,
+     "validos": 22583,
+     "percentualValidos": 13.85,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5215306": {
+     "nome": "Novo Gama",
+     "votos": 4649,
+     "validos": 47820,
+     "percentualValidos": 9.72,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5216809": {
+     "nome": "Planaltina",
+     "votos": 2360,
+     "validos": 38633,
+     "percentualValidos": 6.11,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5217302": {
+     "nome": "Piracanjuba",
+     "votos": 307,
+     "validos": 11412,
+     "percentualValidos": 2.69,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5217609": {
+     "nome": "Pirenópolis",
+     "votos": 1070,
+     "validos": 12848,
+     "percentualValidos": 8.33,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218003": {
+     "nome": "Quirinópolis",
+     "votos": 1722,
+     "validos": 21323,
+     "percentualValidos": 8.08,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218508": {
+     "nome": "Rialma",
+     "votos": 816,
+     "validos": 5932,
+     "percentualValidos": 13.76,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5218805": {
+     "nome": "Rio Verde",
+     "votos": 10304,
+     "validos": 106783,
+     "percentualValidos": 9.65,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219002": {
+     "nome": "Rubiataba",
+     "votos": 887,
+     "validos": 8432,
+     "percentualValidos": 10.52,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219100": {
+     "nome": "Sanclerlândia",
+     "votos": 229,
+     "validos": 4146,
+     "percentualValidos": 5.52,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219308": {
+     "nome": "Santo Antônio do Descoberto",
+     "votos": 4559,
+     "validos": 31766,
+     "percentualValidos": 14.35,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5219738": {
+     "nome": "Senador Canedo",
+     "votos": 2068,
+     "validos": 52152,
+     "percentualValidos": 3.97,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220108": {
+     "nome": "São Domingos",
+     "votos": 531,
+     "validos": 4886,
+     "percentualValidos": 10.87,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220280": {
+     "nome": "São João d'Aliança",
+     "votos": 455,
+     "validos": 6305,
+     "percentualValidos": 7.22,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5220454": {
+     "nome": "São Luís de Montes Belos",
+     "votos": 634,
+     "validos": 15991,
+     "percentualValidos": 3.96,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221007": {
+     "nome": "Três Ranchos",
+     "votos": 147,
+     "validos": 1680,
+     "percentualValidos": 8.75,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221403": {
+     "nome": "Trindade",
+     "votos": 6095,
+     "validos": 66745,
+     "percentualValidos": 9.13,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    },
+    "5221601": {
+     "nome": "Uruaçu",
+     "votos": 2355,
+     "validos": 19251,
+     "percentualValidos": 12.23,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": null,
+     "candidaturasComVoto": 320
+    }
+   },
+   "locais": null,
+   "bairros": null
+  },
+  {
+   "id": "2024-11-1",
+   "electionYear": 2024,
+   "officeCode": 11,
+   "officeName": "Prefeita",
+   "round": 1,
+   "candidatura": {
+    "sqCandidato": "000000000000",
+    "nomeCompleto": "ADRIANA ACCORSI (FIXTURE)",
+    "nomeUrna": "Adriana Accorsi",
+    "partido": "PT",
+    "numero": "1313",
+    "situacaoCandidatura": "APTO",
+    "resultado": "2º TURNO"
+   },
+   "votosNoEstado": 219000,
+   "posicaoNoEstado": 2,
+   "candidaturasNoPleito": 8,
+   "municipiosComVoto": 1,
+   "concentracaoPercentual": {
+    "top5": 100,
+    "top10": 100,
+    "top20": 100
+   },
+   "votosSemLocalDeVotacao": 0,
+   "temRecorteSubmunicipal": true,
+   "municipios": {
+    "5208707": {
+     "nome": "Goiânia",
+     "votos": 219000,
+     "validos": 525600,
+     "percentualValidos": 41.67,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": 2,
+     "candidaturasComVoto": 8
+    }
+   },
+   "locais": null,
+   "bairros": null
+  },
+  {
+   "id": "2024-11-2",
+   "electionYear": 2024,
+   "officeCode": 11,
+   "officeName": "Prefeita",
+   "round": 2,
+   "candidatura": {
+    "sqCandidato": "000000000000",
+    "nomeCompleto": "ADRIANA ACCORSI (FIXTURE)",
+    "nomeUrna": "Adriana Accorsi",
+    "partido": "PT",
+    "numero": "1313",
+    "situacaoCandidatura": "APTO",
+    "resultado": "NÃO ELEITA"
+   },
+   "votosNoEstado": 305000,
+   "posicaoNoEstado": 2,
+   "candidaturasNoPleito": 8,
+   "municipiosComVoto": 1,
+   "concentracaoPercentual": {
+    "top5": 100,
+    "top10": 100,
+    "top20": 100
+   },
+   "votosSemLocalDeVotacao": 0,
+   "temRecorteSubmunicipal": true,
+   "municipios": {
+    "5208707": {
+     "nome": "Goiânia",
+     "votos": 305000,
+     "validos": 732000,
+     "percentualValidos": 41.67,
+     "votosDoPartido": null,
+     "percentualDoPartido": null,
+     "posicaoNoMunicipio": 2,
+     "candidaturasComVoto": 8
+    }
+   },
+   "locais": null,
+   "bairros": null
+  }
+ ]
+}

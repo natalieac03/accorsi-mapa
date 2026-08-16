@@ -50,6 +50,7 @@ import {
   groupContests,
   isMunicipalContest,
   pctValidosNoEstado,
+  PEARSON_MIN_N,
   STATS_INDICATORS,
 } from "../../utils/candidateStats";
 import { formatInteger, formatPercent } from "../../utils/electorate";
@@ -77,13 +78,14 @@ const RANKING_SIZE = 15;
 
 /*
  * Cores das duas categorias da trajetória (municipal × federal/estadual),
- * validadas com o validador da skill de dataviz sobre a superfície #0f0809:
- * CVD ΔE 25,0 (protan) e visão normal ΔE 34,1 — muito acima dos pisos 8/15 —
- * e ambas ≥ 3:1 de contraste. A identidade nunca é só cor: o cargo está
- * escrito sob cada barra e a legenda acompanha o gráfico.
+ * validadas com o validador da skill de dataviz sobre a superfície BRANCA
+ * da janela: CVD ΔE 26,9 (deutan) e visão normal ΔE 33,7 — muito acima dos
+ * pisos 8/15 — e ambas ≥ 3:1 de contraste sobre o branco. A identidade nunca
+ * é só cor: o cargo está escrito sob cada barra e a legenda acompanha o
+ * gráfico.
  */
-const COR_MUNICIPAL = "#3987e5";
-const COR_FEDERAL = "#f0433b";
+const COR_MUNICIPAL = "#2a78d6";
+const COR_FEDERAL = "#c1121f";
 
 const decimalPt = new Intl.NumberFormat("pt-BR", {
   minimumFractionDigits: 0,
@@ -379,10 +381,10 @@ function OverviewView({
   return (
     <section aria-label="Visão geral da carreira">
       <p className="stats-lede">
-        Seis leituras que valem para a carreira inteira. Cada eleição é um
-        universo próprio — eleitores, cargo e regras diferentes —, então os
-        votos de pleitos distintos <strong>nunca são somados</strong> num total
-        único: o que atravessa campanhas é comparação e contagem, não soma.
+        Um resumo da carreira inteira. Cada eleição é um universo próprio —
+        eleitores, cargo e regras diferentes —, então os votos de pleitos
+        distintos <strong>nunca são somados</strong> num total único: o que
+        atravessa campanhas é comparação e contagem, não soma.
       </p>
 
       <div className="stats-cards">
@@ -439,6 +441,7 @@ function OverviewView({
           </span>
         </div>
         <svg
+          className="stats-chart"
           viewBox={`0 0 ${TRAJ_W} ${TRAJ_H}`}
           role="img"
           aria-label={`Votos por eleição, de ${trajectory[0].electionYear} a ${trajectory[trajectory.length - 1].electionYear}, coloridos por tipo de disputa`}
@@ -529,10 +532,11 @@ function OverviewView({
           })}
         </svg>
         <p className="stats-note">
-          Alturas comparam a força de cada campanha isoladamente; universos de
-          eleitores diferentes (uma cidade × o estado inteiro) tornam qualquer
-          soma entre barras sem significado. Clique numa barra para abrir o
-          dashboard do pleito.
+          Cada barra é uma eleição disputada pela Dra. Adriana: a altura é o
+          total de votos que ela recebeu naquele ano. Barras azuis são disputas
+          de uma cidade só; vermelhas, do estado inteiro — universos diferentes,
+          por isso as barras não se somam. Clique numa barra para abrir o
+          pleito.
         </p>
       </div>
     </section>
@@ -585,6 +589,12 @@ function ElectionView({
         <strong>{getContestLabel(contest)}</strong> ·{" "}
         {contest.candidatura.nomeUrna} · {contest.candidatura.partido}{" "}
         {contest.candidatura.numero} · {contest.candidatura.resultado || "—"}
+      </p>
+
+      <p className="stats-note stats-note--intro">
+        Os cartões resumem o pleito: quantos votos ela fez, em que posição
+        terminou entre as candidaturas do cargo e quanto da votação veio das
+        maiores cidades.
       </p>
 
       <div className="stats-cards">
@@ -696,17 +706,53 @@ function ElectionView({
         </div>
       </div>
 
-      {scatter && (
-        <ScatterSection
-          scatter={scatter}
-          indicatorId={indicatorId}
-          onIndicator={onIndicator}
-          onExport={onExportScatter}
-          municipal={municipal}
-        />
+      {/* Correlação entre municípios só faz sentido com cobertura estadual:
+          um pleito de Prefeita de Goiânia tem UM município — não existe
+          dispersão nem Pearson possível ali, e nada é fabricado no lugar. */}
+      {municipal ? (
+        <div className="stats-panel">
+          <div className="stats-panel__heading">
+            <span>
+              <ScatterChart size={14} aria-hidden /> Cruzamento com indicadores
+            </span>
+          </div>
+          <p className="stats-note">
+            Esta disputa aconteceu em uma cidade só, então não existe
+            comparação entre municípios para este pleito. Para ver onde a
+            Dra. Adriana foi mais forte dentro da cidade, use o recorte por
+            bairros na aba <strong>Accorsi</strong> do painel do mapa.
+          </p>
+        </div>
+      ) : (
+        scatter &&
+        contest.municipiosComVoto >= PEARSON_MIN_N && (
+          <ScatterSection
+            scatter={scatter}
+            indicatorId={indicatorId}
+            onIndicator={onIndicator}
+            onExport={onExportScatter}
+          />
+        )
       )}
     </section>
   );
+}
+
+/**
+ * Tradução do coeficiente de Pearson para linguagem de campanha: a força em
+ * palavras + a direção. O número exato continua ao lado — isto é legenda,
+ * não substituto.
+ */
+function descreverPearson(r: number): string {
+  const forca = Math.abs(r);
+  const direcao =
+    r >= 0
+      ? "quanto maior o indicador, maior tende a ser o percentual dela"
+      : "quanto maior o indicador, menor tende a ser o percentual dela";
+  if (forca < 0.2) return "praticamente nada a ver uma coisa com a outra";
+  if (forca < 0.5) return `relação fraca: ${direcao}, mas com muitas exceções`;
+  if (forca < 0.8) return `relação moderada: ${direcao}`;
+  return `relação forte: ${direcao}, na maioria das cidades`;
 }
 
 function ScatterSection({
@@ -714,13 +760,11 @@ function ScatterSection({
   indicatorId,
   onIndicator,
   onExport,
-  municipal,
 }: {
   scatter: NonNullable<ReturnType<typeof buildScatter>>;
   indicatorId: StatsIndicatorId;
   onIndicator: (id: StatsIndicatorId) => void;
   onExport: () => void;
-  municipal: boolean;
 }) {
   const { indicator, points } = scatter;
   const semDado = scatter.semIndicador + scatter.semPercentual;
@@ -767,9 +811,10 @@ function ScatterSection({
       </div>
 
       <p className="stats-note">
-        Ela teve mais votos em cidades com mais mulheres? Mais alfabetizadas?
-        Mais idosas? Cada ponto é um município: o eixo vertical é o % dos votos
-        válidos da candidata ali; o horizontal, o indicador escolhido.
+        Ela foi melhor em cidades com mais mulheres? Mais alfabetizadas? Mais
+        idosas? Cada ponto é um município de Goiás: quanto mais para cima,
+        maior o percentual dela na cidade; quanto mais para a direita, maior o
+        indicador escolhido abaixo.
       </p>
 
       <label className="stats-indicator-control">
@@ -798,6 +843,7 @@ function ScatterSection({
         </p>
       ) : (
         <svg
+          className="stats-chart"
           viewBox={`0 0 ${SC_W} ${SC_H}`}
           role="img"
           aria-label={`Dispersão: % dos votos válidos por município × ${indicator.label}, ${points.length} municípios`}
@@ -859,46 +905,55 @@ function ScatterSection({
         </svg>
       )}
 
+      {/* Legenda do gráfico: a contagem de municípios faz parte dela (nada
+          de número solto flutuando no canto). */}
+      {points.length > 0 && (
+        <p className="stats-chart-caption">
+          Cada ponto é um município de Goiás · {formatInteger(points.length)}{" "}
+          municípios no gráfico
+          {semDado > 0 &&
+            ` · ${formatInteger(semDado)} fora por falta de dado (${[
+              scatter.semIndicador > 0
+                ? `${formatInteger(scatter.semIndicador)} sem o indicador`
+                : "",
+              scatter.semPercentual > 0
+                ? `${formatInteger(scatter.semPercentual)} sem % dos válidos`
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")})`}
+          .
+        </p>
+      )}
+
       <div className="stats-pearson">
         <Sigma size={14} aria-hidden />
         {scatter.amostraInsuficiente ? (
           <span>
-            Correlação de Pearson: <strong>amostra insuficiente</strong> (
-            {formatInteger(points.length)} municípios plotados; mínimo 10).
+            Correlação: <strong>amostra insuficiente</strong> — só{" "}
+            {formatInteger(points.length)} municípios no gráfico (mínimo{" "}
+            {PEARSON_MIN_N}). Com poucos pontos o número viraria ruído.
           </span>
         ) : scatter.pearson === null ? (
           <span>
-            Correlação de Pearson: <strong>indefinida</strong> (sem variação em
-            um dos eixos).
+            Correlação: <strong>indefinida</strong> — um dos eixos não varia
+            entre as cidades, então não há relação para medir.
           </span>
         ) : (
           <span>
-            Correlação de Pearson: <strong>r = {pearsonPt.format(scatter.pearson)}</strong>{" "}
-            · {formatInteger(points.length)} municípios plotados
-            {indicator.logScale ? " · calculada sobre o log10 do indicador" : ""}
+            Correlação: <strong>r = {pearsonPt.format(scatter.pearson)}</strong>{" "}
+            — {descreverPearson(scatter.pearson)}. O “r” vai de −1 a 1: quanto
+            mais perto de 1 (ou de −1), mais as duas coisas andam juntas; perto
+            de 0, nada a ver uma com a outra
+            {indicator.logScale ? " (calculado sobre o log10 do indicador)" : ""}
             .
           </span>
         )}
       </div>
-      {semDado > 0 && (
-        <p className="stats-note">
-          {formatInteger(semDado)} município{semDado > 1 ? "s" : ""} do pleito
-          fora do gráfico:{" "}
-          {scatter.semIndicador > 0 &&
-            `${formatInteger(scatter.semIndicador)} sem dado do indicador`}
-          {scatter.semIndicador > 0 && scatter.semPercentual > 0 && " · "}
-          {scatter.semPercentual > 0 &&
-            `${formatInteger(scatter.semPercentual)} sem % dos válidos apurado`}
-          .
-        </p>
-      )}
       <p className="stats-note stats-note--warning">
-        Leitura honesta: a correlação aqui é <strong>agregada por município</strong>{" "}
-        e não diz nada sobre eleitores individuais — cidades com mais mulheres
-        votarem mais nela não significa que mulheres votaram mais nela (falácia
-        ecológica) — nem implica causa em nenhuma direção.
-        {municipal &&
-          " Neste pleito municipal, cada município é uma disputa diferente; o % dos válidos compara a força dela em disputas distintas."}
+        Atenção na leitura: o gráfico compara <strong>cidades</strong>, não
+        eleitores. Se cidades com mais mulheres votaram mais nela, isso NÃO
+        prova que as mulheres votaram mais nela — e relação não é causa.
       </p>
     </div>
   );
