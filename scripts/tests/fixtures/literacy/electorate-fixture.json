@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "state": "RS",
+    "municipalityCount": 2,
+    "source": "FIXTURE SINTÉTICO: valores de alfabetização inventados por scripts/tests/literacy_fixture.py; apenas códigos e nomes municipais são reais."
+  },
+  "municipalities": {
+    "4300034": {
+      "ibgeCode": "4300034",
+      "tseCode": "88986",
+      "name": "Aceguá",
+      "electorate": 3988
+    },
+    "4314902": {
+      "ibgeCode": "4314902",
+      "tseCode": "88013",
+      "name": "Porto Alegre",
+      "electorate": 1061485
+    }
+  }
+}

@@ -1,0 +1,71 @@
+# ACCORSI — variante do Caddyfile para rodar atrás do proxy de borda do Railway.
+#
+# Diferença em relação ao Caddyfile principal: aqui o Caddy NÃO faz TLS.
+# O proxy do Railway já termina HTTPS e encaminha HTTP simples para a porta
+# que o container escuta (variável $PORT, injetada automaticamente quando o
+# serviço tem domínio público). Deixar o Caddy tentar emitir certificado
+# Let's Encrypt aqui não funciona: a porta 443 não fica exposta à internet
+# diretamente, quem responde por HTTPS é o Railway.
+#
+# Variáveis de ambiente lidas deste arquivo:
+#   PORT           porta que o Railway espera que o container escute
+#                  (injetada automaticamente pelo Railway, não defina à mão)
+#   API_UPSTREAM   host:porta privados do serviço da API, normalmente
+#                  api.railway.internal:8000
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT} {
+	encode zstd gzip
+
+	@blocked path /docs /docs/* /redoc /redoc/* /openapi.json
+	handle @blocked {
+		respond 404
+	}
+
+	handle /api/* {
+		reverse_proxy {$API_UPSTREAM} {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /health/* {
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		# O navegador sempre vê HTTPS (o Railway termina TLS na borda), então
+		# HSTS continua correto mesmo com o container recebendo HTTP simples.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		-Server
+	}
+
+	# Mesmo aviso do Caddyfile principal: comece em modo relatório, confira o
+	# console do navegador por alguns dias, só então troque o nome do header
+	# para Content-Security-Policy.
+	header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://maps.googleapis.com https://servicodados.ibge.gov.br https://viacep.com.br; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+	@immutable path /assets/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@nocache path / /index.html /favicon.svg
+	header @nocache Cache-Control "no-cache"
+
+	log {
+		output stdout
+		format json
+	}
+}

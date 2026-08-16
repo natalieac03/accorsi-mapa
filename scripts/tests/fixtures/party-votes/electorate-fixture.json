@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "mode": "synthetic-fixture",
+    "state": "RS",
+    "municipalityCount": 2,
+    "warning": "Recorte sintético apenas para testes; não substitui electorate-rs.json."
+  },
+  "municipalities": {
+    "4305108": {
+      "ibgeCode": "4305108",
+      "tseCode": "85995",
+      "name": "Caxias do Sul"
+    },
+    "4314902": {
+      "ibgeCode": "4314902",
+      "tseCode": "88013",
+      "name": "Porto Alegre"
+    }
+  }
+}

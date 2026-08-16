@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+.git
+.github
+backend
+scripts/tests/fixtures
+*.log
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+.DS_Store
+DIA*.md
+VALIDATION.md
+*.zip

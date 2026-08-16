@@ -1,0 +1,109 @@
+# ACCORSI — produção.
+#
+#   docker compose -f compose.prod.yaml --env-file .env.production up -d --build
+#
+# Somente o contêiner do proxy publica porta. Banco e API ficam apenas na
+# rede interna; não há como alcançá-los de fora da máquina.
+
+name: acqr
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?defina POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?defina POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD}
+      # Verificação de senha forte no cluster novo.
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - acqr_postgres:/var/lib/postgresql/data
+    networks:
+      internal:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SESSION_SECRET: ${SESSION_SECRET:?gere com openssl rand -hex 32}
+      SESSION_HOURS: ${SESSION_HOURS:-8}
+      COOKIE_SECURE: "true"
+      COOKIE_SAMESITE: "lax"
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      # Origem única atrás do Caddy: não há requisição cross-origin a permitir.
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      ALLOWED_HOSTS: ${SITE_HOST:?defina SITE_HOST}
+      DOCS_ENABLED: "false"
+      LOGIN_MAX_ATTEMPTS: ${LOGIN_MAX_ATTEMPTS:-5}
+      LOGIN_WINDOW_MINUTES: ${LOGIN_WINDOW_MINUTES:-15}
+      # IP fixo do proxy. Não use "*": isso deixaria qualquer cliente forjar
+      # X-Forwarded-For e anular o componente de IP do limite de login.
+      FORWARDED_ALLOW_IPS: "172.28.0.10"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      internal:
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4).status==200 else 1)\""]
+      interval: 30s
+      timeout: 8s
+      retries: 5
+      start_period: 40s
+    logging: *logging
+
+  web:
+    build:
+      context: .
+      args:
+        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:?defina a chave do Google Maps}
+        VITE_GOOGLE_MAPS_MAP_ID: ${VITE_GOOGLE_MAPS_MAP_ID:-}
+        VITE_AUTH_REQUIRED: "true"
+        VITE_API_BASE_URL: "/api/v1"
+        VITE_REGISTRATIONS_MODE: ${VITE_REGISTRATIONS_MODE:-api}
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?defina SITE_ADDRESS}
+      ACME_EMAIL: ${ACME_EMAIL:?defina ACME_EMAIL}
+      API_UPSTREAM: api:8000
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - acqr_caddy_data:/data
+      - acqr_caddy_config:/config
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      internal:
+        ipv4_address: 172.28.0.10
+    logging: *logging
+
+volumes:
+  acqr_postgres:
+  acqr_caddy_data:
+  acqr_caddy_config:
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24

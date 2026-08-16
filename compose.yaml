@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: acqr
+      POSTGRES_USER: acqr
+      POSTGRES_PASSWORD: acqr_local_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - acqr_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acqr -d acqr"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql://acqr:acqr_local_change_me@db:5432/acqr
+      SESSION_SECRET: local-compose-session-secret-change-before-production
+      COOKIE_SECURE: "false"
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/data:/data:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  acqr_postgres:
+

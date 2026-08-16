@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "title": "Espectro ideológico dos partidos brasileiros",
+    "description": "Notas de posicionamento ideológico por partido, em escala contínua de 0 a 10, atribuídas por especialistas em ciência política. Este arquivo é editável: alterar uma nota ou um limiar aqui altera todo o cálculo do índice municipal, sem mexer no código.",
+    "scale": {
+      "minimum": 0,
+      "maximum": 10,
+      "minimumLabel": "extrema esquerda",
+      "maximumLabel": "extrema direita"
+    },
+    "blockThresholds": {
+      "leftMaximum": 4.5,
+      "rightMinimum": 5.5,
+      "rationale": "Cortes em 4,5 e 5,5 reproduzem o achado central da onda de 2022: nenhum partido ocupa a faixa central. Em 2018 a faixa central reúne Rede, PPS e PV. Ajuste estes dois números para mudar a leitura por blocos sem tocar no código."
+    },
+    "waveByElectionYear": {
+      "2018": 2018,
+      "2020": 2018,
+      "2022": 2022,
+      "2024": 2022
+    },
+    "waves": [
+      {
+        "year": 2018,
+        "respondents": 519,
+        "institution": "Associação Brasileira de Ciência Política",
+        "citation": "BOLOGNESI, B.; RIBEIRO, E.; CODATO, A. Uma nova classificação ideológica dos partidos políticos brasileiros. Dados, v. 66, n. 2, 2023.",
+        "doi": "10.1590/dados.2023.66.2.303",
+        "url": "https://www.scielo.br/j/dados/a/zzyM3gzHD4P45WWdytXjZWg/"
+      },
+      {
+        "year": 2022,
+        "respondents": 478,
+        "institution": "Associação Brasileira de Ciência Política",
+        "citation": "BOLOGNESI, B.; RIBEIRO, E.; CODATO, A.; SILVA, B. F. da. O desaparecimento do centro ideológico no sistema partidário brasileiro: a classificação mais atualizada dos experts. Opinião Pública, v. 31, 2025.",
+        "doi": "10.1590/1807-0191202531120",
+        "url": "https://www.scielo.br/j/op/a/hv8GBg9hfCCZLwcWktfYhtC/"
+      }
+    ],
+    "limitations": [
+      "A nota mede a percepção de especialistas sobre o partido nacional, não o comportamento do diretório municipal nem a posição de cada candidatura.",
+      "Em eleições municipais o rótulo partidário é fraco: coligações locais, troca de legenda e candidaturas personalistas reduzem muito o poder informativo da sigla.",
+      "O índice descreve o resultado de uma eleição passada. Não é projeção, intenção de voto nem medida de opinião do eleitorado.",
+      "Partidos sem nota na onda aplicada ficam fora do cálculo e são contabilizados à parte, nunca tratados como zero.",
+      "Notas marcadas com derivedFrom não vêm do survey: são a média aritmética das siglas de origem, seguindo o procedimento adotado pelos próprios autores para o União Brasil."
+    ]
+  },
+  "parties": [
+    { "code": "PSTU", "name": "Partido Socialista dos Trabalhadores Unificado", "tseNumbers": [16], "aliases": ["PSTU"], "scores": { "2018": 0.51, "2022": 0.51 } },
+    { "code": "PCO", "name": "Partido da Causa Operária", "tseNumbers": [29], "aliases": ["PCO"], "scores": { "2018": 0.61, "2022": 0.55 } },
+    { "code": "PCB", "name": "Partido Comunista Brasileiro", "tseNumbers": [21], "aliases": ["PCB"], "scores": { "2018": 0.91, "2022": 0.69 } },
+    { "code": "PSOL", "name": "Partido Socialismo e Liberdade", "tseNumbers": [50], "aliases": ["PSOL"], "scores": { "2018": 1.28, "2022": 1.41 } },
+    { "code": "UP", "name": "Unidade Popular", "tseNumbers": [80], "aliases": ["UP"], "scores": { "2018": null, "2022": 1.63 }, "note": "Registro definitivo obtido em 2019; sem nota na onda de 2018." },
+    { "code": "PCdoB", "name": "Partido Comunista do Brasil", "tseNumbers": [65], "aliases": ["PCDOB", "PC DO B", "PCB DO B"], "scores": { "2018": 1.92, "2022": 1.78 }, "absorbed": ["PPL"] },
+    { "code": "PT", "name": "Partido dos Trabalhadores", "tseNumbers": [13], "aliases": ["PT"], "scores": { "2018": 2.97, "2022": 2.68 } },
+    { "code": "PSB", "name": "Partido Socialista Brasileiro", "tseNumbers": [40], "aliases": ["PSB"], "scores": { "2018": 4.05, "2022": 3.59 } },
+    { "code": "REDE", "name": "Rede Sustentabilidade", "tseNumbers": [18], "aliases": ["REDE"], "scores": { "2018": 4.77, "2022": 3.69 } },
+    { "code": "PDT", "name": "Partido Democrático Trabalhista", "tseNumbers": [12], "aliases": ["PDT"], "scores": { "2018": 3.92, "2022": 3.86 } },
+    { "code": "PV", "name": "Partido Verde", "tseNumbers": [43], "aliases": ["PV"], "scores": { "2018": 5.29, "2022": 4.12 } },
+    { "code": "SOLIDARIEDADE", "name": "Solidariedade", "tseNumbers": [77], "aliases": ["SD", "SDD", "SOLIDARIEDADE"], "scores": { "2018": 6.50, "2022": 6.01 }, "absorbed": ["PROS"], "note": "Incorporou o PROS em 2023." },
+    { "code": "CIDADANIA", "name": "Cidadania", "tseNumbers": [23], "aliases": ["CIDADANIA", "CDD", "PPS"], "scores": { "2018": 4.92, "2022": 6.17 }, "note": "Nome anterior: PPS, até 2019. A nota de 2018 é a do PPS." },
+    { "code": "AVANTE", "name": "Avante", "tseNumbers": [70], "aliases": ["AVANTE", "PTDOB", "PT DO B"], "scores": { "2018": 6.32, "2022": 6.47 } },
+    { "code": "MDB", "name": "Movimento Democrático Brasileiro", "tseNumbers": [15], "aliases": ["MDB", "PMDB"], "scores": { "2018": 7.01, "2022": 6.50 } },
+    { "code": "PMN", "name": "Partido da Mobilização Nacional", "tseNumbers": [33], "aliases": ["PMN", "MOBILIZA"], "scores": { "2018": 6.88, "2022": 6.74 }, "note": "O apelido Mobiliza consta como alias por precaução; confirme a sigla exata nos arquivos de 2024 antes de usar." },
+    { "code": "PSDB", "name": "Partido da Social Democracia Brasileira", "tseNumbers": [45], "aliases": ["PSDB"], "scores": { "2018": 7.11, "2022": 6.76 } },
+    { "code": "PSD", "name": "Partido Social Democrático", "tseNumbers": [55], "aliases": ["PSD"], "scores": { "2018": 7.09, "2022": 6.94 } },
+    { "code": "PMB", "name": "Partido da Mulher Brasileira", "tseNumbers": [35], "aliases": ["PMB"], "scores": { "2018": 6.90, "2022": 7.29 } },
+    { "code": "PODEMOS", "name": "Podemos", "tseNumbers": [20], "aliases": ["PODE", "PODEMOS", "PTN"], "scores": { "2018": 7.24, "2022": 7.44 }, "absorbed": ["PHS"], "note": "Incorporou o PHS em 2019." },
+    { "code": "PROS", "name": "Partido Republicano da Ordem Social", "tseNumbers": [90], "aliases": ["PROS"], "scores": { "2018": 7.47, "2022": 7.45 }, "mergedInto": "SOLIDARIEDADE", "mergedYear": 2023 },
+    { "code": "PRTB", "name": "Partido Renovador Trabalhista Brasileiro", "tseNumbers": [28], "aliases": ["PRTB"], "scores": { "2018": 7.45, "2022": 7.49 } },
+    { "code": "AGIR", "name": "Agir", "tseNumbers": [36], "aliases": ["AGIR", "PTC"], "scores": { "2018": 7.86, "2022": 7.55 }, "note": "Nome anterior: PTC, até 2022. A nota de 2018 é a do PTC." },
+    { "code": "PTB", "name": "Partido Trabalhista Brasileiro", "tseNumbers": [14], "aliases": ["PTB"], "scores": { "2018": 6.10, "2022": 7.72 }, "mergedInto": "PRD", "mergedYear": 2023 },
+    { "code": "PP", "name": "Progressistas", "tseNumbers": [11], "aliases": ["PP", "PROGRESSISTAS", "PROGRE"], "scores": { "2018": 8.20, "2022": 8.15 } },
+    { "code": "DC", "name": "Democracia Cristã", "tseNumbers": [27], "aliases": ["DC", "PSDC"], "scores": { "2018": 8.11, "2022": 8.21 } },
+    { "code": "REPUBLICANOS", "name": "Republicanos", "tseNumbers": [10], "aliases": ["REPUBLICANOS", "REP", "PRB"], "scores": { "2018": 7.78, "2022": 8.33 }, "note": "Nome anterior: PRB, até 2019. A nota de 2018 é a do PRB." },
+    { "code": "PSC", "name": "Partido Social Cristão", "tseNumbers": [20, 30], "aliases": ["PSC"], "scores": { "2018": 8.33, "2022": 8.41 }, "note": "Número de urna 20 até 2022; verifique conflito com o Podemos nos arquivos por número." },
+    { "code": "UNIAO", "name": "União Brasil", "tseNumbers": [44], "aliases": ["UNIÃO", "UNIAO", "UNIÃO BRASIL", "UNIAO BRASIL", "UB"], "scores": { "2018": 8.34, "2022": 8.49 }, "derivedFrom": { "2018": ["DEM", "PSL"] }, "note": "Criado em 2022 pela fusão de DEM e PSL. A nota de 2018 é a média aritmética das duas siglas de origem, procedimento adotado pelos próprios autores do survey." },
+    { "code": "PATRIOTA", "name": "Patriota", "tseNumbers": [51], "aliases": ["PATRI", "PATRIOTA", "PEN"], "scores": { "2018": 8.55, "2022": 8.60 }, "absorbed": ["PRP"], "mergedInto": "PRD", "mergedYear": 2023 },
+    { "code": "NOVO", "name": "Partido Novo", "tseNumbers": [30], "aliases": ["NOVO"], "scores": { "2018": 8.13, "2022": 8.67 } },
+    { "code": "PL", "name": "Partido Liberal", "tseNumbers": [22], "aliases": ["PL", "PR"], "scores": { "2018": 7.78, "2022": 8.80 }, "note": "Nome anterior: PR, até 2019. A nota de 2018 é a do PR." },
+    { "code": "PRD", "name": "Partido Renovação Democrática", "tseNumbers": [25], "aliases": ["PRD"], "scores": { "2018": null, "2022": 8.16 }, "derivedFrom": { "2022": ["PTB", "PATRIOTA"] }, "note": "Criado em 2023 pela fusão de PTB e Patriota, depois da coleta do survey. A nota é a média aritmética das duas siglas de origem." },
+    { "code": "DEM", "name": "Democratas", "tseNumbers": [25], "aliases": ["DEM", "PFL"], "scores": { "2018": 8.57, "2022": null }, "mergedInto": "UNIAO", "mergedYear": 2022 },
+    { "code": "PSL", "name": "Partido Social Liberal", "tseNumbers": [17], "aliases": ["PSL"], "scores": { "2018": 8.11, "2022": null }, "mergedInto": "UNIAO", "mergedYear": 2022 },
+    { "code": "PHS", "name": "Partido Humanista da Solidariedade", "tseNumbers": [31], "aliases": ["PHS"], "scores": { "2018": 6.96, "2022": null }, "mergedInto": "PODEMOS", "mergedYear": 2019 },
+    { "code": "PRP", "name": "Partido Republicano Progressista", "tseNumbers": [44], "aliases": ["PRP"], "scores": { "2018": 7.59, "2022": null }, "mergedInto": "PATRIOTA", "mergedYear": 2019 },
+    { "code": "PPL", "name": "Partido Pátria Livre", "tseNumbers": [54], "aliases": ["PPL"], "scores": { "2018": 7.27, "2022": null }, "mergedInto": "PCdoB", "mergedYear": 2019, "note": "A nota de 2018 destoa da trajetória do partido, de origem à esquerda. É um caso conhecido de baixo reconhecimento no survey; trate com reserva." }
+  ]
+}

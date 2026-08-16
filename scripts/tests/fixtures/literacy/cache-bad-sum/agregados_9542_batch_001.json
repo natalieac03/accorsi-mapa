@@ -1,0 +1,189 @@
+[
+ {
+  "id": 950,
+  "variavel": "Pessoas de 15 anos ou mais de idade",
+  "unidade": "Pessoas",
+  "resultados": [
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93024": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4300034",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Aceguá"
+      },
+      "serie": {
+       "2022": "4637"
+      }
+     },
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "24137"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93025": "Alfabetizadas"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4300034",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Aceguá"
+      },
+      "serie": {
+       "2022": "4137"
+      }
+     },
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "23200"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93026": "Não alfabetizadas"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4300034",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Aceguá"
+      },
+      "serie": {
+       "2022": "-"
+      }
+     },
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "937"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

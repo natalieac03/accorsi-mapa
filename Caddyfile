@@ -1,0 +1,110 @@
+# ACCORSI — proxy reverso de produção.
+#
+# Decisão central: SPA e API são servidas na MESMA ORIGEM. Isso não é só
+# empacotamento — resolve dois problemas reais de segurança:
+#
+#   1. Elimina o CORS. Com origem única, CORS_ORIGINS pode ficar vazio.
+#   2. Permite COOKIE_SAMESITE=lax. O frontend lê o cookie CSRF por
+#      document.cookie, o que exige same-site; com SPA e API em domínios
+#      separados o operador seria empurrado para SameSite=none, que abre
+#      login CSRF. Aqui isso não acontece.
+#
+# Variáveis de ambiente lidas deste arquivo:
+#   SITE_ADDRESS  domínio público (ex.: painel.exemplo.org). Use :80 para
+#                 rodar local sem TLS.
+#   ACME_EMAIL    e-mail de contato do Let's Encrypt.
+#   API_UPSTREAM  host:porta do backend na rede interna.
+{
+	email {$ACME_EMAIL:admin@localhost}
+	admin off
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	# ------------------------------------------------------------------
+	# Superfície administrativa da API não vai para a internet.
+	# DOCS_ENABLED=false já resolve no backend; isto é defesa em profundidade.
+	# ------------------------------------------------------------------
+	# Precisa ser um bloco `handle`: blocos handle são mutuamente exclusivos e
+	# avaliados na ordem escrita. Um `respond` solto ficaria depois do handle
+	# catch-all da SPA na ordem padrão de diretivas do Caddy e nunca seria
+	# alcançado — verificado na prática, devolvia 200 via fallback do index.
+	@blocked path /docs /docs/* /redoc /redoc/* /openapi.json
+	handle @blocked {
+		respond 404
+	}
+
+	# ------------------------------------------------------------------
+	# API e health checks
+	# ------------------------------------------------------------------
+	handle /api/* {
+		reverse_proxy {$API_UPSTREAM:api:8000} {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	handle /health/* {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	# ------------------------------------------------------------------
+	# SPA: qualquer rota desconhecida cai no index.html
+	# ------------------------------------------------------------------
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	# ------------------------------------------------------------------
+	# Cabeçalhos de segurança
+	#
+	# HSTS fica aqui, e não no FastAPI, porque o backend só emite o header
+	# quando request.url.scheme == "https" — atrás de um proxy que termina
+	# TLS o esquema chega como http e o header nunca sairia.
+	# ------------------------------------------------------------------
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		-Server
+	}
+
+	# ------------------------------------------------------------------
+	# CSP em modo RELATÓRIO por padrão.
+	#
+	# O Google Maps JS injeta script, estilo e imagem de vários domínios e a
+	# lista abaixo precisa ser conferida no console do navegador antes de
+	# virar bloqueio. Rode em produção por alguns dias, olhe os relatórios,
+	# e só então troque o nome do header para Content-Security-Policy.
+	#
+	# Origens que a aplicação realmente usa hoje:
+	#   maps.googleapis.com          mapa, Places e Geocoding
+	#   maps.gstatic.com             recursos estáticos do mapa
+	#   servicodados.ibge.gov.br     malha municipal e lista de municípios
+	#   viacep.com.br                consulta de CEP
+	# ------------------------------------------------------------------
+	header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://maps.googleapis.com https://servicodados.ibge.gov.br https://viacep.com.br; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+	# ------------------------------------------------------------------
+	# Cache: bundle tem hash no nome, o index.html não pode ter cache.
+	# Não toque no cache das rotas /api — o backend já manda no-store.
+	# ------------------------------------------------------------------
+	@immutable path /assets/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@nocache path / /index.html /favicon.svg
+	header @nocache Cache-Control "no-cache"
+
+	log {
+		output stdout
+		format json
+	}
+}

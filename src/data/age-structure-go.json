@@ -1,0 +1,2752 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "state": "GO",
+    "source": "IBGE — Censo Demográfico 2022",
+    "dataset": "População residente por idade (Tabela 9514, variável 93)",
+    "aggregate": "9514",
+    "variable": "93",
+    "apiVariant": "agregados",
+    "sourceUrls": [
+      "https://servicodados.ibge.gov.br/api/docs/agregados?versao=3",
+      "https://apisidra.ibge.gov.br/home/ajuda"
+    ],
+    "referenceYear": 2022,
+    "retrievedAtUtc": "2026-08-16T21:40:41+00:00",
+    "processedAtUtc": "2026-08-16T21:40:41+00:00",
+    "municipalityCount": 246,
+    "stateTotals": {
+      "populationTotal": 7056495,
+      "population16Plus": 5527802,
+      "bands": {
+        "a16to17": 203628,
+        "a18to24": 762087,
+        "a25to39": 1708037,
+        "a40to59": 1889633,
+        "a60plus": 964417
+      }
+    },
+    "rawResponseSha256": {
+      "agregados_9514_state.json": "c4b198da76f671cb203843f3e5085b1827514ab16a8c901ee7a0b0396fa85fa0",
+      "agregados_9514_batch_001.json": "dfaaa8390561179a9a763fa9c370d603b8c92880398649a2264cef5c96409cbc",
+      "agregados_9514_batch_002.json": "05aafbcdabd8a1661bf51a57cb726677887b63dd2ed15363031c8192efcd14d6",
+      "agregados_9514_batch_003.json": "589bf25dfb95f45273c631a7b954b4683afe143810c48ebcc87eff0ed0499c59",
+      "agregados_9514_batch_004.json": "8aef4b2d854604df0bdc6397015d34825515b1f38694690fc2e511389bb397dd",
+      "agregados_9514_batch_005.json": "bb1a497be2cf886768ef68a47931a8e6bba9bbfaf485674dbef802edb581f1e9"
+    },
+    "cacheDir": "/home/pc/Downloads/accorsifinal/dados_tse/cache_ibge",
+    "quinquennialApproximation": null,
+    "notes": [
+      "População residente. O eleitorado pode exceder a população 16+ em municípios com títulos não transferidos.",
+      "population16Plus usa as idades simples 15-19 da C287 para separar 15 anos (não vota) de 16 a 19."
+    ]
+  },
+  "municipalities": {
+    "5200050": {
+      "populationTotal": 19128,
+      "population16Plus": 13993,
+      "bands": {
+        "a16to17": 573,
+        "a18to24": 1985,
+        "a25to39": 4825,
+        "a40to59": 4697,
+        "a60plus": 1913
+      }
+    },
+    "5200100": {
+      "populationTotal": 17232,
+      "population16Plus": 13394,
+      "bands": {
+        "a16to17": 475,
+        "a18to24": 1760,
+        "a25to39": 3562,
+        "a40to59": 4783,
+        "a60plus": 2814
+      }
+    },
+    "5200134": {
+      "populationTotal": 21568,
+      "population16Plus": 16943,
+      "bands": {
+        "a16to17": 671,
+        "a18to24": 2229,
+        "a25to39": 4793,
+        "a40to59": 6085,
+        "a60plus": 3165
+      }
+    },
+    "5200159": {
+      "populationTotal": 2297,
+      "population16Plus": 1887,
+      "bands": {
+        "a16to17": 53,
+        "a18to24": 170,
+        "a25to39": 425,
+        "a40to59": 680,
+        "a60plus": 559
+      }
+    },
+    "5200175": {
+      "populationTotal": 4954,
+      "population16Plus": 3832,
+      "bands": {
+        "a16to17": 147,
+        "a18to24": 465,
+        "a25to39": 1123,
+        "a40to59": 1326,
+        "a60plus": 771
+      }
+    },
+    "5200209": {
+      "populationTotal": 1858,
+      "population16Plus": 1515,
+      "bands": {
+        "a16to17": 41,
+        "a18to24": 161,
+        "a25to39": 331,
+        "a40to59": 541,
+        "a60plus": 441
+      }
+    },
+    "5200258": {
+      "populationTotal": 225693,
+      "population16Plus": 164658,
+      "bands": {
+        "a16to17": 7999,
+        "a18to24": 28480,
+        "a25to39": 57910,
+        "a40to59": 55468,
+        "a60plus": 14801
+      }
+    },
+    "5200308": {
+      "populationTotal": 27008,
+      "population16Plus": 20775,
+      "bands": {
+        "a16to17": 871,
+        "a18to24": 3046,
+        "a25to39": 5717,
+        "a40to59": 7189,
+        "a60plus": 3952
+      }
+    },
+    "5200506": {
+      "populationTotal": 1973,
+      "population16Plus": 1647,
+      "bands": {
+        "a16to17": 51,
+        "a18to24": 159,
+        "a25to39": 343,
+        "a40to59": 584,
+        "a60plus": 510
+      }
+    },
+    "5200555": {
+      "populationTotal": 6072,
+      "population16Plus": 4624,
+      "bands": {
+        "a16to17": 192,
+        "a18to24": 638,
+        "a25to39": 1525,
+        "a40to59": 1609,
+        "a60plus": 660
+      }
+    },
+    "5200605": {
+      "populationTotal": 10306,
+      "population16Plus": 7779,
+      "bands": {
+        "a16to17": 295,
+        "a18to24": 1087,
+        "a25to39": 2765,
+        "a40to59": 2539,
+        "a60plus": 1093
+      }
+    },
+    "5200803": {
+      "populationTotal": 8446,
+      "population16Plus": 6432,
+      "bands": {
+        "a16to17": 309,
+        "a18to24": 894,
+        "a25to39": 1902,
+        "a40to59": 2199,
+        "a60plus": 1128
+      }
+    },
+    "5200829": {
+      "populationTotal": 3268,
+      "population16Plus": 2652,
+      "bands": {
+        "a16to17": 96,
+        "a18to24": 260,
+        "a25to39": 602,
+        "a40to59": 1065,
+        "a60plus": 629
+      }
+    },
+    "5200852": {
+      "populationTotal": 5259,
+      "population16Plus": 4348,
+      "bands": {
+        "a16to17": 134,
+        "a18to24": 533,
+        "a25to39": 979,
+        "a40to59": 1664,
+        "a60plus": 1038
+      }
+    },
+    "5200902": {
+      "populationTotal": 3007,
+      "population16Plus": 2536,
+      "bands": {
+        "a16to17": 66,
+        "a18to24": 214,
+        "a25to39": 480,
+        "a40to59": 954,
+        "a60plus": 822
+      }
+    },
+    "5201108": {
+      "populationTotal": 398869,
+      "population16Plus": 313433,
+      "bands": {
+        "a16to17": 11297,
+        "a18to24": 44634,
+        "a25to39": 95861,
+        "a40to59": 105152,
+        "a60plus": 56489
+      }
+    },
+    "5201207": {
+      "populationTotal": 924,
+      "population16Plus": 761,
+      "bands": {
+        "a16to17": 21,
+        "a18to24": 75,
+        "a25to39": 161,
+        "a40to59": 283,
+        "a60plus": 221
+      }
+    },
+    "5201306": {
+      "populationTotal": 18503,
+      "population16Plus": 15089,
+      "bands": {
+        "a16to17": 480,
+        "a18to24": 1625,
+        "a25to39": 3819,
+        "a40to59": 5608,
+        "a60plus": 3557
+      }
+    },
+    "5201405": {
+      "populationTotal": 527796,
+      "population16Plus": 410090,
+      "bands": {
+        "a16to17": 15524,
+        "a18to24": 61182,
+        "a25to39": 140001,
+        "a40to59": 137949,
+        "a60plus": 55434
+      }
+    },
+    "5201454": {
+      "populationTotal": 2907,
+      "population16Plus": 2303,
+      "bands": {
+        "a16to17": 94,
+        "a18to24": 315,
+        "a25to39": 610,
+        "a40to59": 843,
+        "a60plus": 441
+      }
+    },
+    "5201504": {
+      "populationTotal": 4325,
+      "population16Plus": 3287,
+      "bands": {
+        "a16to17": 133,
+        "a18to24": 408,
+        "a25to39": 1003,
+        "a40to59": 1157,
+        "a60plus": 586
+      }
+    },
+    "5201603": {
+      "populationTotal": 3799,
+      "population16Plus": 3142,
+      "bands": {
+        "a16to17": 83,
+        "a18to24": 325,
+        "a25to39": 740,
+        "a40to59": 1202,
+        "a60plus": 792
+      }
+    },
+    "5201702": {
+      "populationTotal": 18390,
+      "population16Plus": 14591,
+      "bands": {
+        "a16to17": 499,
+        "a18to24": 1935,
+        "a25to39": 3928,
+        "a40to59": 5264,
+        "a60plus": 2965
+      }
+    },
+    "5201801": {
+      "populationTotal": 11890,
+      "population16Plus": 9394,
+      "bands": {
+        "a16to17": 330,
+        "a18to24": 1150,
+        "a25to39": 2668,
+        "a40to59": 3326,
+        "a60plus": 1920
+      }
+    },
+    "5202155": {
+      "populationTotal": 7153,
+      "population16Plus": 5753,
+      "bands": {
+        "a16to17": 213,
+        "a18to24": 650,
+        "a25to39": 1409,
+        "a40to59": 2217,
+        "a60plus": 1264
+      }
+    },
+    "5202353": {
+      "populationTotal": 2946,
+      "population16Plus": 2420,
+      "bands": {
+        "a16to17": 66,
+        "a18to24": 196,
+        "a25to39": 499,
+        "a40to59": 958,
+        "a60plus": 701
+      }
+    },
+    "5202502": {
+      "populationTotal": 8300,
+      "population16Plus": 6423,
+      "bands": {
+        "a16to17": 263,
+        "a18to24": 778,
+        "a25to39": 1840,
+        "a40to59": 2363,
+        "a60plus": 1179
+      }
+    },
+    "5202601": {
+      "populationTotal": 3284,
+      "population16Plus": 2774,
+      "bands": {
+        "a16to17": 75,
+        "a18to24": 217,
+        "a25to39": 573,
+        "a40to59": 998,
+        "a60plus": 911
+      }
+    },
+    "5202809": {
+      "populationTotal": 2868,
+      "population16Plus": 2367,
+      "bands": {
+        "a16to17": 81,
+        "a18to24": 227,
+        "a25to39": 574,
+        "a40to59": 824,
+        "a60plus": 661
+      }
+    },
+    "5203104": {
+      "populationTotal": 3351,
+      "population16Plus": 2675,
+      "bands": {
+        "a16to17": 89,
+        "a18to24": 219,
+        "a25to39": 615,
+        "a40to59": 1086,
+        "a60plus": 666
+      }
+    },
+    "5203203": {
+      "populationTotal": 10371,
+      "population16Plus": 7960,
+      "bands": {
+        "a16to17": 339,
+        "a18to24": 1154,
+        "a25to39": 2414,
+        "a40to59": 2727,
+        "a60plus": 1326
+      }
+    },
+    "5203302": {
+      "populationTotal": 34445,
+      "population16Plus": 27466,
+      "bands": {
+        "a16to17": 967,
+        "a18to24": 3418,
+        "a25to39": 7876,
+        "a40to59": 9366,
+        "a60plus": 5839
+      }
+    },
+    "5203401": {
+      "populationTotal": 7826,
+      "population16Plus": 6428,
+      "bands": {
+        "a16to17": 182,
+        "a18to24": 659,
+        "a25to39": 1496,
+        "a40to59": 2387,
+        "a60plus": 1704
+      }
+    },
+    "5203500": {
+      "populationTotal": 23958,
+      "population16Plus": 18654,
+      "bands": {
+        "a16to17": 696,
+        "a18to24": 2685,
+        "a25to39": 5774,
+        "a40to59": 6449,
+        "a60plus": 3050
+      }
+    },
+    "5203559": {
+      "populationTotal": 10296,
+      "population16Plus": 8085,
+      "bands": {
+        "a16to17": 307,
+        "a18to24": 1125,
+        "a25to39": 2255,
+        "a40to59": 2878,
+        "a60plus": 1520
+      }
+    },
+    "5203575": {
+      "populationTotal": 3299,
+      "population16Plus": 2560,
+      "bands": {
+        "a16to17": 98,
+        "a18to24": 313,
+        "a25to39": 713,
+        "a40to59": 902,
+        "a60plus": 534
+      }
+    },
+    "5203609": {
+      "populationTotal": 3992,
+      "population16Plus": 3209,
+      "bands": {
+        "a16to17": 107,
+        "a18to24": 347,
+        "a25to39": 916,
+        "a40to59": 1122,
+        "a60plus": 717
+      }
+    },
+    "5203807": {
+      "populationTotal": 5695,
+      "population16Plus": 4509,
+      "bands": {
+        "a16to17": 172,
+        "a18to24": 528,
+        "a25to39": 1145,
+        "a40to59": 1682,
+        "a60plus": 982
+      }
+    },
+    "5203906": {
+      "populationTotal": 10495,
+      "population16Plus": 8445,
+      "bands": {
+        "a16to17": 261,
+        "a18to24": 984,
+        "a25to39": 2196,
+        "a40to59": 3025,
+        "a60plus": 1979
+      }
+    },
+    "5203939": {
+      "populationTotal": 2732,
+      "population16Plus": 2228,
+      "bands": {
+        "a16to17": 49,
+        "a18to24": 230,
+        "a25to39": 535,
+        "a40to59": 824,
+        "a60plus": 590
+      }
+    },
+    "5203962": {
+      "populationTotal": 3145,
+      "population16Plus": 2429,
+      "bands": {
+        "a16to17": 98,
+        "a18to24": 278,
+        "a25to39": 702,
+        "a40to59": 846,
+        "a60plus": 505
+      }
+    },
+    "5204003": {
+      "populationTotal": 7560,
+      "population16Plus": 5840,
+      "bands": {
+        "a16to17": 259,
+        "a18to24": 864,
+        "a25to39": 1678,
+        "a40to59": 2000,
+        "a60plus": 1039
+      }
+    },
+    "5204102": {
+      "populationTotal": 11513,
+      "population16Plus": 9070,
+      "bands": {
+        "a16to17": 337,
+        "a18to24": 1116,
+        "a25to39": 2665,
+        "a40to59": 3130,
+        "a60plus": 1822
+      }
+    },
+    "5204201": {
+      "populationTotal": 1405,
+      "population16Plus": 1152,
+      "bands": {
+        "a16to17": 32,
+        "a18to24": 114,
+        "a25to39": 246,
+        "a40to59": 459,
+        "a60plus": 301
+      }
+    },
+    "5204250": {
+      "populationTotal": 7782,
+      "population16Plus": 6304,
+      "bands": {
+        "a16to17": 183,
+        "a18to24": 622,
+        "a25to39": 1574,
+        "a40to59": 2334,
+        "a60plus": 1591
+      }
+    },
+    "5204300": {
+      "populationTotal": 13774,
+      "population16Plus": 11042,
+      "bands": {
+        "a16to17": 409,
+        "a18to24": 1243,
+        "a25to39": 2990,
+        "a40to59": 3873,
+        "a60plus": 2527
+      }
+    },
+    "5204409": {
+      "populationTotal": 16513,
+      "population16Plus": 13397,
+      "bands": {
+        "a16to17": 428,
+        "a18to24": 1465,
+        "a25to39": 3437,
+        "a40to59": 4877,
+        "a60plus": 3190
+      }
+    },
+    "5204508": {
+      "populationTotal": 98622,
+      "population16Plus": 76801,
+      "bands": {
+        "a16to17": 3033,
+        "a18to24": 10609,
+        "a25to39": 23958,
+        "a40to59": 26052,
+        "a60plus": 13149
+      }
+    },
+    "5204557": {
+      "populationTotal": 4507,
+      "population16Plus": 3576,
+      "bands": {
+        "a16to17": 142,
+        "a18to24": 411,
+        "a25to39": 886,
+        "a40to59": 1322,
+        "a60plus": 815
+      }
+    },
+    "5204607": {
+      "populationTotal": 3755,
+      "population16Plus": 2958,
+      "bands": {
+        "a16to17": 101,
+        "a18to24": 359,
+        "a25to39": 772,
+        "a40to59": 1097,
+        "a60plus": 629
+      }
+    },
+    "5204656": {
+      "populationTotal": 3708,
+      "population16Plus": 2927,
+      "bands": {
+        "a16to17": 97,
+        "a18to24": 323,
+        "a25to39": 723,
+        "a40to59": 1133,
+        "a60plus": 651
+      }
+    },
+    "5204706": {
+      "populationTotal": 12510,
+      "population16Plus": 9740,
+      "bands": {
+        "a16to17": 362,
+        "a18to24": 1262,
+        "a25to39": 2885,
+        "a40to59": 3404,
+        "a60plus": 1827
+      }
+    },
+    "5204805": {
+      "populationTotal": 7422,
+      "population16Plus": 5725,
+      "bands": {
+        "a16to17": 237,
+        "a18to24": 714,
+        "a25to39": 1729,
+        "a40to59": 2011,
+        "a60plus": 1034
+      }
+    },
+    "5204854": {
+      "populationTotal": 8081,
+      "population16Plus": 6005,
+      "bands": {
+        "a16to17": 257,
+        "a18to24": 896,
+        "a25to39": 1833,
+        "a40to59": 2024,
+        "a60plus": 995
+      }
+    },
+    "5204904": {
+      "populationTotal": 18108,
+      "population16Plus": 13785,
+      "bands": {
+        "a16to17": 637,
+        "a18to24": 1923,
+        "a25to39": 4123,
+        "a40to59": 4748,
+        "a60plus": 2354
+      }
+    },
+    "5204953": {
+      "populationTotal": 4005,
+      "population16Plus": 3167,
+      "bands": {
+        "a16to17": 106,
+        "a18to24": 338,
+        "a25to39": 720,
+        "a40to59": 1177,
+        "a60plus": 826
+      }
+    },
+    "5205000": {
+      "populationTotal": 9710,
+      "population16Plus": 7859,
+      "bands": {
+        "a16to17": 240,
+        "a18to24": 983,
+        "a25to39": 1990,
+        "a40to59": 2861,
+        "a60plus": 1785
+      }
+    },
+    "5205059": {
+      "populationTotal": 2985,
+      "population16Plus": 2412,
+      "bands": {
+        "a16to17": 91,
+        "a18to24": 271,
+        "a25to39": 576,
+        "a40to59": 936,
+        "a60plus": 538
+      }
+    },
+    "5205109": {
+      "populationTotal": 114427,
+      "population16Plus": 91058,
+      "bands": {
+        "a16to17": 3122,
+        "a18to24": 12495,
+        "a25to39": 28651,
+        "a40to59": 31211,
+        "a60plus": 15579
+      }
+    },
+    "5205208": {
+      "populationTotal": 5184,
+      "population16Plus": 4140,
+      "bands": {
+        "a16to17": 156,
+        "a18to24": 454,
+        "a25to39": 1055,
+        "a40to59": 1562,
+        "a60plus": 913
+      }
+    },
+    "5205307": {
+      "populationTotal": 9583,
+      "population16Plus": 7029,
+      "bands": {
+        "a16to17": 349,
+        "a18to24": 933,
+        "a25to39": 2030,
+        "a40to59": 2322,
+        "a60plus": 1395
+      }
+    },
+    "5205406": {
+      "populationTotal": 22046,
+      "population16Plus": 17955,
+      "bands": {
+        "a16to17": 514,
+        "a18to24": 2175,
+        "a25to39": 4827,
+        "a40to59": 6369,
+        "a60plus": 4070
+      }
+    },
+    "5205455": {
+      "populationTotal": 8090,
+      "population16Plus": 6482,
+      "bands": {
+        "a16to17": 181,
+        "a18to24": 675,
+        "a25to39": 1691,
+        "a40to59": 2457,
+        "a60plus": 1478
+      }
+    },
+    "5205471": {
+      "populationTotal": 12870,
+      "population16Plus": 9400,
+      "bands": {
+        "a16to17": 389,
+        "a18to24": 1421,
+        "a25to39": 3807,
+        "a40to59": 2993,
+        "a60plus": 790
+      }
+    },
+    "5205497": {
+      "populationTotal": 91767,
+      "population16Plus": 68055,
+      "bands": {
+        "a16to17": 3106,
+        "a18to24": 11161,
+        "a25to39": 23923,
+        "a40to59": 22251,
+        "a60plus": 7614
+      }
+    },
+    "5205513": {
+      "populationTotal": 25016,
+      "population16Plus": 19355,
+      "bands": {
+        "a16to17": 800,
+        "a18to24": 2630,
+        "a25to39": 5719,
+        "a40to59": 6742,
+        "a60plus": 3464
+      }
+    },
+    "5205521": {
+      "populationTotal": 4030,
+      "population16Plus": 3039,
+      "bands": {
+        "a16to17": 110,
+        "a18to24": 382,
+        "a25to39": 846,
+        "a40to59": 1070,
+        "a60plus": 631
+      }
+    },
+    "5205703": {
+      "populationTotal": 2454,
+      "population16Plus": 2059,
+      "bands": {
+        "a16to17": 53,
+        "a18to24": 190,
+        "a25to39": 408,
+        "a40to59": 790,
+        "a60plus": 618
+      }
+    },
+    "5205802": {
+      "populationTotal": 10562,
+      "population16Plus": 8359,
+      "bands": {
+        "a16to17": 341,
+        "a18to24": 1075,
+        "a25to39": 2113,
+        "a40to59": 2920,
+        "a60plus": 1910
+      }
+    },
+    "5205901": {
+      "populationTotal": 9164,
+      "population16Plus": 7296,
+      "bands": {
+        "a16to17": 238,
+        "a18to24": 882,
+        "a25to39": 1990,
+        "a40to59": 2616,
+        "a60plus": 1570
+      }
+    },
+    "5206206": {
+      "populationTotal": 62337,
+      "population16Plus": 46399,
+      "bands": {
+        "a16to17": 2020,
+        "a18to24": 7286,
+        "a25to39": 15544,
+        "a40to59": 15173,
+        "a60plus": 6376
+      }
+    },
+    "5206305": {
+      "populationTotal": 3504,
+      "population16Plus": 2855,
+      "bands": {
+        "a16to17": 95,
+        "a18to24": 293,
+        "a25to39": 730,
+        "a40to59": 1027,
+        "a60plus": 710
+      }
+    },
+    "5206404": {
+      "populationTotal": 17065,
+      "population16Plus": 13443,
+      "bands": {
+        "a16to17": 448,
+        "a18to24": 1546,
+        "a25to39": 3939,
+        "a40to59": 5017,
+        "a60plus": 2493
+      }
+    },
+    "5206503": {
+      "populationTotal": 3883,
+      "population16Plus": 3153,
+      "bands": {
+        "a16to17": 113,
+        "a18to24": 322,
+        "a25to39": 699,
+        "a40to59": 1129,
+        "a60plus": 890
+      }
+    },
+    "5206602": {
+      "populationTotal": 2927,
+      "population16Plus": 2390,
+      "bands": {
+        "a16to17": 78,
+        "a18to24": 209,
+        "a25to39": 541,
+        "a40to59": 829,
+        "a60plus": 733
+      }
+    },
+    "5206701": {
+      "populationTotal": 3770,
+      "population16Plus": 2944,
+      "bands": {
+        "a16to17": 104,
+        "a18to24": 354,
+        "a25to39": 838,
+        "a40to59": 1043,
+        "a60plus": 605
+      }
+    },
+    "5206800": {
+      "populationTotal": 2724,
+      "population16Plus": 2282,
+      "bands": {
+        "a16to17": 58,
+        "a18to24": 217,
+        "a25to39": 591,
+        "a40to59": 814,
+        "a60plus": 602
+      }
+    },
+    "5206909": {
+      "populationTotal": 1902,
+      "population16Plus": 1530,
+      "bands": {
+        "a16to17": 45,
+        "a18to24": 140,
+        "a25to39": 361,
+        "a40to59": 558,
+        "a60plus": 426
+      }
+    },
+    "5207105": {
+      "populationTotal": 2062,
+      "population16Plus": 1702,
+      "bands": {
+        "a16to17": 58,
+        "a18to24": 138,
+        "a25to39": 331,
+        "a40to59": 668,
+        "a60plus": 507
+      }
+    },
+    "5207253": {
+      "populationTotal": 6956,
+      "population16Plus": 5599,
+      "bands": {
+        "a16to17": 180,
+        "a18to24": 603,
+        "a25to39": 1419,
+        "a40to59": 2130,
+        "a60plus": 1267
+      }
+    },
+    "5207352": {
+      "populationTotal": 4001,
+      "population16Plus": 3254,
+      "bands": {
+        "a16to17": 120,
+        "a18to24": 338,
+        "a25to39": 781,
+        "a40to59": 1200,
+        "a60plus": 815
+      }
+    },
+    "5207402": {
+      "populationTotal": 11747,
+      "population16Plus": 9341,
+      "bands": {
+        "a16to17": 305,
+        "a18to24": 1192,
+        "a25to39": 2570,
+        "a40to59": 3339,
+        "a60plus": 1935
+      }
+    },
+    "5207501": {
+      "populationTotal": 3205,
+      "population16Plus": 2555,
+      "bands": {
+        "a16to17": 88,
+        "a18to24": 308,
+        "a25to39": 661,
+        "a40to59": 879,
+        "a60plus": 619
+      }
+    },
+    "5207535": {
+      "populationTotal": 7070,
+      "population16Plus": 5793,
+      "bands": {
+        "a16to17": 192,
+        "a18to24": 557,
+        "a25to39": 1276,
+        "a40to59": 2294,
+        "a60plus": 1474
+      }
+    },
+    "5207600": {
+      "populationTotal": 5877,
+      "population16Plus": 4886,
+      "bands": {
+        "a16to17": 154,
+        "a18to24": 476,
+        "a25to39": 980,
+        "a40to59": 1890,
+        "a60plus": 1386
+      }
+    },
+    "5207808": {
+      "populationTotal": 10419,
+      "population16Plus": 8533,
+      "bands": {
+        "a16to17": 282,
+        "a18to24": 849,
+        "a25to39": 2037,
+        "a40to59": 3034,
+        "a60plus": 2331
+      }
+    },
+    "5207907": {
+      "populationTotal": 13744,
+      "population16Plus": 10590,
+      "bands": {
+        "a16to17": 499,
+        "a18to24": 1573,
+        "a25to39": 2966,
+        "a40to59": 3685,
+        "a60plus": 1867
+      }
+    },
+    "5208004": {
+      "populationTotal": 115901,
+      "population16Plus": 89270,
+      "bands": {
+        "a16to17": 3603,
+        "a18to24": 13989,
+        "a25to39": 28537,
+        "a40to59": 29786,
+        "a60plus": 13355
+      }
+    },
+    "5208103": {
+      "populationTotal": 4660,
+      "population16Plus": 3766,
+      "bands": {
+        "a16to17": 141,
+        "a18to24": 389,
+        "a25to39": 833,
+        "a40to59": 1424,
+        "a60plus": 979
+      }
+    },
+    "5208152": {
+      "populationTotal": 3456,
+      "population16Plus": 2734,
+      "bands": {
+        "a16to17": 93,
+        "a18to24": 302,
+        "a25to39": 664,
+        "a40to59": 1040,
+        "a60plus": 635
+      }
+    },
+    "5208301": {
+      "populationTotal": 4457,
+      "population16Plus": 3510,
+      "bands": {
+        "a16to17": 149,
+        "a18to24": 469,
+        "a25to39": 880,
+        "a40to59": 1238,
+        "a60plus": 774
+      }
+    },
+    "5208400": {
+      "populationTotal": 13967,
+      "population16Plus": 10829,
+      "bands": {
+        "a16to17": 378,
+        "a18to24": 1502,
+        "a25to39": 3309,
+        "a40to59": 3817,
+        "a60plus": 1823
+      }
+    },
+    "5208509": {
+      "populationTotal": 4973,
+      "population16Plus": 4114,
+      "bands": {
+        "a16to17": 125,
+        "a18to24": 442,
+        "a25to39": 910,
+        "a40to59": 1497,
+        "a60plus": 1140
+      }
+    },
+    "5208608": {
+      "populationTotal": 73707,
+      "population16Plus": 57995,
+      "bands": {
+        "a16to17": 2116,
+        "a18to24": 8383,
+        "a25to39": 17609,
+        "a40to59": 19825,
+        "a60plus": 10062
+      }
+    },
+    "5208707": {
+      "populationTotal": 1437366,
+      "population16Plus": 1160726,
+      "bands": {
+        "a16to17": 36766,
+        "a18to24": 153327,
+        "a25to39": 361511,
+        "a40to59": 392609,
+        "a60plus": 216513
+      }
+    },
+    "5208806": {
+      "populationTotal": 71916,
+      "population16Plus": 53632,
+      "bands": {
+        "a16to17": 2254,
+        "a18to24": 7528,
+        "a25to39": 19150,
+        "a40to59": 18195,
+        "a60plus": 6505
+      }
+    },
+    "5208905": {
+      "populationTotal": 24071,
+      "population16Plus": 19901,
+      "bands": {
+        "a16to17": 618,
+        "a18to24": 2105,
+        "a25to39": 4652,
+        "a40to59": 7432,
+        "a60plus": 5094
+      }
+    },
+    "5209101": {
+      "populationTotal": 35664,
+      "population16Plus": 28757,
+      "bands": {
+        "a16to17": 991,
+        "a18to24": 3637,
+        "a25to39": 8024,
+        "a40to59": 10054,
+        "a60plus": 6051
+      }
+    },
+    "5209150": {
+      "populationTotal": 4390,
+      "population16Plus": 3420,
+      "bands": {
+        "a16to17": 132,
+        "a18to24": 352,
+        "a25to39": 894,
+        "a40to59": 1247,
+        "a60plus": 795
+      }
+    },
+    "5209200": {
+      "populationTotal": 19545,
+      "population16Plus": 14967,
+      "bands": {
+        "a16to17": 529,
+        "a18to24": 2044,
+        "a25to39": 4374,
+        "a40to59": 5295,
+        "a60plus": 2725
+      }
+    },
+    "5209291": {
+      "populationTotal": 2188,
+      "population16Plus": 1846,
+      "bands": {
+        "a16to17": 58,
+        "a18to24": 153,
+        "a25to39": 355,
+        "a40to59": 763,
+        "a60plus": 517
+      }
+    },
+    "5209408": {
+      "populationTotal": 4085,
+      "population16Plus": 3191,
+      "bands": {
+        "a16to17": 140,
+        "a18to24": 360,
+        "a25to39": 780,
+        "a40to59": 1124,
+        "a60plus": 787
+      }
+    },
+    "5209457": {
+      "populationTotal": 2161,
+      "population16Plus": 1787,
+      "bands": {
+        "a16to17": 59,
+        "a18to24": 144,
+        "a25to39": 400,
+        "a40to59": 708,
+        "a60plus": 476
+      }
+    },
+    "5209606": {
+      "populationTotal": 3354,
+      "population16Plus": 2774,
+      "bands": {
+        "a16to17": 101,
+        "a18to24": 249,
+        "a25to39": 631,
+        "a40to59": 1045,
+        "a60plus": 748
+      }
+    },
+    "5209705": {
+      "populationTotal": 27742,
+      "population16Plus": 21464,
+      "bands": {
+        "a16to17": 834,
+        "a18to24": 2901,
+        "a25to39": 6506,
+        "a40to59": 7234,
+        "a60plus": 3989
+      }
+    },
+    "5209804": {
+      "populationTotal": 3545,
+      "population16Plus": 2915,
+      "bands": {
+        "a16to17": 86,
+        "a18to24": 293,
+        "a25to39": 632,
+        "a40to59": 1062,
+        "a60plus": 842
+      }
+    },
+    "5209903": {
+      "populationTotal": 10584,
+      "population16Plus": 7978,
+      "bands": {
+        "a16to17": 417,
+        "a18to24": 1250,
+        "a25to39": 2135,
+        "a40to59": 2676,
+        "a60plus": 1500
+      }
+    },
+    "5209937": {
+      "populationTotal": 5954,
+      "population16Plus": 4697,
+      "bands": {
+        "a16to17": 169,
+        "a18to24": 585,
+        "a25to39": 1252,
+        "a40to59": 1723,
+        "a60plus": 968
+      }
+    },
+    "5209952": {
+      "populationTotal": 17061,
+      "population16Plus": 13494,
+      "bands": {
+        "a16to17": 419,
+        "a18to24": 1787,
+        "a25to39": 4138,
+        "a40to59": 4710,
+        "a60plus": 2440
+      }
+    },
+    "5210000": {
+      "populationTotal": 52204,
+      "population16Plus": 42145,
+      "bands": {
+        "a16to17": 1378,
+        "a18to24": 5200,
+        "a25to39": 11764,
+        "a40to59": 14884,
+        "a60plus": 8919
+      }
+    },
+    "5210109": {
+      "populationTotal": 25548,
+      "population16Plus": 20530,
+      "bands": {
+        "a16to17": 722,
+        "a18to24": 2662,
+        "a25to39": 5439,
+        "a40to59": 7055,
+        "a60plus": 4652
+      }
+    },
+    "5210158": {
+      "populationTotal": 2919,
+      "population16Plus": 2405,
+      "bands": {
+        "a16to17": 62,
+        "a18to24": 252,
+        "a25to39": 502,
+        "a40to59": 934,
+        "a60plus": 655
+      }
+    },
+    "5210208": {
+      "populationTotal": 35684,
+      "population16Plus": 28948,
+      "bands": {
+        "a16to17": 879,
+        "a18to24": 3220,
+        "a25to39": 7665,
+        "a40to59": 10264,
+        "a60plus": 6920
+      }
+    },
+    "5210307": {
+      "populationTotal": 2560,
+      "population16Plus": 2171,
+      "bands": {
+        "a16to17": 55,
+        "a18to24": 204,
+        "a25to39": 463,
+        "a40to59": 841,
+        "a60plus": 608
+      }
+    },
+    "5210406": {
+      "populationTotal": 44734,
+      "population16Plus": 35105,
+      "bands": {
+        "a16to17": 1217,
+        "a18to24": 5028,
+        "a25to39": 10967,
+        "a40to59": 11766,
+        "a60plus": 6127
+      }
+    },
+    "5210562": {
+      "populationTotal": 4963,
+      "population16Plus": 4065,
+      "bands": {
+        "a16to17": 131,
+        "a18to24": 501,
+        "a25to39": 1141,
+        "a40to59": 1418,
+        "a60plus": 874
+      }
+    },
+    "5210604": {
+      "populationTotal": 4904,
+      "population16Plus": 4155,
+      "bands": {
+        "a16to17": 131,
+        "a18to24": 371,
+        "a25to39": 851,
+        "a40to59": 1591,
+        "a60plus": 1211
+      }
+    },
+    "5210802": {
+      "populationTotal": 4380,
+      "population16Plus": 3524,
+      "bands": {
+        "a16to17": 131,
+        "a18to24": 373,
+        "a25to39": 898,
+        "a40to59": 1268,
+        "a60plus": 854
+      }
+    },
+    "5210901": {
+      "populationTotal": 21087,
+      "population16Plus": 16525,
+      "bands": {
+        "a16to17": 602,
+        "a18to24": 2179,
+        "a25to39": 4755,
+        "a40to59": 5825,
+        "a60plus": 3164
+      }
+    },
+    "5211008": {
+      "populationTotal": 8007,
+      "population16Plus": 6501,
+      "bands": {
+        "a16to17": 192,
+        "a18to24": 730,
+        "a25to39": 1541,
+        "a40to59": 2468,
+        "a60plus": 1570
+      }
+    },
+    "5211206": {
+      "populationTotal": 26113,
+      "population16Plus": 21508,
+      "bands": {
+        "a16to17": 633,
+        "a18to24": 2176,
+        "a25to39": 5354,
+        "a40to59": 7955,
+        "a60plus": 5390
+      }
+    },
+    "5211305": {
+      "populationTotal": 6101,
+      "population16Plus": 4811,
+      "bands": {
+        "a16to17": 194,
+        "a18to24": 520,
+        "a25to39": 1280,
+        "a40to59": 1752,
+        "a60plus": 1065
+      }
+    },
+    "5211404": {
+      "populationTotal": 7736,
+      "population16Plus": 6409,
+      "bands": {
+        "a16to17": 185,
+        "a18to24": 662,
+        "a25to39": 1556,
+        "a40to59": 2317,
+        "a60plus": 1689
+      }
+    },
+    "5211503": {
+      "populationTotal": 107970,
+      "population16Plus": 85751,
+      "bands": {
+        "a16to17": 2822,
+        "a18to24": 10689,
+        "a25to39": 24779,
+        "a40to59": 30204,
+        "a60plus": 17257
+      }
+    },
+    "5211602": {
+      "populationTotal": 2693,
+      "population16Plus": 2205,
+      "bands": {
+        "a16to17": 55,
+        "a18to24": 203,
+        "a25to39": 482,
+        "a40to59": 848,
+        "a60plus": 617
+      }
+    },
+    "5211701": {
+      "populationTotal": 6272,
+      "population16Plus": 5155,
+      "bands": {
+        "a16to17": 161,
+        "a18to24": 497,
+        "a25to39": 1128,
+        "a40to59": 1963,
+        "a60plus": 1406
+      }
+    },
+    "5211800": {
+      "populationTotal": 45223,
+      "population16Plus": 35724,
+      "bands": {
+        "a16to17": 1378,
+        "a18to24": 4904,
+        "a25to39": 10156,
+        "a40to59": 12631,
+        "a60plus": 6655
+      }
+    },
+    "5211909": {
+      "populationTotal": 105729,
+      "population16Plus": 82822,
+      "bands": {
+        "a16to17": 3065,
+        "a18to24": 12168,
+        "a25to39": 25714,
+        "a40to59": 27275,
+        "a60plus": 14600
+      }
+    },
+    "5212006": {
+      "populationTotal": 2924,
+      "population16Plus": 2418,
+      "bands": {
+        "a16to17": 70,
+        "a18to24": 263,
+        "a25to39": 487,
+        "a40to59": 896,
+        "a60plus": 702
+      }
+    },
+    "5212055": {
+      "populationTotal": 2123,
+      "population16Plus": 1669,
+      "bands": {
+        "a16to17": 53,
+        "a18to24": 165,
+        "a25to39": 354,
+        "a40to59": 649,
+        "a60plus": 448
+      }
+    },
+    "5212105": {
+      "populationTotal": 7159,
+      "population16Plus": 5753,
+      "bands": {
+        "a16to17": 183,
+        "a18to24": 733,
+        "a25to39": 1604,
+        "a40to59": 1983,
+        "a60plus": 1250
+      }
+    },
+    "5212204": {
+      "populationTotal": 19620,
+      "population16Plus": 15784,
+      "bands": {
+        "a16to17": 501,
+        "a18to24": 1728,
+        "a25to39": 4091,
+        "a40to59": 6008,
+        "a60plus": 3456
+      }
+    },
+    "5212253": {
+      "populationTotal": 1390,
+      "population16Plus": 1071,
+      "bands": {
+        "a16to17": 41,
+        "a18to24": 117,
+        "a25to39": 322,
+        "a40to59": 397,
+        "a60plus": 194
+      }
+    },
+    "5212303": {
+      "populationTotal": 8745,
+      "population16Plus": 6929,
+      "bands": {
+        "a16to17": 245,
+        "a18to24": 766,
+        "a25to39": 1835,
+        "a40to59": 2512,
+        "a60plus": 1571
+      }
+    },
+    "5212501": {
+      "populationTotal": 209129,
+      "population16Plus": 157052,
+      "bands": {
+        "a16to17": 7219,
+        "a18to24": 24834,
+        "a25to39": 50560,
+        "a40to59": 53275,
+        "a60plus": 21164
+      }
+    },
+    "5212600": {
+      "populationTotal": 2561,
+      "population16Plus": 2131,
+      "bands": {
+        "a16to17": 68,
+        "a18to24": 178,
+        "a25to39": 478,
+        "a40to59": 780,
+        "a60plus": 627
+      }
+    },
+    "5212709": {
+      "populationTotal": 8124,
+      "population16Plus": 5980,
+      "bands": {
+        "a16to17": 234,
+        "a18to24": 904,
+        "a25to39": 2025,
+        "a40to59": 1943,
+        "a60plus": 874
+      }
+    },
+    "5212808": {
+      "populationTotal": 10700,
+      "population16Plus": 8558,
+      "bands": {
+        "a16to17": 286,
+        "a18to24": 1002,
+        "a25to39": 2175,
+        "a40to59": 3082,
+        "a60plus": 2013
+      }
+    },
+    "5212907": {
+      "populationTotal": 2758,
+      "population16Plus": 2148,
+      "bands": {
+        "a16to17": 86,
+        "a18to24": 331,
+        "a25to39": 630,
+        "a40to59": 671,
+        "a60plus": 430
+      }
+    },
+    "5212956": {
+      "populationTotal": 4042,
+      "population16Plus": 3287,
+      "bands": {
+        "a16to17": 105,
+        "a18to24": 397,
+        "a25to39": 805,
+        "a40to59": 1208,
+        "a60plus": 772
+      }
+    },
+    "5213004": {
+      "populationTotal": 10304,
+      "population16Plus": 7899,
+      "bands": {
+        "a16to17": 298,
+        "a18to24": 1075,
+        "a25to39": 2424,
+        "a40to59": 2727,
+        "a60plus": 1375
+      }
+    },
+    "5213053": {
+      "populationTotal": 2614,
+      "population16Plus": 2055,
+      "bands": {
+        "a16to17": 82,
+        "a18to24": 227,
+        "a25to39": 486,
+        "a40to59": 769,
+        "a60plus": 491
+      }
+    },
+    "5213087": {
+      "populationTotal": 27075,
+      "population16Plus": 21460,
+      "bands": {
+        "a16to17": 796,
+        "a18to24": 2530,
+        "a25to39": 5344,
+        "a40to59": 8148,
+        "a60plus": 4642
+      }
+    },
+    "5213103": {
+      "populationTotal": 70081,
+      "population16Plus": 53679,
+      "bands": {
+        "a16to17": 2044,
+        "a18to24": 8016,
+        "a25to39": 18770,
+        "a40to59": 16748,
+        "a60plus": 8101
+      }
+    },
+    "5213400": {
+      "populationTotal": 1685,
+      "population16Plus": 1404,
+      "bands": {
+        "a16to17": 33,
+        "a18to24": 119,
+        "a25to39": 288,
+        "a40to59": 532,
+        "a60plus": 432
+      }
+    },
+    "5213509": {
+      "populationTotal": 6692,
+      "population16Plus": 4872,
+      "bands": {
+        "a16to17": 253,
+        "a18to24": 598,
+        "a25to39": 1289,
+        "a40to59": 1646,
+        "a60plus": 1086
+      }
+    },
+    "5213707": {
+      "populationTotal": 8756,
+      "population16Plus": 7040,
+      "bands": {
+        "a16to17": 213,
+        "a18to24": 787,
+        "a25to39": 1878,
+        "a40to59": 2640,
+        "a60plus": 1522
+      }
+    },
+    "5213756": {
+      "populationTotal": 12521,
+      "population16Plus": 9641,
+      "bands": {
+        "a16to17": 390,
+        "a18to24": 1422,
+        "a25to39": 3227,
+        "a40to59": 3191,
+        "a60plus": 1411
+      }
+    },
+    "5213772": {
+      "populationTotal": 3779,
+      "population16Plus": 3016,
+      "bands": {
+        "a16to17": 107,
+        "a18to24": 341,
+        "a25to39": 687,
+        "a40to59": 1164,
+        "a60plus": 717
+      }
+    },
+    "5213806": {
+      "populationTotal": 51351,
+      "population16Plus": 41102,
+      "bands": {
+        "a16to17": 1351,
+        "a18to24": 5267,
+        "a25to39": 11931,
+        "a40to59": 14006,
+        "a60plus": 8547
+      }
+    },
+    "5213855": {
+      "populationTotal": 2456,
+      "population16Plus": 1989,
+      "bands": {
+        "a16to17": 65,
+        "a18to24": 194,
+        "a25to39": 440,
+        "a40to59": 747,
+        "a60plus": 543
+      }
+    },
+    "5213905": {
+      "populationTotal": 4654,
+      "population16Plus": 3856,
+      "bands": {
+        "a16to17": 134,
+        "a18to24": 372,
+        "a25to39": 900,
+        "a40to59": 1429,
+        "a60plus": 1021
+      }
+    },
+    "5214002": {
+      "populationTotal": 14750,
+      "population16Plus": 11358,
+      "bands": {
+        "a16to17": 469,
+        "a18to24": 1621,
+        "a25to39": 3495,
+        "a40to59": 3943,
+        "a60plus": 1830
+      }
+    },
+    "5214051": {
+      "populationTotal": 6189,
+      "population16Plus": 4961,
+      "bands": {
+        "a16to17": 176,
+        "a18to24": 617,
+        "a25to39": 1244,
+        "a40to59": 1866,
+        "a60plus": 1058
+      }
+    },
+    "5214101": {
+      "populationTotal": 3564,
+      "population16Plus": 2877,
+      "bands": {
+        "a16to17": 90,
+        "a18to24": 313,
+        "a25to39": 656,
+        "a40to59": 1157,
+        "a60plus": 661
+      }
+    },
+    "5214408": {
+      "populationTotal": 8189,
+      "population16Plus": 6494,
+      "bands": {
+        "a16to17": 227,
+        "a18to24": 739,
+        "a25to39": 1742,
+        "a40to59": 2323,
+        "a60plus": 1463
+      }
+    },
+    "5214507": {
+      "populationTotal": 31932,
+      "population16Plus": 24594,
+      "bands": {
+        "a16to17": 952,
+        "a18to24": 3609,
+        "a25to39": 7641,
+        "a40to59": 8368,
+        "a60plus": 4024
+      }
+    },
+    "5214606": {
+      "populationTotal": 34964,
+      "population16Plus": 28106,
+      "bands": {
+        "a16to17": 1004,
+        "a18to24": 3267,
+        "a25to39": 7025,
+        "a40to59": 10388,
+        "a60plus": 6422
+      }
+    },
+    "5214705": {
+      "populationTotal": 2337,
+      "population16Plus": 1889,
+      "bands": {
+        "a16to17": 71,
+        "a18to24": 189,
+        "a25to39": 417,
+        "a40to59": 727,
+        "a60plus": 485
+      }
+    },
+    "5214804": {
+      "populationTotal": 2101,
+      "population16Plus": 1711,
+      "bands": {
+        "a16to17": 58,
+        "a18to24": 178,
+        "a25to39": 379,
+        "a40to59": 601,
+        "a60plus": 495
+      }
+    },
+    "5214838": {
+      "populationTotal": 12815,
+      "population16Plus": 9969,
+      "bands": {
+        "a16to17": 354,
+        "a18to24": 1209,
+        "a25to39": 3061,
+        "a40to59": 3608,
+        "a60plus": 1737
+      }
+    },
+    "5214861": {
+      "populationTotal": 8310,
+      "population16Plus": 6848,
+      "bands": {
+        "a16to17": 223,
+        "a18to24": 727,
+        "a25to39": 1511,
+        "a40to59": 2490,
+        "a60plus": 1897
+      }
+    },
+    "5214879": {
+      "populationTotal": 3010,
+      "population16Plus": 2336,
+      "bands": {
+        "a16to17": 71,
+        "a18to24": 263,
+        "a25to39": 620,
+        "a40to59": 846,
+        "a60plus": 536
+      }
+    },
+    "5214903": {
+      "populationTotal": 3076,
+      "population16Plus": 2410,
+      "bands": {
+        "a16to17": 112,
+        "a18to24": 242,
+        "a25to39": 572,
+        "a40to59": 827,
+        "a60plus": 657
+      }
+    },
+    "5215009": {
+      "populationTotal": 9481,
+      "population16Plus": 7646,
+      "bands": {
+        "a16to17": 290,
+        "a18to24": 943,
+        "a25to39": 2152,
+        "a40to59": 2627,
+        "a60plus": 1634
+      }
+    },
+    "5215207": {
+      "populationTotal": 3527,
+      "population16Plus": 2926,
+      "bands": {
+        "a16to17": 82,
+        "a18to24": 269,
+        "a25to39": 692,
+        "a40to59": 1064,
+        "a60plus": 819
+      }
+    },
+    "5215231": {
+      "populationTotal": 103804,
+      "population16Plus": 77098,
+      "bands": {
+        "a16to17": 3627,
+        "a18to24": 13136,
+        "a25to39": 24886,
+        "a40to59": 25937,
+        "a60plus": 9512
+      }
+    },
+    "5215256": {
+      "populationTotal": 3716,
+      "population16Plus": 2950,
+      "bands": {
+        "a16to17": 88,
+        "a18to24": 334,
+        "a25to39": 704,
+        "a40to59": 1187,
+        "a60plus": 637
+      }
+    },
+    "5215306": {
+      "populationTotal": 16399,
+      "population16Plus": 13354,
+      "bands": {
+        "a16to17": 415,
+        "a18to24": 1540,
+        "a25to39": 3529,
+        "a40to59": 4787,
+        "a60plus": 3083
+      }
+    },
+    "5215405": {
+      "populationTotal": 4057,
+      "population16Plus": 3270,
+      "bands": {
+        "a16to17": 109,
+        "a18to24": 344,
+        "a25to39": 776,
+        "a40to59": 1215,
+        "a60plus": 826
+      }
+    },
+    "5215504": {
+      "populationTotal": 7200,
+      "population16Plus": 5782,
+      "bands": {
+        "a16to17": 199,
+        "a18to24": 686,
+        "a25to39": 1600,
+        "a40to59": 2083,
+        "a60plus": 1214
+      }
+    },
+    "5215603": {
+      "populationTotal": 34967,
+      "population16Plus": 26353,
+      "bands": {
+        "a16to17": 1205,
+        "a18to24": 3899,
+        "a25to39": 7511,
+        "a40to59": 8977,
+        "a60plus": 4761
+      }
+    },
+    "5215652": {
+      "populationTotal": 3132,
+      "population16Plus": 2529,
+      "bands": {
+        "a16to17": 86,
+        "a18to24": 255,
+        "a25to39": 595,
+        "a40to59": 973,
+        "a60plus": 620
+      }
+    },
+    "5215702": {
+      "populationTotal": 31858,
+      "population16Plus": 24919,
+      "bands": {
+        "a16to17": 889,
+        "a18to24": 3579,
+        "a25to39": 7832,
+        "a40to59": 8282,
+        "a60plus": 4337
+      }
+    },
+    "5215801": {
+      "populationTotal": 2259,
+      "population16Plus": 1877,
+      "bands": {
+        "a16to17": 63,
+        "a18to24": 218,
+        "a25to39": 392,
+        "a40to59": 675,
+        "a60plus": 529
+      }
+    },
+    "5215900": {
+      "populationTotal": 3851,
+      "population16Plus": 3136,
+      "bands": {
+        "a16to17": 97,
+        "a18to24": 338,
+        "a25to39": 765,
+        "a40to59": 1120,
+        "a60plus": 816
+      }
+    },
+    "5216007": {
+      "populationTotal": 2455,
+      "population16Plus": 1989,
+      "bands": {
+        "a16to17": 61,
+        "a18to24": 184,
+        "a25to39": 452,
+        "a40to59": 725,
+        "a60plus": 567
+      }
+    },
+    "5216304": {
+      "populationTotal": 7607,
+      "population16Plus": 6210,
+      "bands": {
+        "a16to17": 182,
+        "a18to24": 585,
+        "a25to39": 1553,
+        "a40to59": 2230,
+        "a60plus": 1660
+      }
+    },
+    "5216403": {
+      "populationTotal": 10659,
+      "population16Plus": 8485,
+      "bands": {
+        "a16to17": 271,
+        "a18to24": 1052,
+        "a25to39": 2342,
+        "a40to59": 3097,
+        "a60plus": 1723
+      }
+    },
+    "5216452": {
+      "populationTotal": 2964,
+      "population16Plus": 2303,
+      "bands": {
+        "a16to17": 95,
+        "a18to24": 292,
+        "a25to39": 624,
+        "a40to59": 813,
+        "a60plus": 479
+      }
+    },
+    "5216809": {
+      "populationTotal": 9573,
+      "population16Plus": 7929,
+      "bands": {
+        "a16to17": 241,
+        "a18to24": 814,
+        "a25to39": 1922,
+        "a40to59": 2943,
+        "a60plus": 2009
+      }
+    },
+    "5216908": {
+      "populationTotal": 2328,
+      "population16Plus": 1891,
+      "bands": {
+        "a16to17": 60,
+        "a18to24": 165,
+        "a25to39": 425,
+        "a40to59": 743,
+        "a60plus": 498
+      }
+    },
+    "5217104": {
+      "populationTotal": 24883,
+      "population16Plus": 20424,
+      "bands": {
+        "a16to17": 585,
+        "a18to24": 2237,
+        "a25to39": 4989,
+        "a40to59": 7204,
+        "a60plus": 5409
+      }
+    },
+    "5217203": {
+      "populationTotal": 11712,
+      "population16Plus": 9535,
+      "bands": {
+        "a16to17": 278,
+        "a18to24": 1047,
+        "a25to39": 2336,
+        "a40to59": 3497,
+        "a60plus": 2377
+      }
+    },
+    "5217302": {
+      "populationTotal": 26690,
+      "population16Plus": 21336,
+      "bands": {
+        "a16to17": 716,
+        "a18to24": 2695,
+        "a25to39": 5577,
+        "a40to59": 7673,
+        "a60plus": 4675
+      }
+    },
+    "5217401": {
+      "populationTotal": 32373,
+      "population16Plus": 26302,
+      "bands": {
+        "a16to17": 849,
+        "a18to24": 3535,
+        "a25to39": 7411,
+        "a40to59": 8840,
+        "a60plus": 5667
+      }
+    },
+    "5217609": {
+      "populationTotal": 105031,
+      "population16Plus": 78243,
+      "bands": {
+        "a16to17": 3532,
+        "a18to24": 12755,
+        "a25to39": 26355,
+        "a40to59": 25779,
+        "a60plus": 9822
+      }
+    },
+    "5217708": {
+      "populationTotal": 18309,
+      "population16Plus": 15031,
+      "bands": {
+        "a16to17": 463,
+        "a18to24": 1750,
+        "a25to39": 3758,
+        "a40to59": 5352,
+        "a60plus": 3708
+      }
+    },
+    "5218003": {
+      "populationTotal": 44317,
+      "population16Plus": 34860,
+      "bands": {
+        "a16to17": 1327,
+        "a18to24": 4528,
+        "a25to39": 9758,
+        "a40to59": 12264,
+        "a60plus": 6983
+      }
+    },
+    "5218052": {
+      "populationTotal": 4070,
+      "population16Plus": 3090,
+      "bands": {
+        "a16to17": 132,
+        "a18to24": 452,
+        "a25to39": 959,
+        "a40to59": 1084,
+        "a60plus": 463
+      }
+    },
+    "5218102": {
+      "populationTotal": 3280,
+      "population16Plus": 2599,
+      "bands": {
+        "a16to17": 85,
+        "a18to24": 307,
+        "a25to39": 671,
+        "a40to59": 908,
+        "a60plus": 628
+      }
+    },
+    "5218300": {
+      "populationTotal": 34914,
+      "population16Plus": 26358,
+      "bands": {
+        "a16to17": 1227,
+        "a18to24": 3875,
+        "a25to39": 8416,
+        "a40to59": 8867,
+        "a60plus": 3973
+      }
+    },
+    "5218391": {
+      "populationTotal": 3649,
+      "population16Plus": 2958,
+      "bands": {
+        "a16to17": 87,
+        "a18to24": 337,
+        "a25to39": 682,
+        "a40to59": 1085,
+        "a60plus": 767
+      }
+    },
+    "5218508": {
+      "populationTotal": 48447,
+      "population16Plus": 38324,
+      "bands": {
+        "a16to17": 1325,
+        "a18to24": 4683,
+        "a25to39": 11203,
+        "a40to59": 13551,
+        "a60plus": 7562
+      }
+    },
+    "5218607": {
+      "populationTotal": 12165,
+      "population16Plus": 9799,
+      "bands": {
+        "a16to17": 323,
+        "a18to24": 1222,
+        "a25to39": 2723,
+        "a40to59": 3516,
+        "a60plus": 2015
+      }
+    },
+    "5218706": {
+      "populationTotal": 3980,
+      "population16Plus": 3274,
+      "bands": {
+        "a16to17": 107,
+        "a18to24": 364,
+        "a25to39": 835,
+        "a40to59": 1198,
+        "a60plus": 770
+      }
+    },
+    "5218789": {
+      "populationTotal": 3864,
+      "population16Plus": 3022,
+      "bands": {
+        "a16to17": 133,
+        "a18to24": 428,
+        "a25to39": 807,
+        "a40to59": 1126,
+        "a60plus": 528
+      }
+    },
+    "5218805": {
+      "populationTotal": 225696,
+      "population16Plus": 175088,
+      "bands": {
+        "a16to17": 6480,
+        "a18to24": 26508,
+        "a25to39": 63065,
+        "a40to59": 54943,
+        "a60plus": 24092
+      }
+    },
+    "5218904": {
+      "populationTotal": 19788,
+      "population16Plus": 16062,
+      "bands": {
+        "a16to17": 553,
+        "a18to24": 1934,
+        "a25to39": 4232,
+        "a40to59": 5795,
+        "a60plus": 3548
+      }
+    },
+    "5219001": {
+      "populationTotal": 7918,
+      "population16Plus": 6483,
+      "bands": {
+        "a16to17": 198,
+        "a18to24": 754,
+        "a25to39": 1619,
+        "a40to59": 2322,
+        "a60plus": 1590
+      }
+    },
+    "5219100": {
+      "populationTotal": 6149,
+      "population16Plus": 4831,
+      "bands": {
+        "a16to17": 179,
+        "a18to24": 600,
+        "a25to39": 1344,
+        "a40to59": 1687,
+        "a60plus": 1021
+      }
+    },
+    "5219209": {
+      "populationTotal": 3002,
+      "population16Plus": 2467,
+      "bands": {
+        "a16to17": 66,
+        "a18to24": 165,
+        "a25to39": 551,
+        "a40to59": 1009,
+        "a60plus": 676
+      }
+    },
+    "5219258": {
+      "populationTotal": 4951,
+      "population16Plus": 3877,
+      "bands": {
+        "a16to17": 147,
+        "a18to24": 555,
+        "a25to39": 1018,
+        "a40to59": 1368,
+        "a60plus": 789
+      }
+    },
+    "5219308": {
+      "populationTotal": 38492,
+      "population16Plus": 30880,
+      "bands": {
+        "a16to17": 954,
+        "a18to24": 3801,
+        "a25to39": 8632,
+        "a40to59": 10980,
+        "a60plus": 6513
+      }
+    },
+    "5219357": {
+      "populationTotal": 3538,
+      "population16Plus": 2910,
+      "bands": {
+        "a16to17": 88,
+        "a18to24": 261,
+        "a25to39": 598,
+        "a40to59": 1098,
+        "a60plus": 865
+      }
+    },
+    "5219407": {
+      "populationTotal": 5924,
+      "population16Plus": 4644,
+      "bands": {
+        "a16to17": 199,
+        "a18to24": 559,
+        "a25to39": 1250,
+        "a40to59": 1647,
+        "a60plus": 989
+      }
+    },
+    "5219456": {
+      "populationTotal": 2689,
+      "population16Plus": 2170,
+      "bands": {
+        "a16to17": 71,
+        "a18to24": 207,
+        "a25to39": 466,
+        "a40to59": 851,
+        "a60plus": 575
+      }
+    },
+    "5219506": {
+      "populationTotal": 2820,
+      "population16Plus": 2342,
+      "bands": {
+        "a16to17": 56,
+        "a18to24": 245,
+        "a25to39": 514,
+        "a40to59": 862,
+        "a60plus": 665
+      }
+    },
+    "5219605": {
+      "populationTotal": 3293,
+      "population16Plus": 2671,
+      "bands": {
+        "a16to17": 97,
+        "a18to24": 278,
+        "a25to39": 580,
+        "a40to59": 958,
+        "a60plus": 758
+      }
+    },
+    "5219704": {
+      "populationTotal": 10645,
+      "population16Plus": 8540,
+      "bands": {
+        "a16to17": 278,
+        "a18to24": 971,
+        "a25to39": 2114,
+        "a40to59": 3092,
+        "a60plus": 2085
+      }
+    },
+    "5219712": {
+      "populationTotal": 4267,
+      "population16Plus": 3378,
+      "bands": {
+        "a16to17": 155,
+        "a18to24": 432,
+        "a25to39": 888,
+        "a40to59": 1167,
+        "a60plus": 736
+      }
+    },
+    "5219738": {
+      "populationTotal": 7386,
+      "population16Plus": 5710,
+      "bands": {
+        "a16to17": 205,
+        "a18to24": 727,
+        "a25to39": 1731,
+        "a40to59": 2067,
+        "a60plus": 980
+      }
+    },
+    "5219753": {
+      "populationTotal": 72127,
+      "population16Plus": 53209,
+      "bands": {
+        "a16to17": 2590,
+        "a18to24": 8972,
+        "a25to39": 17258,
+        "a40to59": 17527,
+        "a60plus": 6862
+      }
+    },
+    "5219803": {
+      "populationTotal": 9711,
+      "population16Plus": 7458,
+      "bands": {
+        "a16to17": 325,
+        "a18to24": 903,
+        "a25to39": 1977,
+        "a40to59": 2651,
+        "a60plus": 1602
+      }
+    },
+    "5219902": {
+      "populationTotal": 6378,
+      "population16Plus": 5053,
+      "bands": {
+        "a16to17": 176,
+        "a18to24": 571,
+        "a25to39": 1312,
+        "a40to59": 1789,
+        "a60plus": 1205
+      }
+    },
+    "5220009": {
+      "populationTotal": 14041,
+      "population16Plus": 10592,
+      "bands": {
+        "a16to17": 475,
+        "a18to24": 1766,
+        "a25to39": 3641,
+        "a40to59": 3223,
+        "a60plus": 1487
+      }
+    },
+    "5220058": {
+      "populationTotal": 1774,
+      "population16Plus": 1454,
+      "bands": {
+        "a16to17": 51,
+        "a18to24": 155,
+        "a25to39": 318,
+        "a40to59": 523,
+        "a60plus": 407
+      }
+    },
+    "5220108": {
+      "populationTotal": 33852,
+      "population16Plus": 27454,
+      "bands": {
+        "a16to17": 840,
+        "a18to24": 3372,
+        "a25to39": 7404,
+        "a40to59": 9589,
+        "a60plus": 6249
+      }
+    },
+    "5220157": {
+      "populationTotal": 4837,
+      "population16Plus": 3743,
+      "bands": {
+        "a16to17": 141,
+        "a18to24": 450,
+        "a25to39": 1019,
+        "a40to59": 1345,
+        "a60plus": 788
+      }
+    },
+    "5220207": {
+      "populationTotal": 21900,
+      "population16Plus": 17572,
+      "bands": {
+        "a16to17": 678,
+        "a18to24": 2076,
+        "a25to39": 4652,
+        "a40to59": 6376,
+        "a60plus": 3790
+      }
+    },
+    "5220264": {
+      "populationTotal": 4464,
+      "population16Plus": 3575,
+      "bands": {
+        "a16to17": 136,
+        "a18to24": 337,
+        "a25to39": 897,
+        "a40to59": 1341,
+        "a60plus": 864
+      }
+    },
+    "5220280": {
+      "populationTotal": 2143,
+      "population16Plus": 1749,
+      "bands": {
+        "a16to17": 52,
+        "a18to24": 187,
+        "a25to39": 410,
+        "a40to59": 654,
+        "a60plus": 446
+      }
+    },
+    "5220405": {
+      "populationTotal": 17020,
+      "population16Plus": 13657,
+      "bands": {
+        "a16to17": 481,
+        "a18to24": 1516,
+        "a25to39": 3713,
+        "a40to59": 5032,
+        "a60plus": 2915
+      }
+    },
+    "5220454": {
+      "populationTotal": 155635,
+      "population16Plus": 116056,
+      "bands": {
+        "a16to17": 4879,
+        "a18to24": 18060,
+        "a25to39": 42843,
+        "a40to59": 37444,
+        "a60plus": 12830
+      }
+    },
+    "5220504": {
+      "populationTotal": 8027,
+      "population16Plus": 6257,
+      "bands": {
+        "a16to17": 259,
+        "a18to24": 786,
+        "a25to39": 1870,
+        "a40to59": 2192,
+        "a60plus": 1150
+      }
+    },
+    "5220603": {
+      "populationTotal": 22245,
+      "population16Plus": 17688,
+      "bands": {
+        "a16to17": 687,
+        "a18to24": 2233,
+        "a25to39": 4783,
+        "a40to59": 6506,
+        "a60plus": 3479
+      }
+    },
+    "5220686": {
+      "populationTotal": 5742,
+      "population16Plus": 4440,
+      "bands": {
+        "a16to17": 218,
+        "a18to24": 627,
+        "a25to39": 1224,
+        "a40to59": 1554,
+        "a60plus": 817
+      }
+    },
+    "5220702": {
+      "populationTotal": 2927,
+      "population16Plus": 2255,
+      "bands": {
+        "a16to17": 89,
+        "a18to24": 297,
+        "a25to39": 635,
+        "a40to59": 769,
+        "a60plus": 465
+      }
+    },
+    "5221007": {
+      "populationTotal": 4026,
+      "population16Plus": 3317,
+      "bands": {
+        "a16to17": 87,
+        "a18to24": 318,
+        "a25to39": 877,
+        "a40to59": 1211,
+        "a60plus": 824
+      }
+    },
+    "5221080": {
+      "populationTotal": 2701,
+      "population16Plus": 1920,
+      "bands": {
+        "a16to17": 100,
+        "a18to24": 280,
+        "a25to39": 542,
+        "a40to59": 614,
+        "a60plus": 384
+      }
+    },
+    "5221197": {
+      "populationTotal": 7944,
+      "population16Plus": 6203,
+      "bands": {
+        "a16to17": 246,
+        "a18to24": 900,
+        "a25to39": 1743,
+        "a40to59": 2224,
+        "a60plus": 1090
+      }
+    },
+    "5221304": {
+      "populationTotal": 2921,
+      "population16Plus": 2388,
+      "bands": {
+        "a16to17": 72,
+        "a18to24": 210,
+        "a25to39": 517,
+        "a40to59": 905,
+        "a60plus": 684
+      }
+    },
+    "5221403": {
+      "populationTotal": 142431,
+      "population16Plus": 109351,
+      "bands": {
+        "a16to17": 4232,
+        "a18to24": 15058,
+        "a25to39": 36217,
+        "a40to59": 36925,
+        "a60plus": 16919
+      }
+    },
+    "5221452": {
+      "populationTotal": 3120,
+      "population16Plus": 2537,
+      "bands": {
+        "a16to17": 98,
+        "a18to24": 256,
+        "a25to39": 530,
+        "a40to59": 941,
+        "a60plus": 712
+      }
+    },
+    "5221502": {
+      "populationTotal": 4480,
+      "population16Plus": 3672,
+      "bands": {
+        "a16to17": 105,
+        "a18to24": 360,
+        "a25to39": 829,
+        "a40to59": 1347,
+        "a60plus": 1031
+      }
+    },
+    "5221551": {
+      "populationTotal": 4985,
+      "population16Plus": 3795,
+      "bands": {
+        "a16to17": 179,
+        "a18to24": 490,
+        "a25to39": 1124,
+        "a40to59": 1367,
+        "a60plus": 635
+      }
+    },
+    "5221577": {
+      "populationTotal": 2798,
+      "population16Plus": 2247,
+      "bands": {
+        "a16to17": 75,
+        "a18to24": 230,
+        "a25to39": 497,
+        "a40to59": 897,
+        "a60plus": 548
+      }
+    },
+    "5221601": {
+      "populationTotal": 42546,
+      "population16Plus": 33493,
+      "bands": {
+        "a16to17": 1196,
+        "a18to24": 4329,
+        "a25to39": 9694,
+        "a40to59": 11737,
+        "a60plus": 6537
+      }
+    },
+    "5221700": {
+      "populationTotal": 13729,
+      "population16Plus": 11241,
+      "bands": {
+        "a16to17": 370,
+        "a18to24": 1313,
+        "a25to39": 2746,
+        "a40to59": 4010,
+        "a60plus": 2802
+      }
+    },
+    "5221809": {
+      "populationTotal": 3553,
+      "population16Plus": 2886,
+      "bands": {
+        "a16to17": 105,
+        "a18to24": 363,
+        "a25to39": 724,
+        "a40to59": 1001,
+        "a60plus": 693
+      }
+    },
+    "5221858": {
+      "populationTotal": 198861,
+      "population16Plus": 150178,
+      "bands": {
+        "a16to17": 6128,
+        "a18to24": 22747,
+        "a25to39": 56277,
+        "a40to59": 49887,
+        "a60plus": 15139
+      }
+    },
+    "5221908": {
+      "populationTotal": 3716,
+      "population16Plus": 3041,
+      "bands": {
+        "a16to17": 90,
+        "a18to24": 291,
+        "a25to39": 676,
+        "a40to59": 1117,
+        "a60plus": 867
+      }
+    },
+    "5222005": {
+      "populationTotal": 14956,
+      "population16Plus": 11701,
+      "bands": {
+        "a16to17": 413,
+        "a18to24": 1532,
+        "a25to39": 3298,
+        "a40to59": 4255,
+        "a60plus": 2203
+      }
+    },
+    "5222054": {
+      "populationTotal": 8768,
+      "population16Plus": 6819,
+      "bands": {
+        "a16to17": 269,
+        "a18to24": 1016,
+        "a25to39": 2144,
+        "a40to59": 2357,
+        "a60plus": 1033
+      }
+    },
+    "5222203": {
+      "populationTotal": 4215,
+      "population16Plus": 3127,
+      "bands": {
+        "a16to17": 170,
+        "a18to24": 465,
+        "a25to39": 951,
+        "a40to59": 1036,
+        "a60plus": 505
+      }
+    },
+    "5222302": {
+      "populationTotal": 5815,
+      "population16Plus": 4521,
+      "bands": {
+        "a16to17": 180,
+        "a18to24": 581,
+        "a25to39": 1143,
+        "a40to59": 1690,
+        "a60plus": 927
+      }
+    }
+  }
+}

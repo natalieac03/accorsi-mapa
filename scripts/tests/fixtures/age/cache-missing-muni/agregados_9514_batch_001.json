@@ -1,0 +1,1689 @@
+[
+ {
+  "id": 93,
+  "variavel": "População residente",
+  "unidade": "Pessoas",
+  "resultados": [
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93000": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "11436"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93001": "Menos de 1 ano"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "253"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93002": "1 ano"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "260"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93003": "2 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "267"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93004": "3 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "274"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93005": "4 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "281"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93006": "5 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "288"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93007": "6 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "295"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93008": "7 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "302"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93009": "8 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "309"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93010": "9 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "316"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93011": "10 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "323"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93012": "11 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "330"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93013": "12 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "337"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93014": "13 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "344"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93015": "14 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "351"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93016": "15 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "358"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93017": "16 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "365"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93018": "17 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "372"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93019": "18 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "379"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93020": "19 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "386"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93021": "0 a 4 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "1335"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93022": "5 a 9 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "1510"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93023": "10 a 14 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "1685"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93024": "15 a 19 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "1860"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93025": "20 a 24 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "540"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93026": "25 a 29 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "510"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93027": "30 a 34 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "480"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93028": "35 a 39 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "450"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93029": "40 a 44 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "420"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93030": "45 a 49 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "390"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93031": "50 a 54 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "360"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93032": "55 a 59 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "330"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93033": "60 a 64 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "300"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93034": "65 a 69 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "270"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93035": "70 a 74 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "240"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93036": "75 a 79 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "210"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93037": "80 a 84 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "180"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93038": "85 a 89 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "150"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93039": "90 a 94 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "120"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93040": "95 a 99 anos"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "90"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 286,
+      "nome": "Forma de declaração da idade",
+      "categoria": {
+       "113635": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "93041": "100 anos ou mais"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "4314902",
+       "nivel": {
+        "id": "N6",
+        "nome": "Município"
+       },
+       "nome": "Porto Alegre"
+      },
+      "serie": {
+       "2022": "6"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

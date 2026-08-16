@@ -1,0 +1,5690 @@
+{
+  "metadata": {
+    "state": "GO",
+    "year": 2026,
+    "source": "Tribunal Superior Eleitoral (TSE) — Sistema ELO",
+    "dataset": "Eleitorado - 2026",
+    "profileGeneratedAt": "14/07/2026",
+    "mappingGeneratedAt": "09/08/2026",
+    "processedAtUtc": "2026-08-16T20:32:23+00:00",
+    "processedRows": 444067,
+    "municipalityCount": 246,
+    "stateElectorate": 5080755,
+    "electorateThresholds": [
+      3630,
+      4725,
+      7738,
+      18155
+    ],
+    "inputFiles": {
+      "profile": {
+        "name": "perfil_eleitorado_2026.zip",
+        "sha256": "0952e9d9577be19380b444bfcc6a9a99397005e8dc839de9d5ec49914d75648b"
+      },
+      "mapping": {
+        "name": "municipio_tse_ibge.zip",
+        "sha256": "aec7583ddf30fab0f13c06cab62ee03976a022f3b228b758038d0691bc7c66ce"
+      }
+    }
+  },
+  "municipalities": {
+    "5200050": {
+      "ibgeCode": "5200050",
+      "tseCode": "93360",
+      "name": "Abadia de Goiás",
+      "electorate": 15641,
+      "stateSharePct": 0.3078,
+      "stateRank": 57,
+      "zoneCount": 1,
+      "biometrics": 14551,
+      "biometricsPct": 93.03,
+      "registeredDisability": 121,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1839,
+        "percentage": 11.76
+      },
+      "gender": {
+        "female": 8107,
+        "male": 7534,
+        "notInformed": 0
+      }
+    },
+    "5200100": {
+      "ibgeCode": "5200100",
+      "tseCode": "92010",
+      "name": "Abadiânia",
+      "electorate": 12614,
+      "stateSharePct": 0.2483,
+      "stateRank": 68,
+      "zoneCount": 1,
+      "biometrics": 11067,
+      "biometricsPct": 87.74,
+      "registeredDisability": 80,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 1239,
+        "percentage": 9.82
+      },
+      "gender": {
+        "female": 6447,
+        "male": 6167,
+        "notInformed": 0
+      }
+    },
+    "5200134": {
+      "ibgeCode": "5200134",
+      "tseCode": "96458",
+      "name": "Acreúna",
+      "electorate": 15990,
+      "stateSharePct": 0.3147,
+      "stateRank": 54,
+      "zoneCount": 1,
+      "biometrics": 14921,
+      "biometricsPct": 93.31,
+      "registeredDisability": 225,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1537,
+        "percentage": 9.61
+      },
+      "gender": {
+        "female": 8158,
+        "male": 7832,
+        "notInformed": 0
+      }
+    },
+    "5200159": {
+      "ibgeCode": "5200159",
+      "tseCode": "96911",
+      "name": "Adelândia",
+      "electorate": 2971,
+      "stateSharePct": 0.0585,
+      "stateRank": 230,
+      "zoneCount": 1,
+      "biometrics": 2836,
+      "biometricsPct": 95.46,
+      "registeredDisability": 19,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 295,
+        "percentage": 9.93
+      },
+      "gender": {
+        "female": 1435,
+        "male": 1536,
+        "notInformed": 0
+      }
+    },
+    "5200175": {
+      "ibgeCode": "5200175",
+      "tseCode": "96938",
+      "name": "Água Fria de Goiás",
+      "electorate": 5108,
+      "stateSharePct": 0.1005,
+      "stateRank": 145,
+      "zoneCount": 1,
+      "biometrics": 4912,
+      "biometricsPct": 96.16,
+      "registeredDisability": 53,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 519,
+        "percentage": 10.16
+      },
+      "gender": {
+        "female": 2382,
+        "male": 2726,
+        "notInformed": 0
+      }
+    },
+    "5200209": {
+      "ibgeCode": "5200209",
+      "tseCode": "92037",
+      "name": "Água Limpa",
+      "electorate": 2635,
+      "stateSharePct": 0.0519,
+      "stateRank": 235,
+      "zoneCount": 1,
+      "biometrics": 2547,
+      "biometricsPct": 96.66,
+      "registeredDisability": 14,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 262,
+        "percentage": 9.94
+      },
+      "gender": {
+        "female": 1288,
+        "male": 1347,
+        "notInformed": 0
+      }
+    },
+    "5200258": {
+      "ibgeCode": "5200258",
+      "tseCode": "93343",
+      "name": "Águas Lindas de Goiás",
+      "electorate": 125051,
+      "stateSharePct": 2.4613,
+      "stateRank": 6,
+      "zoneCount": 1,
+      "biometrics": 113285,
+      "biometricsPct": 90.59,
+      "registeredDisability": 1262,
+      "socialName": 22,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 15780,
+        "percentage": 12.62
+      },
+      "gender": {
+        "female": 67337,
+        "male": 57714,
+        "notInformed": 0
+      }
+    },
+    "5200308": {
+      "ibgeCode": "5200308",
+      "tseCode": "92053",
+      "name": "Alexânia",
+      "electorate": 21998,
+      "stateSharePct": 0.433,
+      "stateRank": 42,
+      "zoneCount": 1,
+      "biometrics": 20436,
+      "biometricsPct": 92.9,
+      "registeredDisability": 163,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 2283,
+        "percentage": 10.38
+      },
+      "gender": {
+        "female": 11349,
+        "male": 10649,
+        "notInformed": 0
+      }
+    },
+    "5200506": {
+      "ibgeCode": "5200506",
+      "tseCode": "92096",
+      "name": "Aloândia",
+      "electorate": 2170,
+      "stateSharePct": 0.0427,
+      "stateRank": 243,
+      "zoneCount": 1,
+      "biometrics": 2043,
+      "biometricsPct": 94.15,
+      "registeredDisability": 24,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 198,
+        "percentage": 9.12
+      },
+      "gender": {
+        "female": 1072,
+        "male": 1098,
+        "notInformed": 0
+      }
+    },
+    "5200555": {
+      "ibgeCode": "5200555",
+      "tseCode": "92940",
+      "name": "Alto Horizonte",
+      "electorate": 6421,
+      "stateSharePct": 0.1264,
+      "stateRank": 125,
+      "zoneCount": 1,
+      "biometrics": 6189,
+      "biometricsPct": 96.39,
+      "registeredDisability": 48,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 794,
+        "percentage": 12.37
+      },
+      "gender": {
+        "female": 3219,
+        "male": 3202,
+        "notInformed": 0
+      }
+    },
+    "5200605": {
+      "ibgeCode": "5200605",
+      "tseCode": "92118",
+      "name": "Alto Paraíso de Goiás",
+      "electorate": 7744,
+      "stateSharePct": 0.1524,
+      "stateRank": 98,
+      "zoneCount": 1,
+      "biometrics": 7278,
+      "biometricsPct": 93.98,
+      "registeredDisability": 62,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1015,
+        "percentage": 13.11
+      },
+      "gender": {
+        "female": 4193,
+        "male": 3551,
+        "notInformed": 0
+      }
+    },
+    "5200803": {
+      "ibgeCode": "5200803",
+      "tseCode": "92150",
+      "name": "Alvorada do Norte",
+      "electorate": 6807,
+      "stateSharePct": 0.134,
+      "stateRank": 120,
+      "zoneCount": 1,
+      "biometrics": 6505,
+      "biometricsPct": 95.56,
+      "registeredDisability": 67,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 737,
+        "percentage": 10.83
+      },
+      "gender": {
+        "female": 3488,
+        "male": 3319,
+        "notInformed": 0
+      }
+    },
+    "5200829": {
+      "ibgeCode": "5200829",
+      "tseCode": "93386",
+      "name": "Amaralina",
+      "electorate": 2982,
+      "stateSharePct": 0.0587,
+      "stateRank": 229,
+      "zoneCount": 1,
+      "biometrics": 2851,
+      "biometricsPct": 95.61,
+      "registeredDisability": 24,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 304,
+        "percentage": 10.19
+      },
+      "gender": {
+        "female": 1391,
+        "male": 1591,
+        "notInformed": 0
+      }
+    },
+    "5200852": {
+      "ibgeCode": "5200852",
+      "tseCode": "96610",
+      "name": "Americano do Brasil",
+      "electorate": 5598,
+      "stateSharePct": 0.1102,
+      "stateRank": 134,
+      "zoneCount": 1,
+      "biometrics": 5260,
+      "biometricsPct": 93.96,
+      "registeredDisability": 35,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 532,
+        "percentage": 9.5
+      },
+      "gender": {
+        "female": 2811,
+        "male": 2787,
+        "notInformed": 0
+      }
+    },
+    "5200902": {
+      "ibgeCode": "5200902",
+      "tseCode": "92177",
+      "name": "Amorinópolis",
+      "electorate": 3873,
+      "stateSharePct": 0.0762,
+      "stateRank": 185,
+      "zoneCount": 1,
+      "biometrics": 3728,
+      "biometricsPct": 96.26,
+      "registeredDisability": 28,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 376,
+        "percentage": 9.71
+      },
+      "gender": {
+        "female": 1919,
+        "male": 1954,
+        "notInformed": 0
+      }
+    },
+    "5201108": {
+      "ibgeCode": "5201108",
+      "tseCode": "92215",
+      "name": "Anápolis",
+      "electorate": 287888,
+      "stateSharePct": 5.6662,
+      "stateRank": 3,
+      "zoneCount": 3,
+      "biometrics": 271079,
+      "biometricsPct": 94.16,
+      "registeredDisability": 1973,
+      "socialName": 50,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 28536,
+        "percentage": 9.91
+      },
+      "gender": {
+        "female": 154910,
+        "male": 132977,
+        "notInformed": 1
+      }
+    },
+    "5201207": {
+      "ibgeCode": "5201207",
+      "tseCode": "92231",
+      "name": "Anhanguera",
+      "electorate": 1744,
+      "stateSharePct": 0.0343,
+      "stateRank": 246,
+      "zoneCount": 1,
+      "biometrics": 1698,
+      "biometricsPct": 97.36,
+      "registeredDisability": 18,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 193,
+        "percentage": 11.07
+      },
+      "gender": {
+        "female": 821,
+        "male": 923,
+        "notInformed": 0
+      }
+    },
+    "5201306": {
+      "ibgeCode": "5201306",
+      "tseCode": "92258",
+      "name": "Anicuns",
+      "electorate": 15185,
+      "stateSharePct": 0.2989,
+      "stateRank": 58,
+      "zoneCount": 1,
+      "biometrics": 14256,
+      "biometricsPct": 93.88,
+      "registeredDisability": 65,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1471,
+        "percentage": 9.69
+      },
+      "gender": {
+        "female": 7927,
+        "male": 7258,
+        "notInformed": 0
+      }
+    },
+    "5201405": {
+      "ibgeCode": "5201405",
+      "tseCode": "92274",
+      "name": "Aparecida de Goiânia",
+      "electorate": 341027,
+      "stateSharePct": 6.7121,
+      "stateRank": 2,
+      "zoneCount": 3,
+      "biometrics": 316680,
+      "biometricsPct": 92.86,
+      "registeredDisability": 2649,
+      "socialName": 62,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 37828,
+        "percentage": 11.09
+      },
+      "gender": {
+        "female": 184138,
+        "male": 156889,
+        "notInformed": 0
+      }
+    },
+    "5201454": {
+      "ibgeCode": "5201454",
+      "tseCode": "93009",
+      "name": "Aparecida do Rio Doce",
+      "electorate": 3443,
+      "stateSharePct": 0.0678,
+      "stateRank": 208,
+      "zoneCount": 1,
+      "biometrics": 3244,
+      "biometricsPct": 94.22,
+      "registeredDisability": 11,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 371,
+        "percentage": 10.78
+      },
+      "gender": {
+        "female": 1693,
+        "male": 1750,
+        "notInformed": 0
+      }
+    },
+    "5201504": {
+      "ibgeCode": "5201504",
+      "tseCode": "92290",
+      "name": "Aporé",
+      "electorate": 3465,
+      "stateSharePct": 0.0682,
+      "stateRank": 207,
+      "zoneCount": 1,
+      "biometrics": 3076,
+      "biometricsPct": 88.77,
+      "registeredDisability": 62,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 368,
+        "percentage": 10.62
+      },
+      "gender": {
+        "female": 1752,
+        "male": 1713,
+        "notInformed": 0
+      }
+    },
+    "5201603": {
+      "ibgeCode": "5201603",
+      "tseCode": "92312",
+      "name": "Araçu",
+      "electorate": 4176,
+      "stateSharePct": 0.0822,
+      "stateRank": 166,
+      "zoneCount": 1,
+      "biometrics": 3680,
+      "biometricsPct": 88.12,
+      "registeredDisability": 23,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 395,
+        "percentage": 9.46
+      },
+      "gender": {
+        "female": 2122,
+        "male": 2054,
+        "notInformed": 0
+      }
+    },
+    "5201702": {
+      "ibgeCode": "5201702",
+      "tseCode": "92339",
+      "name": "Aragarças",
+      "electorate": 13947,
+      "stateSharePct": 0.2745,
+      "stateRank": 63,
+      "zoneCount": 1,
+      "biometrics": 13165,
+      "biometricsPct": 94.39,
+      "registeredDisability": 109,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1334,
+        "percentage": 9.56
+      },
+      "gender": {
+        "female": 7400,
+        "male": 6547,
+        "notInformed": 0
+      }
+    },
+    "5201801": {
+      "ibgeCode": "5201801",
+      "tseCode": "92355",
+      "name": "Aragoiânia",
+      "electorate": 10220,
+      "stateSharePct": 0.2012,
+      "stateRank": 76,
+      "zoneCount": 1,
+      "biometrics": 9678,
+      "biometricsPct": 94.7,
+      "registeredDisability": 130,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 1030,
+        "percentage": 10.08
+      },
+      "gender": {
+        "female": 5160,
+        "male": 5060,
+        "notInformed": 0
+      }
+    },
+    "5202155": {
+      "ibgeCode": "5202155",
+      "tseCode": "96695",
+      "name": "Araguapaz",
+      "electorate": 6012,
+      "stateSharePct": 0.1183,
+      "stateRank": 127,
+      "zoneCount": 1,
+      "biometrics": 5727,
+      "biometricsPct": 95.26,
+      "registeredDisability": 49,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 606,
+        "percentage": 10.08
+      },
+      "gender": {
+        "female": 2952,
+        "male": 3060,
+        "notInformed": 0
+      }
+    },
+    "5202353": {
+      "ibgeCode": "5202353",
+      "tseCode": "96717",
+      "name": "Arenópolis",
+      "electorate": 3630,
+      "stateSharePct": 0.0714,
+      "stateRank": 197,
+      "zoneCount": 1,
+      "biometrics": 3514,
+      "biometricsPct": 96.8,
+      "registeredDisability": 60,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 354,
+        "percentage": 9.75
+      },
+      "gender": {
+        "female": 1798,
+        "male": 1832,
+        "notInformed": 0
+      }
+    },
+    "5202502": {
+      "ibgeCode": "5202502",
+      "tseCode": "92495",
+      "name": "Aruanã",
+      "electorate": 7409,
+      "stateSharePct": 0.1458,
+      "stateRank": 106,
+      "zoneCount": 1,
+      "biometrics": 6895,
+      "biometricsPct": 93.06,
+      "registeredDisability": 42,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 778,
+        "percentage": 10.5
+      },
+      "gender": {
+        "female": 3689,
+        "male": 3720,
+        "notInformed": 0
+      }
+    },
+    "5202601": {
+      "ibgeCode": "5202601",
+      "tseCode": "92517",
+      "name": "Aurilândia",
+      "electorate": 3302,
+      "stateSharePct": 0.065,
+      "stateRank": 212,
+      "zoneCount": 1,
+      "biometrics": 3178,
+      "biometricsPct": 96.24,
+      "registeredDisability": 16,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 298,
+        "percentage": 9.02
+      },
+      "gender": {
+        "female": 1675,
+        "male": 1627,
+        "notInformed": 0
+      }
+    },
+    "5202809": {
+      "ibgeCode": "5202809",
+      "tseCode": "92550",
+      "name": "Avelinópolis",
+      "electorate": 4473,
+      "stateSharePct": 0.088,
+      "stateRank": 154,
+      "zoneCount": 1,
+      "biometrics": 3826,
+      "biometricsPct": 85.54,
+      "registeredDisability": 56,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 437,
+        "percentage": 9.77
+      },
+      "gender": {
+        "female": 2218,
+        "male": 2255,
+        "notInformed": 0
+      }
+    },
+    "5203104": {
+      "ibgeCode": "5203104",
+      "tseCode": "92614",
+      "name": "Baliza",
+      "electorate": 3345,
+      "stateSharePct": 0.0658,
+      "stateRank": 211,
+      "zoneCount": 1,
+      "biometrics": 3187,
+      "biometricsPct": 95.28,
+      "registeredDisability": 17,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 326,
+        "percentage": 9.75
+      },
+      "gender": {
+        "female": 1567,
+        "male": 1778,
+        "notInformed": 0
+      }
+    },
+    "5203203": {
+      "ibgeCode": "5203203",
+      "tseCode": "92630",
+      "name": "Barro Alto",
+      "electorate": 10023,
+      "stateSharePct": 0.1973,
+      "stateRank": 77,
+      "zoneCount": 1,
+      "biometrics": 9546,
+      "biometricsPct": 95.24,
+      "registeredDisability": 62,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1100,
+        "percentage": 10.97
+      },
+      "gender": {
+        "female": 5058,
+        "male": 4965,
+        "notInformed": 0
+      }
+    },
+    "5203302": {
+      "ibgeCode": "5203302",
+      "tseCode": "92657",
+      "name": "Bela Vista de Goiás",
+      "electorate": 24237,
+      "stateSharePct": 0.477,
+      "stateRank": 37,
+      "zoneCount": 1,
+      "biometrics": 22963,
+      "biometricsPct": 94.74,
+      "registeredDisability": 258,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2435,
+        "percentage": 10.05
+      },
+      "gender": {
+        "female": 12434,
+        "male": 11803,
+        "notInformed": 0
+      }
+    },
+    "5203401": {
+      "ibgeCode": "5203401",
+      "tseCode": "92673",
+      "name": "Bom Jardim de Goiás",
+      "electorate": 7601,
+      "stateSharePct": 0.1496,
+      "stateRank": 102,
+      "zoneCount": 1,
+      "biometrics": 7220,
+      "biometricsPct": 94.99,
+      "registeredDisability": 47,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 704,
+        "percentage": 9.26
+      },
+      "gender": {
+        "female": 3806,
+        "male": 3795,
+        "notInformed": 0
+      }
+    },
+    "5203500": {
+      "ibgeCode": "5203500",
+      "tseCode": "92690",
+      "name": "Bom Jesus de Goiás",
+      "electorate": 18155,
+      "stateSharePct": 0.3573,
+      "stateRank": 50,
+      "zoneCount": 1,
+      "biometrics": 17144,
+      "biometricsPct": 94.43,
+      "registeredDisability": 215,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 1808,
+        "percentage": 9.96
+      },
+      "gender": {
+        "female": 9192,
+        "male": 8963,
+        "notInformed": 0
+      }
+    },
+    "5203559": {
+      "ibgeCode": "5203559",
+      "tseCode": "92029",
+      "name": "Bonfinópolis",
+      "electorate": 7880,
+      "stateSharePct": 0.1551,
+      "stateRank": 96,
+      "zoneCount": 1,
+      "biometrics": 7305,
+      "biometricsPct": 92.7,
+      "registeredDisability": 67,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 801,
+        "percentage": 10.16
+      },
+      "gender": {
+        "female": 4112,
+        "male": 3768,
+        "notInformed": 0
+      }
+    },
+    "5203575": {
+      "ibgeCode": "5203575",
+      "tseCode": "93408",
+      "name": "Bonópolis",
+      "electorate": 3738,
+      "stateSharePct": 0.0736,
+      "stateRank": 191,
+      "zoneCount": 1,
+      "biometrics": 3571,
+      "biometricsPct": 95.53,
+      "registeredDisability": 16,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 380,
+        "percentage": 10.17
+      },
+      "gender": {
+        "female": 1777,
+        "male": 1961,
+        "notInformed": 0
+      }
+    },
+    "5203609": {
+      "ibgeCode": "5203609",
+      "tseCode": "92711",
+      "name": "Brazabrantes",
+      "electorate": 3892,
+      "stateSharePct": 0.0766,
+      "stateRank": 183,
+      "zoneCount": 1,
+      "biometrics": 3712,
+      "biometricsPct": 95.38,
+      "registeredDisability": 33,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 394,
+        "percentage": 10.12
+      },
+      "gender": {
+        "female": 1961,
+        "male": 1931,
+        "notInformed": 0
+      }
+    },
+    "5203807": {
+      "ibgeCode": "5203807",
+      "tseCode": "92754",
+      "name": "Britânia",
+      "electorate": 5203,
+      "stateSharePct": 0.1024,
+      "stateRank": 141,
+      "zoneCount": 1,
+      "biometrics": 4934,
+      "biometricsPct": 94.83,
+      "registeredDisability": 55,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 530,
+        "percentage": 10.19
+      },
+      "gender": {
+        "female": 2620,
+        "male": 2583,
+        "notInformed": 0
+      }
+    },
+    "5203906": {
+      "ibgeCode": "5203906",
+      "tseCode": "92770",
+      "name": "Buriti Alegre",
+      "electorate": 8706,
+      "stateSharePct": 0.1714,
+      "stateRank": 88,
+      "zoneCount": 1,
+      "biometrics": 8308,
+      "biometricsPct": 95.43,
+      "registeredDisability": 76,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 771,
+        "percentage": 8.86
+      },
+      "gender": {
+        "female": 4505,
+        "male": 4201,
+        "notInformed": 0
+      }
+    },
+    "5203939": {
+      "ibgeCode": "5203939",
+      "tseCode": "93106",
+      "name": "Buriti de Goiás",
+      "electorate": 3505,
+      "stateSharePct": 0.069,
+      "stateRank": 205,
+      "zoneCount": 1,
+      "biometrics": 3339,
+      "biometricsPct": 95.26,
+      "registeredDisability": 21,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 329,
+        "percentage": 9.39
+      },
+      "gender": {
+        "female": 1752,
+        "male": 1753,
+        "notInformed": 0
+      }
+    },
+    "5203962": {
+      "ibgeCode": "5203962",
+      "tseCode": "93262",
+      "name": "Buritinópolis",
+      "electorate": 3521,
+      "stateSharePct": 0.0693,
+      "stateRank": 202,
+      "zoneCount": 1,
+      "biometrics": 3421,
+      "biometricsPct": 97.16,
+      "registeredDisability": 30,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 401,
+        "percentage": 11.39
+      },
+      "gender": {
+        "female": 1731,
+        "male": 1790,
+        "notInformed": 0
+      }
+    },
+    "5204003": {
+      "ibgeCode": "5204003",
+      "tseCode": "92797",
+      "name": "Cabeceiras",
+      "electorate": 7457,
+      "stateSharePct": 0.1468,
+      "stateRank": 105,
+      "zoneCount": 1,
+      "biometrics": 7049,
+      "biometricsPct": 94.53,
+      "registeredDisability": 126,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 832,
+        "percentage": 11.16
+      },
+      "gender": {
+        "female": 3660,
+        "male": 3797,
+        "notInformed": 0
+      }
+    },
+    "5204102": {
+      "ibgeCode": "5204102",
+      "tseCode": "92819",
+      "name": "Cachoeira Alta",
+      "electorate": 7738,
+      "stateSharePct": 0.1523,
+      "stateRank": 99,
+      "zoneCount": 1,
+      "biometrics": 7342,
+      "biometricsPct": 94.88,
+      "registeredDisability": 46,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 775,
+        "percentage": 10.02
+      },
+      "gender": {
+        "female": 3923,
+        "male": 3815,
+        "notInformed": 0
+      }
+    },
+    "5204201": {
+      "ibgeCode": "5204201",
+      "tseCode": "92835",
+      "name": "Cachoeira de Goiás",
+      "electorate": 2073,
+      "stateSharePct": 0.0408,
+      "stateRank": 244,
+      "zoneCount": 1,
+      "biometrics": 1994,
+      "biometricsPct": 96.19,
+      "registeredDisability": 15,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 202,
+        "percentage": 9.74
+      },
+      "gender": {
+        "female": 1009,
+        "male": 1064,
+        "notInformed": 0
+      }
+    },
+    "5204250": {
+      "ibgeCode": "5204250",
+      "tseCode": "96733",
+      "name": "Cachoeira Dourada",
+      "electorate": 7238,
+      "stateSharePct": 0.1425,
+      "stateRank": 110,
+      "zoneCount": 1,
+      "biometrics": 6930,
+      "biometricsPct": 95.74,
+      "registeredDisability": 30,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 668,
+        "percentage": 9.23
+      },
+      "gender": {
+        "female": 3608,
+        "male": 3630,
+        "notInformed": 0
+      }
+    },
+    "5204300": {
+      "ibgeCode": "5204300",
+      "tseCode": "92851",
+      "name": "Caçu",
+      "electorate": 10818,
+      "stateSharePct": 0.2129,
+      "stateRank": 72,
+      "zoneCount": 1,
+      "biometrics": 10374,
+      "biometricsPct": 95.9,
+      "registeredDisability": 62,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 995,
+        "percentage": 9.2
+      },
+      "gender": {
+        "female": 5582,
+        "male": 5236,
+        "notInformed": 0
+      }
+    },
+    "5204409": {
+      "ibgeCode": "5204409",
+      "tseCode": "92878",
+      "name": "Caiapônia",
+      "electorate": 13218,
+      "stateSharePct": 0.2602,
+      "stateRank": 65,
+      "zoneCount": 1,
+      "biometrics": 12784,
+      "biometricsPct": 96.72,
+      "registeredDisability": 88,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1239,
+        "percentage": 9.37
+      },
+      "gender": {
+        "female": 6819,
+        "male": 6399,
+        "notInformed": 0
+      }
+    },
+    "5204508": {
+      "ibgeCode": "5204508",
+      "tseCode": "92894",
+      "name": "Caldas Novas",
+      "electorate": 68299,
+      "stateSharePct": 1.3443,
+      "stateRank": 14,
+      "zoneCount": 1,
+      "biometrics": 63318,
+      "biometricsPct": 92.71,
+      "registeredDisability": 397,
+      "socialName": 19,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 7017,
+        "percentage": 10.27
+      },
+      "gender": {
+        "female": 36271,
+        "male": 32028,
+        "notInformed": 0
+      }
+    },
+    "5204557": {
+      "ibgeCode": "5204557",
+      "tseCode": "93122",
+      "name": "Caldazinha",
+      "electorate": 4299,
+      "stateSharePct": 0.0846,
+      "stateRank": 161,
+      "zoneCount": 1,
+      "biometrics": 4153,
+      "biometricsPct": 96.6,
+      "registeredDisability": 28,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 426,
+        "percentage": 9.91
+      },
+      "gender": {
+        "female": 2112,
+        "male": 2187,
+        "notInformed": 0
+      }
+    },
+    "5204607": {
+      "ibgeCode": "5204607",
+      "tseCode": "92916",
+      "name": "Campestre de Goiás",
+      "electorate": 4044,
+      "stateSharePct": 0.0796,
+      "stateRank": 171,
+      "zoneCount": 1,
+      "biometrics": 3933,
+      "biometricsPct": 97.26,
+      "registeredDisability": 27,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 419,
+        "percentage": 10.36
+      },
+      "gender": {
+        "female": 1974,
+        "male": 2070,
+        "notInformed": 0
+      }
+    },
+    "5204656": {
+      "ibgeCode": "5204656",
+      "tseCode": "96873",
+      "name": "Campinaçu",
+      "electorate": 3776,
+      "stateSharePct": 0.0743,
+      "stateRank": 189,
+      "zoneCount": 1,
+      "biometrics": 3552,
+      "biometricsPct": 94.07,
+      "registeredDisability": 24,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 392,
+        "percentage": 10.38
+      },
+      "gender": {
+        "female": 1800,
+        "male": 1976,
+        "notInformed": 0
+      }
+    },
+    "5204706": {
+      "ibgeCode": "5204706",
+      "tseCode": "92932",
+      "name": "Campinorte",
+      "electorate": 9182,
+      "stateSharePct": 0.1807,
+      "stateRank": 85,
+      "zoneCount": 1,
+      "biometrics": 8703,
+      "biometricsPct": 94.78,
+      "registeredDisability": 54,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 928,
+        "percentage": 10.11
+      },
+      "gender": {
+        "female": 4710,
+        "male": 4472,
+        "notInformed": 0
+      }
+    },
+    "5204805": {
+      "ibgeCode": "5204805",
+      "tseCode": "92959",
+      "name": "Campo Alegre de Goiás",
+      "electorate": 5818,
+      "stateSharePct": 0.1145,
+      "stateRank": 129,
+      "zoneCount": 1,
+      "biometrics": 5565,
+      "biometricsPct": 95.65,
+      "registeredDisability": 39,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 590,
+        "percentage": 10.14
+      },
+      "gender": {
+        "female": 2845,
+        "male": 2973,
+        "notInformed": 0
+      }
+    },
+    "5204854": {
+      "ibgeCode": "5204854",
+      "tseCode": "93580",
+      "name": "Campo Limpo de Goiás",
+      "electorate": 6779,
+      "stateSharePct": 0.1334,
+      "stateRank": 121,
+      "zoneCount": 1,
+      "biometrics": 6439,
+      "biometricsPct": 94.98,
+      "registeredDisability": 58,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 693,
+        "percentage": 10.22
+      },
+      "gender": {
+        "female": 3476,
+        "male": 3303,
+        "notInformed": 0
+      }
+    },
+    "5204904": {
+      "ibgeCode": "5204904",
+      "tseCode": "92975",
+      "name": "Campos Belos",
+      "electorate": 14941,
+      "stateSharePct": 0.2941,
+      "stateRank": 59,
+      "zoneCount": 1,
+      "biometrics": 14096,
+      "biometricsPct": 94.34,
+      "registeredDisability": 130,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1672,
+        "percentage": 11.19
+      },
+      "gender": {
+        "female": 7844,
+        "male": 7097,
+        "notInformed": 0
+      }
+    },
+    "5204953": {
+      "ibgeCode": "5204953",
+      "tseCode": "92061",
+      "name": "Campos Verdes",
+      "electorate": 4506,
+      "stateSharePct": 0.0887,
+      "stateRank": 153,
+      "zoneCount": 1,
+      "biometrics": 4283,
+      "biometricsPct": 95.05,
+      "registeredDisability": 49,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 401,
+        "percentage": 8.9
+      },
+      "gender": {
+        "female": 2240,
+        "male": 2266,
+        "notInformed": 0
+      }
+    },
+    "5205000": {
+      "ibgeCode": "5205000",
+      "tseCode": "92991",
+      "name": "Carmo do Rio Verde",
+      "electorate": 7234,
+      "stateSharePct": 0.1424,
+      "stateRank": 111,
+      "zoneCount": 1,
+      "biometrics": 6534,
+      "biometricsPct": 90.32,
+      "registeredDisability": 29,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 693,
+        "percentage": 9.58
+      },
+      "gender": {
+        "female": 3663,
+        "male": 3571,
+        "notInformed": 0
+      }
+    },
+    "5205059": {
+      "ibgeCode": "5205059",
+      "tseCode": "92967",
+      "name": "Castelândia",
+      "electorate": 4004,
+      "stateSharePct": 0.0788,
+      "stateRank": 175,
+      "zoneCount": 1,
+      "biometrics": 3884,
+      "biometricsPct": 97.0,
+      "registeredDisability": 47,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 400,
+        "percentage": 9.99
+      },
+      "gender": {
+        "female": 1951,
+        "male": 2053,
+        "notInformed": 0
+      }
+    },
+    "5205109": {
+      "ibgeCode": "5205109",
+      "tseCode": "93017",
+      "name": "Catalão",
+      "electorate": 75551,
+      "stateSharePct": 1.487,
+      "stateRank": 11,
+      "zoneCount": 1,
+      "biometrics": 71782,
+      "biometricsPct": 95.01,
+      "registeredDisability": 544,
+      "socialName": 14,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 7993,
+        "percentage": 10.58
+      },
+      "gender": {
+        "female": 39922,
+        "male": 35629,
+        "notInformed": 0
+      }
+    },
+    "5205208": {
+      "ibgeCode": "5205208",
+      "tseCode": "93033",
+      "name": "Caturaí",
+      "electorate": 5466,
+      "stateSharePct": 0.1076,
+      "stateRank": 137,
+      "zoneCount": 1,
+      "biometrics": 5238,
+      "biometricsPct": 95.83,
+      "registeredDisability": 46,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 517,
+        "percentage": 9.46
+      },
+      "gender": {
+        "female": 2736,
+        "male": 2730,
+        "notInformed": 0
+      }
+    },
+    "5205307": {
+      "ibgeCode": "5205307",
+      "tseCode": "93050",
+      "name": "Cavalcante",
+      "electorate": 7988,
+      "stateSharePct": 0.1572,
+      "stateRank": 93,
+      "zoneCount": 1,
+      "biometrics": 7519,
+      "biometricsPct": 94.13,
+      "registeredDisability": 82,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 844,
+        "percentage": 10.57
+      },
+      "gender": {
+        "female": 3971,
+        "male": 4017,
+        "notInformed": 0
+      }
+    },
+    "5205406": {
+      "ibgeCode": "5205406",
+      "tseCode": "93076",
+      "name": "Ceres",
+      "electorate": 16963,
+      "stateSharePct": 0.3339,
+      "stateRank": 52,
+      "zoneCount": 1,
+      "biometrics": 16086,
+      "biometricsPct": 94.83,
+      "registeredDisability": 124,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1544,
+        "percentage": 9.1
+      },
+      "gender": {
+        "female": 9039,
+        "male": 7924,
+        "notInformed": 0
+      }
+    },
+    "5205455": {
+      "ibgeCode": "5205455",
+      "tseCode": "92100",
+      "name": "Cezarina",
+      "electorate": 7371,
+      "stateSharePct": 0.1451,
+      "stateRank": 107,
+      "zoneCount": 1,
+      "biometrics": 7126,
+      "biometricsPct": 96.68,
+      "registeredDisability": 58,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 745,
+        "percentage": 10.11
+      },
+      "gender": {
+        "female": 3664,
+        "male": 3707,
+        "notInformed": 0
+      }
+    },
+    "5205471": {
+      "ibgeCode": "5205471",
+      "tseCode": "92924",
+      "name": "Chapadão do Céu",
+      "electorate": 9513,
+      "stateSharePct": 0.1872,
+      "stateRank": 80,
+      "zoneCount": 1,
+      "biometrics": 8448,
+      "biometricsPct": 88.8,
+      "registeredDisability": 48,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1236,
+        "percentage": 12.99
+      },
+      "gender": {
+        "female": 4825,
+        "male": 4688,
+        "notInformed": 0
+      }
+    },
+    "5205497": {
+      "ibgeCode": "5205497",
+      "tseCode": "93025",
+      "name": "Cidade Ocidental",
+      "electorate": 49785,
+      "stateSharePct": 0.9799,
+      "stateRank": 19,
+      "zoneCount": 1,
+      "biometrics": 45594,
+      "biometricsPct": 91.58,
+      "registeredDisability": 304,
+      "socialName": 20,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 5571,
+        "percentage": 11.19
+      },
+      "gender": {
+        "female": 27321,
+        "male": 22464,
+        "notInformed": 0
+      }
+    },
+    "5205513": {
+      "ibgeCode": "5205513",
+      "tseCode": "92886",
+      "name": "Cocalzinho de Goiás",
+      "electorate": 17542,
+      "stateSharePct": 0.3453,
+      "stateRank": 51,
+      "zoneCount": 1,
+      "biometrics": 16655,
+      "biometricsPct": 94.94,
+      "registeredDisability": 135,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1802,
+        "percentage": 10.27
+      },
+      "gender": {
+        "female": 8895,
+        "male": 8647,
+        "notInformed": 0
+      }
+    },
+    "5205521": {
+      "ibgeCode": "5205521",
+      "tseCode": "92126",
+      "name": "Colinas do Sul",
+      "electorate": 3862,
+      "stateSharePct": 0.076,
+      "stateRank": 186,
+      "zoneCount": 1,
+      "biometrics": 3708,
+      "biometricsPct": 96.01,
+      "registeredDisability": 36,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 390,
+        "percentage": 10.1
+      },
+      "gender": {
+        "female": 1880,
+        "male": 1982,
+        "notInformed": 0
+      }
+    },
+    "5205703": {
+      "ibgeCode": "5205703",
+      "tseCode": "93157",
+      "name": "Córrego do Ouro",
+      "electorate": 3119,
+      "stateSharePct": 0.0614,
+      "stateRank": 219,
+      "zoneCount": 1,
+      "biometrics": 2934,
+      "biometricsPct": 94.07,
+      "registeredDisability": 9,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 328,
+        "percentage": 10.52
+      },
+      "gender": {
+        "female": 1536,
+        "male": 1583,
+        "notInformed": 0
+      }
+    },
+    "5205802": {
+      "ibgeCode": "5205802",
+      "tseCode": "93173",
+      "name": "Corumbá de Goiás",
+      "electorate": 7950,
+      "stateSharePct": 0.1565,
+      "stateRank": 95,
+      "zoneCount": 1,
+      "biometrics": 7623,
+      "biometricsPct": 95.89,
+      "registeredDisability": 41,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 773,
+        "percentage": 9.72
+      },
+      "gender": {
+        "female": 3957,
+        "male": 3993,
+        "notInformed": 0
+      }
+    },
+    "5205901": {
+      "ibgeCode": "5205901",
+      "tseCode": "93190",
+      "name": "Corumbaíba",
+      "electorate": 7155,
+      "stateSharePct": 0.1408,
+      "stateRank": 113,
+      "zoneCount": 1,
+      "biometrics": 6424,
+      "biometricsPct": 89.78,
+      "registeredDisability": 28,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 664,
+        "percentage": 9.28
+      },
+      "gender": {
+        "female": 3594,
+        "male": 3561,
+        "notInformed": 0
+      }
+    },
+    "5206206": {
+      "ibgeCode": "5206206",
+      "tseCode": "93254",
+      "name": "Cristalina",
+      "electorate": 39002,
+      "stateSharePct": 0.7676,
+      "stateRank": 23,
+      "zoneCount": 1,
+      "biometrics": 36745,
+      "biometricsPct": 94.21,
+      "registeredDisability": 202,
+      "socialName": 7,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 4116,
+        "percentage": 10.55
+      },
+      "gender": {
+        "female": 20210,
+        "male": 18792,
+        "notInformed": 0
+      }
+    },
+    "5206305": {
+      "ibgeCode": "5206305",
+      "tseCode": "93270",
+      "name": "Cristianópolis",
+      "electorate": 4033,
+      "stateSharePct": 0.0794,
+      "stateRank": 172,
+      "zoneCount": 1,
+      "biometrics": 3833,
+      "biometricsPct": 95.04,
+      "registeredDisability": 40,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 400,
+        "percentage": 9.92
+      },
+      "gender": {
+        "female": 2018,
+        "male": 2015,
+        "notInformed": 0
+      }
+    },
+    "5206404": {
+      "ibgeCode": "5206404",
+      "tseCode": "93297",
+      "name": "Crixás",
+      "electorate": 13058,
+      "stateSharePct": 0.257,
+      "stateRank": 66,
+      "zoneCount": 1,
+      "biometrics": 12327,
+      "biometricsPct": 94.4,
+      "registeredDisability": 134,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1228,
+        "percentage": 9.4
+      },
+      "gender": {
+        "female": 6471,
+        "male": 6587,
+        "notInformed": 0
+      }
+    },
+    "5206503": {
+      "ibgeCode": "5206503",
+      "tseCode": "93319",
+      "name": "Cromínia",
+      "electorate": 3977,
+      "stateSharePct": 0.0783,
+      "stateRank": 176,
+      "zoneCount": 1,
+      "biometrics": 3786,
+      "biometricsPct": 95.2,
+      "registeredDisability": 57,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 369,
+        "percentage": 9.28
+      },
+      "gender": {
+        "female": 2029,
+        "male": 1948,
+        "notInformed": 0
+      }
+    },
+    "5206602": {
+      "ibgeCode": "5206602",
+      "tseCode": "93335",
+      "name": "Cumari",
+      "electorate": 2616,
+      "stateSharePct": 0.0515,
+      "stateRank": 236,
+      "zoneCount": 1,
+      "biometrics": 2523,
+      "biometricsPct": 96.44,
+      "registeredDisability": 18,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 243,
+        "percentage": 9.29
+      },
+      "gender": {
+        "female": 1305,
+        "male": 1311,
+        "notInformed": 0
+      }
+    },
+    "5206701": {
+      "ibgeCode": "5206701",
+      "tseCode": "93351",
+      "name": "Damianópolis",
+      "electorate": 4045,
+      "stateSharePct": 0.0796,
+      "stateRank": 170,
+      "zoneCount": 1,
+      "biometrics": 3928,
+      "biometricsPct": 97.11,
+      "registeredDisability": 63,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 440,
+        "percentage": 10.88
+      },
+      "gender": {
+        "female": 1994,
+        "male": 2051,
+        "notInformed": 0
+      }
+    },
+    "5206800": {
+      "ibgeCode": "5206800",
+      "tseCode": "93378",
+      "name": "Damolândia",
+      "electorate": 3642,
+      "stateSharePct": 0.0717,
+      "stateRank": 195,
+      "zoneCount": 1,
+      "biometrics": 3541,
+      "biometricsPct": 97.23,
+      "registeredDisability": 26,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 354,
+        "percentage": 9.72
+      },
+      "gender": {
+        "female": 1784,
+        "male": 1858,
+        "notInformed": 0
+      }
+    },
+    "5206909": {
+      "ibgeCode": "5206909",
+      "tseCode": "93394",
+      "name": "Davinópolis",
+      "electorate": 4156,
+      "stateSharePct": 0.0818,
+      "stateRank": 168,
+      "zoneCount": 1,
+      "biometrics": 4013,
+      "biometricsPct": 96.56,
+      "registeredDisability": 19,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 399,
+        "percentage": 9.6
+      },
+      "gender": {
+        "female": 2018,
+        "male": 2138,
+        "notInformed": 0
+      }
+    },
+    "5207105": {
+      "ibgeCode": "5207105",
+      "tseCode": "93432",
+      "name": "Diorama",
+      "electorate": 2506,
+      "stateSharePct": 0.0493,
+      "stateRank": 238,
+      "zoneCount": 1,
+      "biometrics": 2392,
+      "biometricsPct": 95.45,
+      "registeredDisability": 24,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 258,
+        "percentage": 10.3
+      },
+      "gender": {
+        "female": 1228,
+        "male": 1278,
+        "notInformed": 0
+      }
+    },
+    "5207253": {
+      "ibgeCode": "5207253",
+      "tseCode": "96750",
+      "name": "Doverlândia",
+      "electorate": 5682,
+      "stateSharePct": 0.1118,
+      "stateRank": 131,
+      "zoneCount": 1,
+      "biometrics": 5483,
+      "biometricsPct": 96.5,
+      "registeredDisability": 39,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 592,
+        "percentage": 10.42
+      },
+      "gender": {
+        "female": 2781,
+        "male": 2901,
+        "notInformed": 0
+      }
+    },
+    "5207352": {
+      "ibgeCode": "5207352",
+      "tseCode": "92207",
+      "name": "Edealina",
+      "electorate": 4165,
+      "stateSharePct": 0.082,
+      "stateRank": 167,
+      "zoneCount": 1,
+      "biometrics": 4033,
+      "biometricsPct": 96.83,
+      "registeredDisability": 37,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 408,
+        "percentage": 9.8
+      },
+      "gender": {
+        "female": 2075,
+        "male": 2090,
+        "notInformed": 0
+      }
+    },
+    "5207402": {
+      "ibgeCode": "5207402",
+      "tseCode": "93491",
+      "name": "Edéia",
+      "electorate": 9559,
+      "stateSharePct": 0.1881,
+      "stateRank": 79,
+      "zoneCount": 1,
+      "biometrics": 9116,
+      "biometricsPct": 95.37,
+      "registeredDisability": 68,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 942,
+        "percentage": 9.85
+      },
+      "gender": {
+        "female": 4981,
+        "male": 4578,
+        "notInformed": 0
+      }
+    },
+    "5207501": {
+      "ibgeCode": "5207501",
+      "tseCode": "93513",
+      "name": "Estrela do Norte",
+      "electorate": 3227,
+      "stateSharePct": 0.0635,
+      "stateRank": 214,
+      "zoneCount": 1,
+      "biometrics": 3084,
+      "biometricsPct": 95.57,
+      "registeredDisability": 13,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 304,
+        "percentage": 9.42
+      },
+      "gender": {
+        "female": 1621,
+        "male": 1606,
+        "notInformed": 0
+      }
+    },
+    "5207535": {
+      "ibgeCode": "5207535",
+      "tseCode": "92223",
+      "name": "Faina",
+      "electorate": 6632,
+      "stateSharePct": 0.1305,
+      "stateRank": 123,
+      "zoneCount": 1,
+      "biometrics": 5975,
+      "biometricsPct": 90.09,
+      "registeredDisability": 32,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 665,
+        "percentage": 10.03
+      },
+      "gender": {
+        "female": 3220,
+        "male": 3412,
+        "notInformed": 0
+      }
+    },
+    "5207600": {
+      "ibgeCode": "5207600",
+      "tseCode": "93530",
+      "name": "Fazenda Nova",
+      "electorate": 5546,
+      "stateSharePct": 0.1092,
+      "stateRank": 136,
+      "zoneCount": 1,
+      "biometrics": 5331,
+      "biometricsPct": 96.12,
+      "registeredDisability": 33,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 542,
+        "percentage": 9.77
+      },
+      "gender": {
+        "female": 2786,
+        "male": 2760,
+        "notInformed": 0
+      }
+    },
+    "5207808": {
+      "ibgeCode": "5207808",
+      "tseCode": "93572",
+      "name": "Firminópolis",
+      "electorate": 8778,
+      "stateSharePct": 0.1728,
+      "stateRank": 87,
+      "zoneCount": 1,
+      "biometrics": 8460,
+      "biometricsPct": 96.38,
+      "registeredDisability": 72,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 860,
+        "percentage": 9.8
+      },
+      "gender": {
+        "female": 4685,
+        "male": 4093,
+        "notInformed": 0
+      }
+    },
+    "5207907": {
+      "ibgeCode": "5207907",
+      "tseCode": "93599",
+      "name": "Flores de Goiás",
+      "electorate": 8550,
+      "stateSharePct": 0.1683,
+      "stateRank": 90,
+      "zoneCount": 1,
+      "biometrics": 7818,
+      "biometricsPct": 91.44,
+      "registeredDisability": 106,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 836,
+        "percentage": 9.78
+      },
+      "gender": {
+        "female": 4078,
+        "male": 4472,
+        "notInformed": 0
+      }
+    },
+    "5208004": {
+      "ibgeCode": "5208004",
+      "tseCode": "93610",
+      "name": "Formosa",
+      "electorate": 77893,
+      "stateSharePct": 1.5331,
+      "stateRank": 10,
+      "zoneCount": 1,
+      "biometrics": 72234,
+      "biometricsPct": 92.73,
+      "registeredDisability": 702,
+      "socialName": 16,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 8442,
+        "percentage": 10.84
+      },
+      "gender": {
+        "female": 41742,
+        "male": 36151,
+        "notInformed": 0
+      }
+    },
+    "5208103": {
+      "ibgeCode": "5208103",
+      "tseCode": "93637",
+      "name": "Formoso",
+      "electorate": 4725,
+      "stateSharePct": 0.093,
+      "stateRank": 148,
+      "zoneCount": 1,
+      "biometrics": 4511,
+      "biometricsPct": 95.47,
+      "registeredDisability": 28,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 436,
+        "percentage": 9.23
+      },
+      "gender": {
+        "female": 2388,
+        "male": 2337,
+        "notInformed": 0
+      }
+    },
+    "5208152": {
+      "ibgeCode": "5208152",
+      "tseCode": "93564",
+      "name": "Gameleira de Goiás",
+      "electorate": 3713,
+      "stateSharePct": 0.0731,
+      "stateRank": 193,
+      "zoneCount": 1,
+      "biometrics": 3516,
+      "biometricsPct": 94.69,
+      "registeredDisability": 21,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 379,
+        "percentage": 10.21
+      },
+      "gender": {
+        "female": 1825,
+        "male": 1888,
+        "notInformed": 0
+      }
+    },
+    "5208301": {
+      "ibgeCode": "5208301",
+      "tseCode": "93092",
+      "name": "Divinópolis de Goiás",
+      "electorate": 5167,
+      "stateSharePct": 0.1017,
+      "stateRank": 143,
+      "zoneCount": 1,
+      "biometrics": 4939,
+      "biometricsPct": 95.59,
+      "registeredDisability": 40,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 563,
+        "percentage": 10.9
+      },
+      "gender": {
+        "female": 2497,
+        "male": 2670,
+        "notInformed": 0
+      }
+    },
+    "5208400": {
+      "ibgeCode": "5208400",
+      "tseCode": "93670",
+      "name": "Goianápolis",
+      "electorate": 10762,
+      "stateSharePct": 0.2118,
+      "stateRank": 74,
+      "zoneCount": 1,
+      "biometrics": 10350,
+      "biometricsPct": 96.17,
+      "registeredDisability": 78,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1089,
+        "percentage": 10.12
+      },
+      "gender": {
+        "female": 5622,
+        "male": 5140,
+        "notInformed": 0
+      }
+    },
+    "5208509": {
+      "ibgeCode": "5208509",
+      "tseCode": "93696",
+      "name": "Goiandira",
+      "electorate": 4576,
+      "stateSharePct": 0.0901,
+      "stateRank": 152,
+      "zoneCount": 1,
+      "biometrics": 4386,
+      "biometricsPct": 95.85,
+      "registeredDisability": 20,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 434,
+        "percentage": 9.48
+      },
+      "gender": {
+        "female": 2310,
+        "male": 2266,
+        "notInformed": 0
+      }
+    },
+    "5208608": {
+      "ibgeCode": "5208608",
+      "tseCode": "93718",
+      "name": "Goianésia",
+      "electorate": 59506,
+      "stateSharePct": 1.1712,
+      "stateRank": 16,
+      "zoneCount": 1,
+      "biometrics": 56060,
+      "biometricsPct": 94.21,
+      "registeredDisability": 399,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 6085,
+        "percentage": 10.23
+      },
+      "gender": {
+        "female": 31581,
+        "male": 27925,
+        "notInformed": 0
+      }
+    },
+    "5208707": {
+      "ibgeCode": "5208707",
+      "tseCode": "93734",
+      "name": "Goiânia",
+      "electorate": 1016153,
+      "stateSharePct": 20.0,
+      "stateRank": 1,
+      "zoneCount": 9,
+      "biometrics": 953625,
+      "biometricsPct": 93.85,
+      "registeredDisability": 10473,
+      "socialName": 206,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 107645,
+        "percentage": 10.59
+      },
+      "gender": {
+        "female": 559531,
+        "male": 456622,
+        "notInformed": 0
+      }
+    },
+    "5208806": {
+      "ibgeCode": "5208806",
+      "tseCode": "93750",
+      "name": "Goianira",
+      "electorate": 47612,
+      "stateSharePct": 0.9371,
+      "stateRank": 20,
+      "zoneCount": 1,
+      "biometrics": 44091,
+      "biometricsPct": 92.6,
+      "registeredDisability": 540,
+      "socialName": 13,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 5556,
+        "percentage": 11.67
+      },
+      "gender": {
+        "female": 25146,
+        "male": 22466,
+        "notInformed": 0
+      }
+    },
+    "5208905": {
+      "ibgeCode": "5208905",
+      "tseCode": "93777",
+      "name": "Goiás",
+      "electorate": 19268,
+      "stateSharePct": 0.3792,
+      "stateRank": 47,
+      "zoneCount": 1,
+      "biometrics": 18221,
+      "biometricsPct": 94.57,
+      "registeredDisability": 68,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 1764,
+        "percentage": 9.16
+      },
+      "gender": {
+        "female": 10087,
+        "male": 9181,
+        "notInformed": 0
+      }
+    },
+    "5209101": {
+      "ibgeCode": "5209101",
+      "tseCode": "93793",
+      "name": "Goiatuba",
+      "electorate": 27889,
+      "stateSharePct": 0.5489,
+      "stateRank": 32,
+      "zoneCount": 1,
+      "biometrics": 26408,
+      "biometricsPct": 94.69,
+      "registeredDisability": 253,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2610,
+        "percentage": 9.36
+      },
+      "gender": {
+        "female": 14618,
+        "male": 13271,
+        "notInformed": 0
+      }
+    },
+    "5209150": {
+      "ibgeCode": "5209150",
+      "tseCode": "92266",
+      "name": "Gouvelândia",
+      "electorate": 4014,
+      "stateSharePct": 0.079,
+      "stateRank": 174,
+      "zoneCount": 1,
+      "biometrics": 3840,
+      "biometricsPct": 95.67,
+      "registeredDisability": 19,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 398,
+        "percentage": 9.92
+      },
+      "gender": {
+        "female": 2019,
+        "male": 1995,
+        "notInformed": 0
+      }
+    },
+    "5209200": {
+      "ibgeCode": "5209200",
+      "tseCode": "93815",
+      "name": "Guapó",
+      "electorate": 14874,
+      "stateSharePct": 0.2928,
+      "stateRank": 60,
+      "zoneCount": 1,
+      "biometrics": 14113,
+      "biometricsPct": 94.88,
+      "registeredDisability": 91,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 1534,
+        "percentage": 10.31
+      },
+      "gender": {
+        "female": 7788,
+        "male": 7086,
+        "notInformed": 0
+      }
+    },
+    "5209291": {
+      "ibgeCode": "5209291",
+      "tseCode": "93149",
+      "name": "Guaraíta",
+      "electorate": 2790,
+      "stateSharePct": 0.0549,
+      "stateRank": 231,
+      "zoneCount": 1,
+      "biometrics": 2657,
+      "biometricsPct": 95.23,
+      "registeredDisability": 20,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 280,
+        "percentage": 10.04
+      },
+      "gender": {
+        "female": 1373,
+        "male": 1417,
+        "notInformed": 0
+      }
+    },
+    "5209408": {
+      "ibgeCode": "5209408",
+      "tseCode": "93831",
+      "name": "Guarani de Goiás",
+      "electorate": 4813,
+      "stateSharePct": 0.0947,
+      "stateRank": 146,
+      "zoneCount": 1,
+      "biometrics": 4610,
+      "biometricsPct": 95.78,
+      "registeredDisability": 56,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 498,
+        "percentage": 10.35
+      },
+      "gender": {
+        "female": 2245,
+        "male": 2568,
+        "notInformed": 0
+      }
+    },
+    "5209457": {
+      "ibgeCode": "5209457",
+      "tseCode": "92860",
+      "name": "Guarinos",
+      "electorate": 3073,
+      "stateSharePct": 0.0605,
+      "stateRank": 221,
+      "zoneCount": 1,
+      "biometrics": 2971,
+      "biometricsPct": 96.68,
+      "registeredDisability": 28,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 296,
+        "percentage": 9.63
+      },
+      "gender": {
+        "female": 1426,
+        "male": 1647,
+        "notInformed": 0
+      }
+    },
+    "5209606": {
+      "ibgeCode": "5209606",
+      "tseCode": "93874",
+      "name": "Heitoraí",
+      "electorate": 4200,
+      "stateSharePct": 0.0827,
+      "stateRank": 165,
+      "zoneCount": 1,
+      "biometrics": 4039,
+      "biometricsPct": 96.17,
+      "registeredDisability": 32,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 395,
+        "percentage": 9.4
+      },
+      "gender": {
+        "female": 2091,
+        "male": 2109,
+        "notInformed": 0
+      }
+    },
+    "5209705": {
+      "ibgeCode": "5209705",
+      "tseCode": "93890",
+      "name": "Hidrolândia",
+      "electorate": 23608,
+      "stateSharePct": 0.4647,
+      "stateRank": 38,
+      "zoneCount": 1,
+      "biometrics": 22521,
+      "biometricsPct": 95.4,
+      "registeredDisability": 237,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 2455,
+        "percentage": 10.4
+      },
+      "gender": {
+        "female": 12070,
+        "male": 11538,
+        "notInformed": 0
+      }
+    },
+    "5209804": {
+      "ibgeCode": "5209804",
+      "tseCode": "93912",
+      "name": "Hidrolina",
+      "electorate": 3884,
+      "stateSharePct": 0.0764,
+      "stateRank": 184,
+      "zoneCount": 1,
+      "biometrics": 3668,
+      "biometricsPct": 94.44,
+      "registeredDisability": 17,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 364,
+        "percentage": 9.37
+      },
+      "gender": {
+        "female": 1873,
+        "male": 2011,
+        "notInformed": 0
+      }
+    },
+    "5209903": {
+      "ibgeCode": "5209903",
+      "tseCode": "93939",
+      "name": "Iaciara",
+      "electorate": 8534,
+      "stateSharePct": 0.168,
+      "stateRank": 92,
+      "zoneCount": 1,
+      "biometrics": 7959,
+      "biometricsPct": 93.26,
+      "registeredDisability": 119,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 864,
+        "percentage": 10.12
+      },
+      "gender": {
+        "female": 4379,
+        "male": 4155,
+        "notInformed": 0
+      }
+    },
+    "5209937": {
+      "ibgeCode": "5209937",
+      "tseCode": "93165",
+      "name": "Inaciolândia",
+      "electorate": 4810,
+      "stateSharePct": 0.0947,
+      "stateRank": 147,
+      "zoneCount": 1,
+      "biometrics": 4521,
+      "biometricsPct": 93.99,
+      "registeredDisability": 22,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 457,
+        "percentage": 9.5
+      },
+      "gender": {
+        "female": 2418,
+        "male": 2392,
+        "notInformed": 0
+      }
+    },
+    "5209952": {
+      "ibgeCode": "5209952",
+      "tseCode": "96814",
+      "name": "Indiara",
+      "electorate": 12741,
+      "stateSharePct": 0.2508,
+      "stateRank": 67,
+      "zoneCount": 1,
+      "biometrics": 11532,
+      "biometricsPct": 90.51,
+      "registeredDisability": 86,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 1306,
+        "percentage": 10.25
+      },
+      "gender": {
+        "female": 6491,
+        "male": 6250,
+        "notInformed": 0
+      }
+    },
+    "5210000": {
+      "ibgeCode": "5210000",
+      "tseCode": "93955",
+      "name": "Inhumas",
+      "electorate": 40905,
+      "stateSharePct": 0.8051,
+      "stateRank": 22,
+      "zoneCount": 1,
+      "biometrics": 38969,
+      "biometricsPct": 95.27,
+      "registeredDisability": 232,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 3932,
+        "percentage": 9.61
+      },
+      "gender": {
+        "female": 21962,
+        "male": 18943,
+        "notInformed": 0
+      }
+    },
+    "5210109": {
+      "ibgeCode": "5210109",
+      "tseCode": "93971",
+      "name": "Ipameri",
+      "electorate": 20531,
+      "stateSharePct": 0.4041,
+      "stateRank": 45,
+      "zoneCount": 1,
+      "biometrics": 19518,
+      "biometricsPct": 95.07,
+      "registeredDisability": 186,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1888,
+        "percentage": 9.2
+      },
+      "gender": {
+        "female": 10690,
+        "male": 9841,
+        "notInformed": 0
+      }
+    },
+    "5210158": {
+      "ibgeCode": "5210158",
+      "tseCode": "93548",
+      "name": "Ipiranga de Goiás",
+      "electorate": 3155,
+      "stateSharePct": 0.0621,
+      "stateRank": 216,
+      "zoneCount": 1,
+      "biometrics": 3038,
+      "biometricsPct": 96.29,
+      "registeredDisability": 8,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 320,
+        "percentage": 10.14
+      },
+      "gender": {
+        "female": 1519,
+        "male": 1636,
+        "notInformed": 0
+      }
+    },
+    "5210208": {
+      "ibgeCode": "5210208",
+      "tseCode": "93998",
+      "name": "Iporá",
+      "electorate": 26665,
+      "stateSharePct": 0.5248,
+      "stateRank": 33,
+      "zoneCount": 1,
+      "biometrics": 25362,
+      "biometricsPct": 95.11,
+      "registeredDisability": 217,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 2379,
+        "percentage": 8.92
+      },
+      "gender": {
+        "female": 14276,
+        "male": 12389,
+        "notInformed": 0
+      }
+    },
+    "5210307": {
+      "ibgeCode": "5210307",
+      "tseCode": "94013",
+      "name": "Israelândia",
+      "electorate": 2993,
+      "stateSharePct": 0.0589,
+      "stateRank": 228,
+      "zoneCount": 1,
+      "biometrics": 2717,
+      "biometricsPct": 90.78,
+      "registeredDisability": 17,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 305,
+        "percentage": 10.19
+      },
+      "gender": {
+        "female": 1472,
+        "male": 1521,
+        "notInformed": 0
+      }
+    },
+    "5210406": {
+      "ibgeCode": "5210406",
+      "tseCode": "94030",
+      "name": "Itaberaí",
+      "electorate": 33267,
+      "stateSharePct": 0.6548,
+      "stateRank": 27,
+      "zoneCount": 1,
+      "biometrics": 31176,
+      "biometricsPct": 93.71,
+      "registeredDisability": 243,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 3493,
+        "percentage": 10.5
+      },
+      "gender": {
+        "female": 17578,
+        "male": 15689,
+        "notInformed": 0
+      }
+    },
+    "5210562": {
+      "ibgeCode": "5210562",
+      "tseCode": "92282",
+      "name": "Itaguari",
+      "electorate": 5172,
+      "stateSharePct": 0.1018,
+      "stateRank": 142,
+      "zoneCount": 1,
+      "biometrics": 4622,
+      "biometricsPct": 89.37,
+      "registeredDisability": 23,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 512,
+        "percentage": 9.9
+      },
+      "gender": {
+        "female": 2590,
+        "male": 2582,
+        "notInformed": 0
+      }
+    },
+    "5210604": {
+      "ibgeCode": "5210604",
+      "tseCode": "94072",
+      "name": "Itaguaru",
+      "electorate": 5282,
+      "stateSharePct": 0.104,
+      "stateRank": 140,
+      "zoneCount": 1,
+      "biometrics": 4825,
+      "biometricsPct": 91.35,
+      "registeredDisability": 36,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 503,
+        "percentage": 9.52
+      },
+      "gender": {
+        "female": 2651,
+        "male": 2631,
+        "notInformed": 0
+      }
+    },
+    "5210802": {
+      "ibgeCode": "5210802",
+      "tseCode": "94110",
+      "name": "Itajá",
+      "electorate": 3674,
+      "stateSharePct": 0.0723,
+      "stateRank": 194,
+      "zoneCount": 1,
+      "biometrics": 3510,
+      "biometricsPct": 95.54,
+      "registeredDisability": 69,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 357,
+        "percentage": 9.72
+      },
+      "gender": {
+        "female": 1921,
+        "male": 1753,
+        "notInformed": 0
+      }
+    },
+    "5210901": {
+      "ibgeCode": "5210901",
+      "tseCode": "94137",
+      "name": "Itapaci",
+      "electorate": 15733,
+      "stateSharePct": 0.3097,
+      "stateRank": 55,
+      "zoneCount": 1,
+      "biometrics": 14821,
+      "biometricsPct": 94.2,
+      "registeredDisability": 83,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1498,
+        "percentage": 9.52
+      },
+      "gender": {
+        "female": 8097,
+        "male": 7636,
+        "notInformed": 0
+      }
+    },
+    "5211008": {
+      "ibgeCode": "5211008",
+      "tseCode": "94153",
+      "name": "Itapirapuã",
+      "electorate": 6872,
+      "stateSharePct": 0.1353,
+      "stateRank": 118,
+      "zoneCount": 1,
+      "biometrics": 6622,
+      "biometricsPct": 96.36,
+      "registeredDisability": 104,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 636,
+        "percentage": 9.25
+      },
+      "gender": {
+        "female": 3491,
+        "male": 3381,
+        "notInformed": 0
+      }
+    },
+    "5211206": {
+      "ibgeCode": "5211206",
+      "tseCode": "94196",
+      "name": "Itapuranga",
+      "electorate": 21521,
+      "stateSharePct": 0.4236,
+      "stateRank": 43,
+      "zoneCount": 1,
+      "biometrics": 20311,
+      "biometricsPct": 94.38,
+      "registeredDisability": 151,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2014,
+        "percentage": 9.36
+      },
+      "gender": {
+        "female": 11416,
+        "male": 10105,
+        "notInformed": 0
+      }
+    },
+    "5211305": {
+      "ibgeCode": "5211305",
+      "tseCode": "94218",
+      "name": "Itarumã",
+      "electorate": 4685,
+      "stateSharePct": 0.0922,
+      "stateRank": 149,
+      "zoneCount": 1,
+      "biometrics": 4519,
+      "biometricsPct": 96.46,
+      "registeredDisability": 17,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 473,
+        "percentage": 10.1
+      },
+      "gender": {
+        "female": 2312,
+        "male": 2373,
+        "notInformed": 0
+      }
+    },
+    "5211404": {
+      "ibgeCode": "5211404",
+      "tseCode": "94234",
+      "name": "Itauçu",
+      "electorate": 7701,
+      "stateSharePct": 0.1516,
+      "stateRank": 100,
+      "zoneCount": 1,
+      "biometrics": 6812,
+      "biometricsPct": 88.46,
+      "registeredDisability": 42,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 712,
+        "percentage": 9.25
+      },
+      "gender": {
+        "female": 3990,
+        "male": 3711,
+        "notInformed": 0
+      }
+    },
+    "5211503": {
+      "ibgeCode": "5211503",
+      "tseCode": "94250",
+      "name": "Itumbiara",
+      "electorate": 75024,
+      "stateSharePct": 1.4766,
+      "stateRank": 12,
+      "zoneCount": 1,
+      "biometrics": 70752,
+      "biometricsPct": 94.31,
+      "registeredDisability": 272,
+      "socialName": 13,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 7404,
+        "percentage": 9.87
+      },
+      "gender": {
+        "female": 40342,
+        "male": 34682,
+        "notInformed": 0
+      }
+    },
+    "5211602": {
+      "ibgeCode": "5211602",
+      "tseCode": "94277",
+      "name": "Ivolândia",
+      "electorate": 3153,
+      "stateSharePct": 0.0621,
+      "stateRank": 218,
+      "zoneCount": 1,
+      "biometrics": 2878,
+      "biometricsPct": 91.28,
+      "registeredDisability": 12,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 301,
+        "percentage": 9.55
+      },
+      "gender": {
+        "female": 1521,
+        "male": 1632,
+        "notInformed": 0
+      }
+    },
+    "5211701": {
+      "ibgeCode": "5211701",
+      "tseCode": "94293",
+      "name": "Jandaia",
+      "electorate": 5999,
+      "stateSharePct": 0.1181,
+      "stateRank": 128,
+      "zoneCount": 1,
+      "biometrics": 5790,
+      "biometricsPct": 96.52,
+      "registeredDisability": 29,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 578,
+        "percentage": 9.63
+      },
+      "gender": {
+        "female": 3036,
+        "male": 2963,
+        "notInformed": 0
+      }
+    },
+    "5211800": {
+      "ibgeCode": "5211800",
+      "tseCode": "94315",
+      "name": "Jaraguá",
+      "electorate": 33497,
+      "stateSharePct": 0.6593,
+      "stateRank": 26,
+      "zoneCount": 1,
+      "biometrics": 30893,
+      "biometricsPct": 92.23,
+      "registeredDisability": 53,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 3288,
+        "percentage": 9.82
+      },
+      "gender": {
+        "female": 17725,
+        "male": 15772,
+        "notInformed": 0
+      }
+    },
+    "5211909": {
+      "ibgeCode": "5211909",
+      "tseCode": "94331",
+      "name": "Jataí",
+      "electorate": 73745,
+      "stateSharePct": 1.4515,
+      "stateRank": 13,
+      "zoneCount": 1,
+      "biometrics": 69444,
+      "biometricsPct": 94.17,
+      "registeredDisability": 452,
+      "socialName": 36,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 7313,
+        "percentage": 9.92
+      },
+      "gender": {
+        "female": 39229,
+        "male": 34516,
+        "notInformed": 0
+      }
+    },
+    "5212006": {
+      "ibgeCode": "5212006",
+      "tseCode": "94358",
+      "name": "Jaupaci",
+      "electorate": 3165,
+      "stateSharePct": 0.0623,
+      "stateRank": 215,
+      "zoneCount": 1,
+      "biometrics": 2861,
+      "biometricsPct": 90.39,
+      "registeredDisability": 31,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 292,
+        "percentage": 9.23
+      },
+      "gender": {
+        "female": 1608,
+        "male": 1557,
+        "notInformed": 0
+      }
+    },
+    "5212055": {
+      "ibgeCode": "5212055",
+      "tseCode": "92983",
+      "name": "Jesúpolis",
+      "electorate": 2727,
+      "stateSharePct": 0.0537,
+      "stateRank": 233,
+      "zoneCount": 1,
+      "biometrics": 2605,
+      "biometricsPct": 95.53,
+      "registeredDisability": 7,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 250,
+        "percentage": 9.17
+      },
+      "gender": {
+        "female": 1320,
+        "male": 1407,
+        "notInformed": 0
+      }
+    },
+    "5212105": {
+      "ibgeCode": "5212105",
+      "tseCode": "94374",
+      "name": "Joviânia",
+      "electorate": 5782,
+      "stateSharePct": 0.1138,
+      "stateRank": 130,
+      "zoneCount": 1,
+      "biometrics": 5504,
+      "biometricsPct": 95.19,
+      "registeredDisability": 56,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 554,
+        "percentage": 9.58
+      },
+      "gender": {
+        "female": 2925,
+        "male": 2857,
+        "notInformed": 0
+      }
+    },
+    "5212204": {
+      "ibgeCode": "5212204",
+      "tseCode": "94390",
+      "name": "Jussara",
+      "electorate": 14836,
+      "stateSharePct": 0.292,
+      "stateRank": 61,
+      "zoneCount": 1,
+      "biometrics": 13998,
+      "biometricsPct": 94.35,
+      "registeredDisability": 197,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1449,
+        "percentage": 9.77
+      },
+      "gender": {
+        "female": 7838,
+        "male": 6998,
+        "notInformed": 0
+      }
+    },
+    "5212253": {
+      "ibgeCode": "5212253",
+      "tseCode": "93602",
+      "name": "Lagoa Santa",
+      "electorate": 1789,
+      "stateSharePct": 0.0352,
+      "stateRank": 245,
+      "zoneCount": 1,
+      "biometrics": 1723,
+      "biometricsPct": 96.31,
+      "registeredDisability": 31,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 187,
+        "percentage": 10.45
+      },
+      "gender": {
+        "female": 901,
+        "male": 888,
+        "notInformed": 0
+      }
+    },
+    "5212303": {
+      "ibgeCode": "5212303",
+      "tseCode": "94439",
+      "name": "Leopoldo de Bulhões",
+      "electorate": 7351,
+      "stateSharePct": 0.1447,
+      "stateRank": 108,
+      "zoneCount": 1,
+      "biometrics": 6951,
+      "biometricsPct": 94.56,
+      "registeredDisability": 30,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 704,
+        "percentage": 9.58
+      },
+      "gender": {
+        "female": 3779,
+        "male": 3572,
+        "notInformed": 0
+      }
+    },
+    "5212501": {
+      "ibgeCode": "5212501",
+      "tseCode": "94455",
+      "name": "Luziânia",
+      "electorate": 136499,
+      "stateSharePct": 2.6866,
+      "stateRank": 5,
+      "zoneCount": 1,
+      "biometrics": 126075,
+      "biometricsPct": 92.36,
+      "registeredDisability": 1847,
+      "socialName": 25,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 15572,
+        "percentage": 11.41
+      },
+      "gender": {
+        "female": 73183,
+        "male": 63316,
+        "notInformed": 0
+      }
+    },
+    "5212600": {
+      "ibgeCode": "5212600",
+      "tseCode": "94471",
+      "name": "Mairipotaba",
+      "electorate": 3496,
+      "stateSharePct": 0.0688,
+      "stateRank": 206,
+      "zoneCount": 1,
+      "biometrics": 3347,
+      "biometricsPct": 95.74,
+      "registeredDisability": 29,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 360,
+        "percentage": 10.3
+      },
+      "gender": {
+        "female": 1725,
+        "male": 1771,
+        "notInformed": 0
+      }
+    },
+    "5212709": {
+      "ibgeCode": "5212709",
+      "tseCode": "94498",
+      "name": "Mambaí",
+      "electorate": 6527,
+      "stateSharePct": 0.1285,
+      "stateRank": 124,
+      "zoneCount": 1,
+      "biometrics": 6267,
+      "biometricsPct": 96.02,
+      "registeredDisability": 124,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 716,
+        "percentage": 10.97
+      },
+      "gender": {
+        "female": 3235,
+        "male": 3292,
+        "notInformed": 0
+      }
+    },
+    "5212808": {
+      "ibgeCode": "5212808",
+      "tseCode": "94510",
+      "name": "Mara Rosa",
+      "electorate": 9199,
+      "stateSharePct": 0.1811,
+      "stateRank": 84,
+      "zoneCount": 1,
+      "biometrics": 8695,
+      "biometricsPct": 94.52,
+      "registeredDisability": 50,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 819,
+        "percentage": 8.9
+      },
+      "gender": {
+        "female": 4760,
+        "male": 4439,
+        "notInformed": 0
+      }
+    },
+    "5212907": {
+      "ibgeCode": "5212907",
+      "tseCode": "94536",
+      "name": "Marzagão",
+      "electorate": 3006,
+      "stateSharePct": 0.0592,
+      "stateRank": 227,
+      "zoneCount": 1,
+      "biometrics": 2851,
+      "biometricsPct": 94.84,
+      "registeredDisability": 14,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 332,
+        "percentage": 11.04
+      },
+      "gender": {
+        "female": 1529,
+        "male": 1477,
+        "notInformed": 0
+      }
+    },
+    "5212956": {
+      "ibgeCode": "5212956",
+      "tseCode": "92320",
+      "name": "Matrinchã",
+      "electorate": 3957,
+      "stateSharePct": 0.0779,
+      "stateRank": 179,
+      "zoneCount": 1,
+      "biometrics": 3755,
+      "biometricsPct": 94.9,
+      "registeredDisability": 38,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 403,
+        "percentage": 10.18
+      },
+      "gender": {
+        "female": 2015,
+        "male": 1942,
+        "notInformed": 0
+      }
+    },
+    "5213004": {
+      "ibgeCode": "5213004",
+      "tseCode": "94579",
+      "name": "Maurilândia",
+      "electorate": 7561,
+      "stateSharePct": 0.1488,
+      "stateRank": 103,
+      "zoneCount": 1,
+      "biometrics": 7298,
+      "biometricsPct": 96.52,
+      "registeredDisability": 25,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 774,
+        "percentage": 10.24
+      },
+      "gender": {
+        "female": 3802,
+        "male": 3759,
+        "notInformed": 0
+      }
+    },
+    "5213053": {
+      "ibgeCode": "5213053",
+      "tseCode": "92347",
+      "name": "Mimoso de Goiás",
+      "electorate": 3361,
+      "stateSharePct": 0.0662,
+      "stateRank": 210,
+      "zoneCount": 1,
+      "biometrics": 3239,
+      "biometricsPct": 96.37,
+      "registeredDisability": 28,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 349,
+        "percentage": 10.38
+      },
+      "gender": {
+        "female": 1606,
+        "male": 1755,
+        "notInformed": 0
+      }
+    },
+    "5213087": {
+      "ibgeCode": "5213087",
+      "tseCode": "96474",
+      "name": "Minaçu",
+      "electorate": 22467,
+      "stateSharePct": 0.4422,
+      "stateRank": 40,
+      "zoneCount": 1,
+      "biometrics": 21060,
+      "biometricsPct": 93.74,
+      "registeredDisability": 123,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2256,
+        "percentage": 10.04
+      },
+      "gender": {
+        "female": 11517,
+        "male": 10950,
+        "notInformed": 0
+      }
+    },
+    "5213103": {
+      "ibgeCode": "5213103",
+      "tseCode": "94595",
+      "name": "Mineiros",
+      "electorate": 51833,
+      "stateSharePct": 1.0202,
+      "stateRank": 18,
+      "zoneCount": 1,
+      "biometrics": 48768,
+      "biometricsPct": 94.09,
+      "registeredDisability": 392,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 5758,
+        "percentage": 11.11
+      },
+      "gender": {
+        "female": 27233,
+        "male": 24600,
+        "notInformed": 0
+      }
+    },
+    "5213400": {
+      "ibgeCode": "5213400",
+      "tseCode": "94650",
+      "name": "Moiporá",
+      "electorate": 2517,
+      "stateSharePct": 0.0495,
+      "stateRank": 237,
+      "zoneCount": 1,
+      "biometrics": 2419,
+      "biometricsPct": 96.11,
+      "registeredDisability": 7,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 239,
+        "percentage": 9.5
+      },
+      "gender": {
+        "female": 1247,
+        "male": 1270,
+        "notInformed": 0
+      }
+    },
+    "5213509": {
+      "ibgeCode": "5213509",
+      "tseCode": "94676",
+      "name": "Monte Alegre de Goiás",
+      "electorate": 5634,
+      "stateSharePct": 0.1109,
+      "stateRank": 132,
+      "zoneCount": 1,
+      "biometrics": 5279,
+      "biometricsPct": 93.7,
+      "registeredDisability": 63,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 583,
+        "percentage": 10.35
+      },
+      "gender": {
+        "female": 2794,
+        "male": 2840,
+        "notInformed": 0
+      }
+    },
+    "5213707": {
+      "ibgeCode": "5213707",
+      "tseCode": "94714",
+      "name": "Montes Claros de Goiás",
+      "electorate": 7113,
+      "stateSharePct": 0.14,
+      "stateRank": 116,
+      "zoneCount": 1,
+      "biometrics": 6454,
+      "biometricsPct": 90.74,
+      "registeredDisability": 64,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 710,
+        "percentage": 9.98
+      },
+      "gender": {
+        "female": 3564,
+        "male": 3549,
+        "notInformed": 0
+      }
+    },
+    "5213756": {
+      "ibgeCode": "5213756",
+      "tseCode": "92363",
+      "name": "Montividiu",
+      "electorate": 9844,
+      "stateSharePct": 0.1938,
+      "stateRank": 78,
+      "zoneCount": 1,
+      "biometrics": 9230,
+      "biometricsPct": 93.76,
+      "registeredDisability": 61,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 1121,
+        "percentage": 11.39
+      },
+      "gender": {
+        "female": 4848,
+        "male": 4996,
+        "notInformed": 0
+      }
+    },
+    "5213772": {
+      "ibgeCode": "5213772",
+      "tseCode": "93181",
+      "name": "Montividiu do Norte",
+      "electorate": 3729,
+      "stateSharePct": 0.0734,
+      "stateRank": 192,
+      "zoneCount": 1,
+      "biometrics": 3535,
+      "biometricsPct": 94.8,
+      "registeredDisability": 45,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 389,
+        "percentage": 10.43
+      },
+      "gender": {
+        "female": 1812,
+        "male": 1917,
+        "notInformed": 0
+      }
+    },
+    "5213806": {
+      "ibgeCode": "5213806",
+      "tseCode": "94730",
+      "name": "Morrinhos",
+      "electorate": 37219,
+      "stateSharePct": 0.7325,
+      "stateRank": 24,
+      "zoneCount": 1,
+      "biometrics": 35737,
+      "biometricsPct": 96.02,
+      "registeredDisability": 414,
+      "socialName": 8,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 3488,
+        "percentage": 9.37
+      },
+      "gender": {
+        "female": 19580,
+        "male": 17639,
+        "notInformed": 0
+      }
+    },
+    "5213855": {
+      "ibgeCode": "5213855",
+      "tseCode": "92169",
+      "name": "Morro Agudo de Goiás",
+      "electorate": 3067,
+      "stateSharePct": 0.0604,
+      "stateRank": 223,
+      "zoneCount": 1,
+      "biometrics": 2930,
+      "biometricsPct": 95.53,
+      "registeredDisability": 47,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 298,
+        "percentage": 9.72
+      },
+      "gender": {
+        "female": 1528,
+        "male": 1539,
+        "notInformed": 0
+      }
+    },
+    "5213905": {
+      "ibgeCode": "5213905",
+      "tseCode": "94757",
+      "name": "Mossâmedes",
+      "electorate": 4654,
+      "stateSharePct": 0.0916,
+      "stateRank": 150,
+      "zoneCount": 1,
+      "biometrics": 4508,
+      "biometricsPct": 96.86,
+      "registeredDisability": 53,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 440,
+        "percentage": 9.45
+      },
+      "gender": {
+        "female": 2364,
+        "male": 2290,
+        "notInformed": 0
+      }
+    },
+    "5214002": {
+      "ibgeCode": "5214002",
+      "tseCode": "94773",
+      "name": "Mozarlândia",
+      "electorate": 12343,
+      "stateSharePct": 0.2429,
+      "stateRank": 69,
+      "zoneCount": 1,
+      "biometrics": 11521,
+      "biometricsPct": 93.34,
+      "registeredDisability": 87,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1270,
+        "percentage": 10.29
+      },
+      "gender": {
+        "female": 6271,
+        "male": 6072,
+        "notInformed": 0
+      }
+    },
+    "5214051": {
+      "ibgeCode": "5214051",
+      "tseCode": "96512",
+      "name": "Mundo Novo",
+      "electorate": 5374,
+      "stateSharePct": 0.1058,
+      "stateRank": 139,
+      "zoneCount": 1,
+      "biometrics": 5080,
+      "biometricsPct": 94.53,
+      "registeredDisability": 18,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 519,
+        "percentage": 9.66
+      },
+      "gender": {
+        "female": 2642,
+        "male": 2732,
+        "notInformed": 0
+      }
+    },
+    "5214101": {
+      "ibgeCode": "5214101",
+      "tseCode": "94790",
+      "name": "Mutunópolis",
+      "electorate": 3632,
+      "stateSharePct": 0.0715,
+      "stateRank": 196,
+      "zoneCount": 1,
+      "biometrics": 3492,
+      "biometricsPct": 96.15,
+      "registeredDisability": 16,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 354,
+        "percentage": 9.75
+      },
+      "gender": {
+        "female": 1797,
+        "male": 1835,
+        "notInformed": 0
+      }
+    },
+    "5214408": {
+      "ibgeCode": "5214408",
+      "tseCode": "94854",
+      "name": "Nazário",
+      "electorate": 7700,
+      "stateSharePct": 0.1516,
+      "stateRank": 101,
+      "zoneCount": 1,
+      "biometrics": 7353,
+      "biometricsPct": 95.49,
+      "registeredDisability": 54,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 763,
+        "percentage": 9.91
+      },
+      "gender": {
+        "female": 3895,
+        "male": 3805,
+        "notInformed": 0
+      }
+    },
+    "5214507": {
+      "ibgeCode": "5214507",
+      "tseCode": "94870",
+      "name": "Nerópolis",
+      "electorate": 25884,
+      "stateSharePct": 0.5095,
+      "stateRank": 34,
+      "zoneCount": 1,
+      "biometrics": 23303,
+      "biometricsPct": 90.03,
+      "registeredDisability": 148,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 2706,
+        "percentage": 10.45
+      },
+      "gender": {
+        "female": 13729,
+        "male": 12155,
+        "notInformed": 0
+      }
+    },
+    "5214606": {
+      "ibgeCode": "5214606",
+      "tseCode": "94897",
+      "name": "Niquelândia",
+      "electorate": 28308,
+      "stateSharePct": 0.5572,
+      "stateRank": 31,
+      "zoneCount": 1,
+      "biometrics": 26856,
+      "biometricsPct": 94.87,
+      "registeredDisability": 106,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2823,
+        "percentage": 9.97
+      },
+      "gender": {
+        "female": 14398,
+        "male": 13910,
+        "notInformed": 0
+      }
+    },
+    "5214705": {
+      "ibgeCode": "5214705",
+      "tseCode": "94919",
+      "name": "Nova América",
+      "electorate": 2775,
+      "stateSharePct": 0.0546,
+      "stateRank": 232,
+      "zoneCount": 1,
+      "biometrics": 2642,
+      "biometricsPct": 95.21,
+      "registeredDisability": 25,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 276,
+        "percentage": 9.95
+      },
+      "gender": {
+        "female": 1403,
+        "male": 1372,
+        "notInformed": 0
+      }
+    },
+    "5214804": {
+      "ibgeCode": "5214804",
+      "tseCode": "94935",
+      "name": "Nova Aurora",
+      "electorate": 2333,
+      "stateSharePct": 0.0459,
+      "stateRank": 241,
+      "zoneCount": 1,
+      "biometrics": 2203,
+      "biometricsPct": 94.43,
+      "registeredDisability": 11,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 217,
+        "percentage": 9.3
+      },
+      "gender": {
+        "female": 1138,
+        "male": 1195,
+        "notInformed": 0
+      }
+    },
+    "5214838": {
+      "ibgeCode": "5214838",
+      "tseCode": "96539",
+      "name": "Nova Crixás",
+      "electorate": 9344,
+      "stateSharePct": 0.1839,
+      "stateRank": 81,
+      "zoneCount": 1,
+      "biometrics": 8887,
+      "biometricsPct": 95.11,
+      "registeredDisability": 95,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1019,
+        "percentage": 10.91
+      },
+      "gender": {
+        "female": 4614,
+        "male": 4730,
+        "notInformed": 0
+      }
+    },
+    "5214861": {
+      "ibgeCode": "5214861",
+      "tseCode": "96555",
+      "name": "Nova Glória",
+      "electorate": 6897,
+      "stateSharePct": 0.1357,
+      "stateRank": 117,
+      "zoneCount": 1,
+      "biometrics": 6512,
+      "biometricsPct": 94.42,
+      "registeredDisability": 76,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 640,
+        "percentage": 9.28
+      },
+      "gender": {
+        "female": 3525,
+        "male": 3372,
+        "notInformed": 0
+      }
+    },
+    "5214879": {
+      "ibgeCode": "5214879",
+      "tseCode": "93084",
+      "name": "Nova Iguaçu de Goiás",
+      "electorate": 2681,
+      "stateSharePct": 0.0528,
+      "stateRank": 234,
+      "zoneCount": 1,
+      "biometrics": 2614,
+      "biometricsPct": 97.5,
+      "registeredDisability": 12,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 255,
+        "percentage": 9.51
+      },
+      "gender": {
+        "female": 1298,
+        "male": 1383,
+        "notInformed": 0
+      }
+    },
+    "5214903": {
+      "ibgeCode": "5214903",
+      "tseCode": "94951",
+      "name": "Nova Roma",
+      "electorate": 3030,
+      "stateSharePct": 0.0596,
+      "stateRank": 226,
+      "zoneCount": 1,
+      "biometrics": 2889,
+      "biometricsPct": 95.35,
+      "registeredDisability": 25,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 310,
+        "percentage": 10.23
+      },
+      "gender": {
+        "female": 1473,
+        "male": 1557,
+        "notInformed": 0
+      }
+    },
+    "5215009": {
+      "ibgeCode": "5215009",
+      "tseCode": "94978",
+      "name": "Nova Veneza",
+      "electorate": 8559,
+      "stateSharePct": 0.1685,
+      "stateRank": 89,
+      "zoneCount": 1,
+      "biometrics": 7776,
+      "biometricsPct": 90.85,
+      "registeredDisability": 47,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 844,
+        "percentage": 9.86
+      },
+      "gender": {
+        "female": 4341,
+        "male": 4218,
+        "notInformed": 0
+      }
+    },
+    "5215207": {
+      "ibgeCode": "5215207",
+      "tseCode": "95010",
+      "name": "Novo Brasil",
+      "electorate": 3622,
+      "stateSharePct": 0.0713,
+      "stateRank": 198,
+      "zoneCount": 1,
+      "biometrics": 3346,
+      "biometricsPct": 92.38,
+      "registeredDisability": 25,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 339,
+        "percentage": 9.36
+      },
+      "gender": {
+        "female": 1812,
+        "male": 1810,
+        "notInformed": 0
+      }
+    },
+    "5215231": {
+      "ibgeCode": "5215231",
+      "tseCode": "93327",
+      "name": "Novo Gama",
+      "electorate": 58675,
+      "stateSharePct": 1.1548,
+      "stateRank": 17,
+      "zoneCount": 1,
+      "biometrics": 53987,
+      "biometricsPct": 92.01,
+      "registeredDisability": 741,
+      "socialName": 11,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 7052,
+        "percentage": 12.02
+      },
+      "gender": {
+        "female": 31904,
+        "male": 26771,
+        "notInformed": 0
+      }
+    },
+    "5215256": {
+      "ibgeCode": "5215256",
+      "tseCode": "92444",
+      "name": "Novo Planalto",
+      "electorate": 4138,
+      "stateSharePct": 0.0814,
+      "stateRank": 169,
+      "zoneCount": 1,
+      "biometrics": 3988,
+      "biometricsPct": 96.38,
+      "registeredDisability": 15,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 407,
+        "percentage": 9.84
+      },
+      "gender": {
+        "female": 2029,
+        "male": 2109,
+        "notInformed": 0
+      }
+    },
+    "5215306": {
+      "ibgeCode": "5215306",
+      "tseCode": "95036",
+      "name": "Orizona",
+      "electorate": 12101,
+      "stateSharePct": 0.2382,
+      "stateRank": 70,
+      "zoneCount": 1,
+      "biometrics": 11682,
+      "biometricsPct": 96.54,
+      "registeredDisability": 71,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 1152,
+        "percentage": 9.52
+      },
+      "gender": {
+        "female": 6076,
+        "male": 6025,
+        "notInformed": 0
+      }
+    },
+    "5215405": {
+      "ibgeCode": "5215405",
+      "tseCode": "95052",
+      "name": "Ouro Verde de Goiás",
+      "electorate": 3773,
+      "stateSharePct": 0.0743,
+      "stateRank": 190,
+      "zoneCount": 1,
+      "biometrics": 3627,
+      "biometricsPct": 96.13,
+      "registeredDisability": 25,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 359,
+        "percentage": 9.51
+      },
+      "gender": {
+        "female": 1902,
+        "male": 1871,
+        "notInformed": 0
+      }
+    },
+    "5215504": {
+      "ibgeCode": "5215504",
+      "tseCode": "95079",
+      "name": "Ouvidor",
+      "electorate": 10521,
+      "stateSharePct": 0.2071,
+      "stateRank": 75,
+      "zoneCount": 1,
+      "biometrics": 10060,
+      "biometricsPct": 95.62,
+      "registeredDisability": 91,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1101,
+        "percentage": 10.46
+      },
+      "gender": {
+        "female": 5253,
+        "male": 5268,
+        "notInformed": 0
+      }
+    },
+    "5215603": {
+      "ibgeCode": "5215603",
+      "tseCode": "95095",
+      "name": "Padre Bernardo",
+      "electorate": 20382,
+      "stateSharePct": 0.4012,
+      "stateRank": 46,
+      "zoneCount": 1,
+      "biometrics": 19223,
+      "biometricsPct": 94.31,
+      "registeredDisability": 239,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 2073,
+        "percentage": 10.17
+      },
+      "gender": {
+        "female": 10432,
+        "male": 9950,
+        "notInformed": 0
+      }
+    },
+    "5215652": {
+      "ibgeCode": "5215652",
+      "tseCode": "92460",
+      "name": "Palestina de Goiás",
+      "electorate": 3584,
+      "stateSharePct": 0.0705,
+      "stateRank": 200,
+      "zoneCount": 1,
+      "biometrics": 3479,
+      "biometricsPct": 97.07,
+      "registeredDisability": 34,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 339,
+        "percentage": 9.46
+      },
+      "gender": {
+        "female": 1771,
+        "male": 1813,
+        "notInformed": 0
+      }
+    },
+    "5215702": {
+      "ibgeCode": "5215702",
+      "tseCode": "95117",
+      "name": "Palmeiras de Goiás",
+      "electorate": 23485,
+      "stateSharePct": 0.4622,
+      "stateRank": 39,
+      "zoneCount": 1,
+      "biometrics": 22137,
+      "biometricsPct": 94.26,
+      "registeredDisability": 188,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 2448,
+        "percentage": 10.42
+      },
+      "gender": {
+        "female": 12401,
+        "male": 11084,
+        "notInformed": 0
+      }
+    },
+    "5215801": {
+      "ibgeCode": "5215801",
+      "tseCode": "95133",
+      "name": "Palmelo",
+      "electorate": 2415,
+      "stateSharePct": 0.0475,
+      "stateRank": 240,
+      "zoneCount": 1,
+      "biometrics": 2304,
+      "biometricsPct": 95.4,
+      "registeredDisability": 38,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 220,
+        "percentage": 9.11
+      },
+      "gender": {
+        "female": 1275,
+        "male": 1140,
+        "notInformed": 0
+      }
+    },
+    "5215900": {
+      "ibgeCode": "5215900",
+      "tseCode": "95150",
+      "name": "Palminópolis",
+      "electorate": 4441,
+      "stateSharePct": 0.0874,
+      "stateRank": 158,
+      "zoneCount": 1,
+      "biometrics": 4287,
+      "biometricsPct": 96.53,
+      "registeredDisability": 45,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 434,
+        "percentage": 9.77
+      },
+      "gender": {
+        "female": 2245,
+        "male": 2196,
+        "notInformed": 0
+      }
+    },
+    "5216007": {
+      "ibgeCode": "5216007",
+      "tseCode": "95176",
+      "name": "Panamá",
+      "electorate": 3038,
+      "stateSharePct": 0.0598,
+      "stateRank": 225,
+      "zoneCount": 1,
+      "biometrics": 2952,
+      "biometricsPct": 97.17,
+      "registeredDisability": 15,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 285,
+        "percentage": 9.38
+      },
+      "gender": {
+        "female": 1518,
+        "male": 1520,
+        "notInformed": 0
+      }
+    },
+    "5216304": {
+      "ibgeCode": "5216304",
+      "tseCode": "94552",
+      "name": "Paranaiguara",
+      "electorate": 7186,
+      "stateSharePct": 0.1414,
+      "stateRank": 112,
+      "zoneCount": 1,
+      "biometrics": 6862,
+      "biometricsPct": 95.49,
+      "registeredDisability": 48,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 672,
+        "percentage": 9.35
+      },
+      "gender": {
+        "female": 3746,
+        "male": 3440,
+        "notInformed": 0
+      }
+    },
+    "5216403": {
+      "ibgeCode": "5216403",
+      "tseCode": "95230",
+      "name": "Paraúna",
+      "electorate": 9280,
+      "stateSharePct": 0.1827,
+      "stateRank": 82,
+      "zoneCount": 1,
+      "biometrics": 8957,
+      "biometricsPct": 96.52,
+      "registeredDisability": 40,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 968,
+        "percentage": 10.43
+      },
+      "gender": {
+        "female": 4815,
+        "male": 4465,
+        "notInformed": 0
+      }
+    },
+    "5216452": {
+      "ibgeCode": "5216452",
+      "tseCode": "93068",
+      "name": "Perolândia",
+      "electorate": 3154,
+      "stateSharePct": 0.0621,
+      "stateRank": 217,
+      "zoneCount": 1,
+      "biometrics": 2820,
+      "biometricsPct": 89.41,
+      "registeredDisability": 30,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 337,
+        "percentage": 10.68
+      },
+      "gender": {
+        "female": 1536,
+        "male": 1618,
+        "notInformed": 0
+      }
+    },
+    "5216809": {
+      "ibgeCode": "5216809",
+      "tseCode": "95311",
+      "name": "Petrolina de Goiás",
+      "electorate": 7542,
+      "stateSharePct": 0.1484,
+      "stateRank": 104,
+      "zoneCount": 1,
+      "biometrics": 6847,
+      "biometricsPct": 90.78,
+      "registeredDisability": 36,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 733,
+        "percentage": 9.72
+      },
+      "gender": {
+        "female": 3896,
+        "male": 3646,
+        "notInformed": 0
+      }
+    },
+    "5216908": {
+      "ibgeCode": "5216908",
+      "tseCode": "95354",
+      "name": "Pilar de Goiás",
+      "electorate": 3953,
+      "stateSharePct": 0.0778,
+      "stateRank": 180,
+      "zoneCount": 1,
+      "biometrics": 3772,
+      "biometricsPct": 95.42,
+      "registeredDisability": 27,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 407,
+        "percentage": 10.3
+      },
+      "gender": {
+        "female": 1815,
+        "male": 2138,
+        "notInformed": 0
+      }
+    },
+    "5217104": {
+      "ibgeCode": "5217104",
+      "tseCode": "95397",
+      "name": "Piracanjuba",
+      "electorate": 18853,
+      "stateSharePct": 0.3711,
+      "stateRank": 48,
+      "zoneCount": 1,
+      "biometrics": 18056,
+      "biometricsPct": 95.77,
+      "registeredDisability": 177,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1760,
+        "percentage": 9.34
+      },
+      "gender": {
+        "female": 9757,
+        "male": 9096,
+        "notInformed": 0
+      }
+    },
+    "5217203": {
+      "ibgeCode": "5217203",
+      "tseCode": "95419",
+      "name": "Piranhas",
+      "electorate": 9116,
+      "stateSharePct": 0.1794,
+      "stateRank": 86,
+      "zoneCount": 1,
+      "biometrics": 8807,
+      "biometricsPct": 96.61,
+      "registeredDisability": 106,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 846,
+        "percentage": 9.28
+      },
+      "gender": {
+        "female": 4714,
+        "male": 4402,
+        "notInformed": 0
+      }
+    },
+    "5217302": {
+      "ibgeCode": "5217302",
+      "tseCode": "95435",
+      "name": "Pirenópolis",
+      "electorate": 20783,
+      "stateSharePct": 0.4091,
+      "stateRank": 44,
+      "zoneCount": 1,
+      "biometrics": 19598,
+      "biometricsPct": 94.3,
+      "registeredDisability": 56,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2069,
+        "percentage": 9.96
+      },
+      "gender": {
+        "female": 10661,
+        "male": 10122,
+        "notInformed": 0
+      }
+    },
+    "5217401": {
+      "ibgeCode": "5217401",
+      "tseCode": "95451",
+      "name": "Pires do Rio",
+      "electorate": 22103,
+      "stateSharePct": 0.435,
+      "stateRank": 41,
+      "zoneCount": 1,
+      "biometrics": 20849,
+      "biometricsPct": 94.33,
+      "registeredDisability": 173,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2114,
+        "percentage": 9.56
+      },
+      "gender": {
+        "female": 11758,
+        "male": 10345,
+        "notInformed": 0
+      }
+    },
+    "5217609": {
+      "ibgeCode": "5217609",
+      "tseCode": "95958",
+      "name": "Planaltina",
+      "electorate": 66623,
+      "stateSharePct": 1.3113,
+      "stateRank": 15,
+      "zoneCount": 1,
+      "biometrics": 61922,
+      "biometricsPct": 92.94,
+      "registeredDisability": 513,
+      "socialName": 20,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 7903,
+        "percentage": 11.86
+      },
+      "gender": {
+        "female": 35664,
+        "male": 30959,
+        "notInformed": 0
+      }
+    },
+    "5217708": {
+      "ibgeCode": "5217708",
+      "tseCode": "95494",
+      "name": "Pontalina",
+      "electorate": 14378,
+      "stateSharePct": 0.283,
+      "stateRank": 62,
+      "zoneCount": 1,
+      "biometrics": 13645,
+      "biometricsPct": 94.9,
+      "registeredDisability": 84,
+      "socialName": 6,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1348,
+        "percentage": 9.38
+      },
+      "gender": {
+        "female": 7539,
+        "male": 6839,
+        "notInformed": 0
+      }
+    },
+    "5218003": {
+      "ibgeCode": "5218003",
+      "tseCode": "95559",
+      "name": "Porangatu",
+      "electorate": 31023,
+      "stateSharePct": 0.6106,
+      "stateRank": 28,
+      "zoneCount": 1,
+      "biometrics": 29224,
+      "biometricsPct": 94.2,
+      "registeredDisability": 181,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2901,
+        "percentage": 9.35
+      },
+      "gender": {
+        "female": 16395,
+        "male": 14628,
+        "notInformed": 0
+      }
+    },
+    "5218052": {
+      "ibgeCode": "5218052",
+      "tseCode": "93424",
+      "name": "Porteirão",
+      "electorate": 3977,
+      "stateSharePct": 0.0783,
+      "stateRank": 176,
+      "zoneCount": 1,
+      "biometrics": 3796,
+      "biometricsPct": 95.45,
+      "registeredDisability": 32,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 456,
+        "percentage": 11.47
+      },
+      "gender": {
+        "female": 1903,
+        "male": 2074,
+        "notInformed": 0
+      }
+    },
+    "5218102": {
+      "ibgeCode": "5218102",
+      "tseCode": "95575",
+      "name": "Portelândia",
+      "electorate": 3428,
+      "stateSharePct": 0.0675,
+      "stateRank": 209,
+      "zoneCount": 1,
+      "biometrics": 3080,
+      "biometricsPct": 89.85,
+      "registeredDisability": 30,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 330,
+        "percentage": 9.63
+      },
+      "gender": {
+        "female": 1652,
+        "male": 1776,
+        "notInformed": 0
+      }
+    },
+    "5218300": {
+      "ibgeCode": "5218300",
+      "tseCode": "95613",
+      "name": "Posse",
+      "electorate": 25397,
+      "stateSharePct": 0.4999,
+      "stateRank": 35,
+      "zoneCount": 1,
+      "biometrics": 23845,
+      "biometricsPct": 93.89,
+      "registeredDisability": 255,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 2783,
+        "percentage": 10.96
+      },
+      "gender": {
+        "female": 13131,
+        "male": 12266,
+        "notInformed": 0
+      }
+    },
+    "5218391": {
+      "ibgeCode": "5218391",
+      "tseCode": "93041",
+      "name": "Professor Jamil",
+      "electorate": 3604,
+      "stateSharePct": 0.0709,
+      "stateRank": 199,
+      "zoneCount": 1,
+      "biometrics": 3396,
+      "biometricsPct": 94.23,
+      "registeredDisability": 45,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 356,
+        "percentage": 9.88
+      },
+      "gender": {
+        "female": 1785,
+        "male": 1819,
+        "notInformed": 0
+      }
+    },
+    "5218508": {
+      "ibgeCode": "5218508",
+      "tseCode": "95630",
+      "name": "Quirinópolis",
+      "electorate": 35339,
+      "stateSharePct": 0.6955,
+      "stateRank": 25,
+      "zoneCount": 1,
+      "biometrics": 33543,
+      "biometricsPct": 94.92,
+      "registeredDisability": 137,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 3546,
+        "percentage": 10.03
+      },
+      "gender": {
+        "female": 18760,
+        "male": 16579,
+        "notInformed": 0
+      }
+    },
+    "5218607": {
+      "ibgeCode": "5218607",
+      "tseCode": "95656",
+      "name": "Rialma",
+      "electorate": 9253,
+      "stateSharePct": 0.1821,
+      "stateRank": 83,
+      "zoneCount": 1,
+      "biometrics": 8765,
+      "biometricsPct": 94.73,
+      "registeredDisability": 97,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 930,
+        "percentage": 10.05
+      },
+      "gender": {
+        "female": 4918,
+        "male": 4335,
+        "notInformed": 0
+      }
+    },
+    "5218706": {
+      "ibgeCode": "5218706",
+      "tseCode": "95672",
+      "name": "Rianápolis",
+      "electorate": 3948,
+      "stateSharePct": 0.0777,
+      "stateRank": 181,
+      "zoneCount": 1,
+      "biometrics": 3741,
+      "biometricsPct": 94.76,
+      "registeredDisability": 48,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 367,
+        "percentage": 9.3
+      },
+      "gender": {
+        "female": 2023,
+        "male": 1925,
+        "notInformed": 0
+      }
+    },
+    "5218789": {
+      "ibgeCode": "5218789",
+      "tseCode": "92827",
+      "name": "Rio Quente",
+      "electorate": 4436,
+      "stateSharePct": 0.0873,
+      "stateRank": 159,
+      "zoneCount": 1,
+      "biometrics": 4245,
+      "biometricsPct": 95.69,
+      "registeredDisability": 31,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 461,
+        "percentage": 10.39
+      },
+      "gender": {
+        "female": 2218,
+        "male": 2218,
+        "notInformed": 0
+      }
+    },
+    "5218805": {
+      "ibgeCode": "5218805",
+      "tseCode": "95710",
+      "name": "Rio Verde",
+      "electorate": 152761,
+      "stateSharePct": 3.0067,
+      "stateRank": 4,
+      "zoneCount": 2,
+      "biometrics": 141797,
+      "biometricsPct": 92.82,
+      "registeredDisability": 919,
+      "socialName": 29,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 17960,
+        "percentage": 11.76
+      },
+      "gender": {
+        "female": 80685,
+        "male": 72076,
+        "notInformed": 0
+      }
+    },
+    "5218904": {
+      "ibgeCode": "5218904",
+      "tseCode": "95737",
+      "name": "Rubiataba",
+      "electorate": 15655,
+      "stateSharePct": 0.3081,
+      "stateRank": 56,
+      "zoneCount": 1,
+      "biometrics": 14719,
+      "biometricsPct": 94.02,
+      "registeredDisability": 192,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 1439,
+        "percentage": 9.19
+      },
+      "gender": {
+        "female": 8190,
+        "male": 7465,
+        "notInformed": 0
+      }
+    },
+    "5219001": {
+      "ibgeCode": "5219001",
+      "tseCode": "95753",
+      "name": "Sanclerlândia",
+      "electorate": 7147,
+      "stateSharePct": 0.1407,
+      "stateRank": 114,
+      "zoneCount": 1,
+      "biometrics": 6798,
+      "biometricsPct": 95.12,
+      "registeredDisability": 27,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 674,
+        "percentage": 9.43
+      },
+      "gender": {
+        "female": 3691,
+        "male": 3456,
+        "notInformed": 0
+      }
+    },
+    "5219100": {
+      "ibgeCode": "5219100",
+      "tseCode": "95770",
+      "name": "Santa Bárbara de Goiás",
+      "electorate": 5600,
+      "stateSharePct": 0.1102,
+      "stateRank": 133,
+      "zoneCount": 1,
+      "biometrics": 5330,
+      "biometricsPct": 95.18,
+      "registeredDisability": 37,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 538,
+        "percentage": 9.61
+      },
+      "gender": {
+        "female": 2906,
+        "male": 2694,
+        "notInformed": 0
+      }
+    },
+    "5219209": {
+      "ibgeCode": "5219209",
+      "tseCode": "95796",
+      "name": "Santa Cruz de Goiás",
+      "electorate": 3512,
+      "stateSharePct": 0.0691,
+      "stateRank": 203,
+      "zoneCount": 1,
+      "biometrics": 3349,
+      "biometricsPct": 95.36,
+      "registeredDisability": 44,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 351,
+        "percentage": 9.99
+      },
+      "gender": {
+        "female": 1718,
+        "male": 1794,
+        "notInformed": 0
+      }
+    },
+    "5219258": {
+      "ibgeCode": "5219258",
+      "tseCode": "92568",
+      "name": "Santa Fé de Goiás",
+      "electorate": 4213,
+      "stateSharePct": 0.0829,
+      "stateRank": 163,
+      "zoneCount": 1,
+      "biometrics": 3954,
+      "biometricsPct": 93.85,
+      "registeredDisability": 47,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 450,
+        "percentage": 10.68
+      },
+      "gender": {
+        "female": 2116,
+        "male": 2097,
+        "notInformed": 0
+      }
+    },
+    "5219308": {
+      "ibgeCode": "5219308",
+      "tseCode": "95818",
+      "name": "Santa Helena de Goiás",
+      "electorate": 30186,
+      "stateSharePct": 0.5941,
+      "stateRank": 30,
+      "zoneCount": 1,
+      "biometrics": 28805,
+      "biometricsPct": 95.43,
+      "registeredDisability": 219,
+      "socialName": 9,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 2944,
+        "percentage": 9.75
+      },
+      "gender": {
+        "female": 15902,
+        "male": 14284,
+        "notInformed": 0
+      }
+    },
+    "5219357": {
+      "ibgeCode": "5219357",
+      "tseCode": "96890",
+      "name": "Santa Isabel",
+      "electorate": 3831,
+      "stateSharePct": 0.0754,
+      "stateRank": 188,
+      "zoneCount": 1,
+      "biometrics": 3695,
+      "biometricsPct": 96.45,
+      "registeredDisability": 63,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 378,
+        "percentage": 9.87
+      },
+      "gender": {
+        "female": 1901,
+        "male": 1930,
+        "notInformed": 0
+      }
+    },
+    "5219407": {
+      "ibgeCode": "5219407",
+      "tseCode": "95834",
+      "name": "Santa Rita do Araguaia",
+      "electorate": 4468,
+      "stateSharePct": 0.0879,
+      "stateRank": 155,
+      "zoneCount": 1,
+      "biometrics": 4307,
+      "biometricsPct": 96.4,
+      "registeredDisability": 30,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 412,
+        "percentage": 9.22
+      },
+      "gender": {
+        "female": 2228,
+        "male": 2240,
+        "notInformed": 0
+      }
+    },
+    "5219456": {
+      "ibgeCode": "5219456",
+      "tseCode": "93440",
+      "name": "Santa Rita do Novo Destino",
+      "electorate": 3054,
+      "stateSharePct": 0.0601,
+      "stateRank": 224,
+      "zoneCount": 1,
+      "biometrics": 2993,
+      "biometricsPct": 98.0,
+      "registeredDisability": 14,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "60 a 64 anos",
+        "electorate": 317,
+        "percentage": 10.38
+      },
+      "gender": {
+        "female": 1408,
+        "male": 1646,
+        "notInformed": 0
+      }
+    },
+    "5219506": {
+      "ibgeCode": "5219506",
+      "tseCode": "95850",
+      "name": "Santa Rosa de Goiás",
+      "electorate": 3530,
+      "stateSharePct": 0.0695,
+      "stateRank": 201,
+      "zoneCount": 1,
+      "biometrics": 3331,
+      "biometricsPct": 94.36,
+      "registeredDisability": 24,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 337,
+        "percentage": 9.55
+      },
+      "gender": {
+        "female": 1778,
+        "male": 1752,
+        "notInformed": 0
+      }
+    },
+    "5219605": {
+      "ibgeCode": "5219605",
+      "tseCode": "95877",
+      "name": "Santa Tereza de Goiás",
+      "electorate": 3848,
+      "stateSharePct": 0.0757,
+      "stateRank": 187,
+      "zoneCount": 1,
+      "biometrics": 3736,
+      "biometricsPct": 97.09,
+      "registeredDisability": 33,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 378,
+        "percentage": 9.82
+      },
+      "gender": {
+        "female": 1924,
+        "male": 1924,
+        "notInformed": 0
+      }
+    },
+    "5219704": {
+      "ibgeCode": "5219704",
+      "tseCode": "95893",
+      "name": "Santa Terezinha de Goiás",
+      "electorate": 8542,
+      "stateSharePct": 0.1681,
+      "stateRank": 91,
+      "zoneCount": 1,
+      "biometrics": 8092,
+      "biometricsPct": 94.73,
+      "registeredDisability": 90,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 792,
+        "percentage": 9.27
+      },
+      "gender": {
+        "female": 4387,
+        "male": 4155,
+        "notInformed": 0
+      }
+    },
+    "5219712": {
+      "ibgeCode": "5219712",
+      "tseCode": "93203",
+      "name": "Santo Antônio da Barra",
+      "electorate": 4300,
+      "stateSharePct": 0.0846,
+      "stateRank": 160,
+      "zoneCount": 1,
+      "biometrics": 4102,
+      "biometricsPct": 95.4,
+      "registeredDisability": 45,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 450,
+        "percentage": 10.47
+      },
+      "gender": {
+        "female": 2051,
+        "male": 2249,
+        "notInformed": 0
+      }
+    },
+    "5219738": {
+      "ibgeCode": "5219738",
+      "tseCode": "92908",
+      "name": "Santo Antônio de Goiás",
+      "electorate": 7982,
+      "stateSharePct": 0.1571,
+      "stateRank": 94,
+      "zoneCount": 1,
+      "biometrics": 7644,
+      "biometricsPct": 95.77,
+      "registeredDisability": 67,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 865,
+        "percentage": 10.84
+      },
+      "gender": {
+        "female": 4069,
+        "male": 3913,
+        "notInformed": 0
+      }
+    },
+    "5219753": {
+      "ibgeCode": "5219753",
+      "tseCode": "96776",
+      "name": "Santo Antônio do Descoberto",
+      "electorate": 46750,
+      "stateSharePct": 0.9201,
+      "stateRank": 21,
+      "zoneCount": 1,
+      "biometrics": 43431,
+      "biometricsPct": 92.9,
+      "registeredDisability": 371,
+      "socialName": 7,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 5534,
+        "percentage": 11.84
+      },
+      "gender": {
+        "female": 24615,
+        "male": 22135,
+        "notInformed": 0
+      }
+    },
+    "5219803": {
+      "ibgeCode": "5219803",
+      "tseCode": "95915",
+      "name": "São Domingos",
+      "electorate": 7307,
+      "stateSharePct": 0.1438,
+      "stateRank": 109,
+      "zoneCount": 1,
+      "biometrics": 6976,
+      "biometricsPct": 95.47,
+      "registeredDisability": 74,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 712,
+        "percentage": 9.74
+      },
+      "gender": {
+        "female": 3532,
+        "male": 3775,
+        "notInformed": 0
+      }
+    },
+    "5219902": {
+      "ibgeCode": "5219902",
+      "tseCode": "95931",
+      "name": "São Francisco de Goiás",
+      "electorate": 5400,
+      "stateSharePct": 0.1063,
+      "stateRank": 138,
+      "zoneCount": 1,
+      "biometrics": 5099,
+      "biometricsPct": 94.43,
+      "registeredDisability": 29,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 508,
+        "percentage": 9.41
+      },
+      "gender": {
+        "female": 2712,
+        "male": 2688,
+        "notInformed": 0
+      }
+    },
+    "5220009": {
+      "ibgeCode": "5220009",
+      "tseCode": "95974",
+      "name": "São João D'Aliança",
+      "electorate": 7775,
+      "stateSharePct": 0.153,
+      "stateRank": 97,
+      "zoneCount": 1,
+      "biometrics": 7325,
+      "biometricsPct": 94.21,
+      "registeredDisability": 52,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 833,
+        "percentage": 10.71
+      },
+      "gender": {
+        "female": 3943,
+        "male": 3832,
+        "notInformed": 0
+      }
+    },
+    "5220058": {
+      "ibgeCode": "5220058",
+      "tseCode": "92622",
+      "name": "São João da Paraúna",
+      "electorate": 2199,
+      "stateSharePct": 0.0433,
+      "stateRank": 242,
+      "zoneCount": 1,
+      "biometrics": 2098,
+      "biometricsPct": 95.41,
+      "registeredDisability": 10,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 225,
+        "percentage": 10.23
+      },
+      "gender": {
+        "female": 1104,
+        "male": 1095,
+        "notInformed": 0
+      }
+    },
+    "5220108": {
+      "ibgeCode": "5220108",
+      "tseCode": "95990",
+      "name": "São Luís de Montes Belos",
+      "electorate": 24605,
+      "stateSharePct": 0.4843,
+      "stateRank": 36,
+      "zoneCount": 1,
+      "biometrics": 23227,
+      "biometricsPct": 94.4,
+      "registeredDisability": 105,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2352,
+        "percentage": 9.56
+      },
+      "gender": {
+        "female": 13356,
+        "male": 11249,
+        "notInformed": 0
+      }
+    },
+    "5220157": {
+      "ibgeCode": "5220157",
+      "tseCode": "92649",
+      "name": "São Luíz do Norte",
+      "electorate": 5119,
+      "stateSharePct": 0.1008,
+      "stateRank": 144,
+      "zoneCount": 1,
+      "biometrics": 4891,
+      "biometricsPct": 95.55,
+      "registeredDisability": 38,
+      "socialName": 2,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 560,
+        "percentage": 10.94
+      },
+      "gender": {
+        "female": 2501,
+        "male": 2618,
+        "notInformed": 0
+      }
+    },
+    "5220207": {
+      "ibgeCode": "5220207",
+      "tseCode": "96016",
+      "name": "São Miguel do Araguaia",
+      "electorate": 18445,
+      "stateSharePct": 0.363,
+      "stateRank": 49,
+      "zoneCount": 1,
+      "biometrics": 17256,
+      "biometricsPct": 93.55,
+      "registeredDisability": 103,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 1794,
+        "percentage": 9.73
+      },
+      "gender": {
+        "female": 9438,
+        "male": 9007,
+        "notInformed": 0
+      }
+    },
+    "5220264": {
+      "ibgeCode": "5220264",
+      "tseCode": "92665",
+      "name": "São Miguel do Passa Quatro",
+      "electorate": 4215,
+      "stateSharePct": 0.083,
+      "stateRank": 162,
+      "zoneCount": 1,
+      "biometrics": 4032,
+      "biometricsPct": 95.66,
+      "registeredDisability": 23,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 399,
+        "percentage": 9.47
+      },
+      "gender": {
+        "female": 2072,
+        "male": 2143,
+        "notInformed": 0
+      }
+    },
+    "5220280": {
+      "ibgeCode": "5220280",
+      "tseCode": "93483",
+      "name": "São Patrício",
+      "electorate": 2462,
+      "stateSharePct": 0.0485,
+      "stateRank": 239,
+      "zoneCount": 1,
+      "biometrics": 2333,
+      "biometricsPct": 94.76,
+      "registeredDisability": 12,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 239,
+        "percentage": 9.71
+      },
+      "gender": {
+        "female": 1217,
+        "male": 1245,
+        "notInformed": 0
+      }
+    },
+    "5220405": {
+      "ibgeCode": "5220405",
+      "tseCode": "96059",
+      "name": "São Simão",
+      "electorate": 13347,
+      "stateSharePct": 0.2627,
+      "stateRank": 64,
+      "zoneCount": 1,
+      "biometrics": 12660,
+      "biometricsPct": 94.85,
+      "registeredDisability": 89,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 1352,
+        "percentage": 10.13
+      },
+      "gender": {
+        "female": 6920,
+        "male": 6427,
+        "notInformed": 0
+      }
+    },
+    "5220454": {
+      "ibgeCode": "5220454",
+      "tseCode": "92703",
+      "name": "Senador Canedo",
+      "electorate": 95323,
+      "stateSharePct": 1.8762,
+      "stateRank": 9,
+      "zoneCount": 1,
+      "biometrics": 88646,
+      "biometricsPct": 93.0,
+      "registeredDisability": 783,
+      "socialName": 15,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 11173,
+        "percentage": 11.72
+      },
+      "gender": {
+        "female": 50968,
+        "male": 44355,
+        "notInformed": 0
+      }
+    },
+    "5220504": {
+      "ibgeCode": "5220504",
+      "tseCode": "96075",
+      "name": "Serranópolis",
+      "electorate": 6634,
+      "stateSharePct": 0.1306,
+      "stateRank": 122,
+      "zoneCount": 1,
+      "biometrics": 5838,
+      "biometricsPct": 88.0,
+      "registeredDisability": 15,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 726,
+        "percentage": 10.94
+      },
+      "gender": {
+        "female": 3184,
+        "male": 3450,
+        "notInformed": 0
+      }
+    },
+    "5220603": {
+      "ibgeCode": "5220603",
+      "tseCode": "96091",
+      "name": "Silvânia",
+      "electorate": 16369,
+      "stateSharePct": 0.3222,
+      "stateRank": 53,
+      "zoneCount": 1,
+      "biometrics": 15444,
+      "biometricsPct": 94.35,
+      "registeredDisability": 110,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1680,
+        "percentage": 10.26
+      },
+      "gender": {
+        "female": 8483,
+        "male": 7886,
+        "notInformed": 0
+      }
+    },
+    "5220686": {
+      "ibgeCode": "5220686",
+      "tseCode": "92720",
+      "name": "Simolândia",
+      "electorate": 5583,
+      "stateSharePct": 0.1099,
+      "stateRank": 135,
+      "zoneCount": 1,
+      "biometrics": 5358,
+      "biometricsPct": 95.97,
+      "registeredDisability": 36,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 599,
+        "percentage": 10.73
+      },
+      "gender": {
+        "female": 2811,
+        "male": 2772,
+        "notInformed": 0
+      }
+    },
+    "5220702": {
+      "ibgeCode": "5220702",
+      "tseCode": "96113",
+      "name": "Sítio D'Abadia",
+      "electorate": 3507,
+      "stateSharePct": 0.069,
+      "stateRank": 204,
+      "zoneCount": 1,
+      "biometrics": 3386,
+      "biometricsPct": 96.55,
+      "registeredDisability": 57,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 380,
+        "percentage": 10.84
+      },
+      "gender": {
+        "female": 1649,
+        "male": 1858,
+        "notInformed": 0
+      }
+    },
+    "5221007": {
+      "ibgeCode": "5221007",
+      "tseCode": "96172",
+      "name": "Taquaral de Goiás",
+      "electorate": 4457,
+      "stateSharePct": 0.0877,
+      "stateRank": 157,
+      "zoneCount": 1,
+      "biometrics": 4144,
+      "biometricsPct": 92.98,
+      "registeredDisability": 20,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 425,
+        "percentage": 9.54
+      },
+      "gender": {
+        "female": 2274,
+        "male": 2183,
+        "notInformed": 0
+      }
+    },
+    "5221080": {
+      "ibgeCode": "5221080",
+      "tseCode": "92762",
+      "name": "Teresina de Goiás",
+      "electorate": 3275,
+      "stateSharePct": 0.0645,
+      "stateRank": 213,
+      "zoneCount": 1,
+      "biometrics": 3137,
+      "biometricsPct": 95.79,
+      "registeredDisability": 43,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "30 a 34 anos",
+        "electorate": 337,
+        "percentage": 10.29
+      },
+      "gender": {
+        "female": 1610,
+        "male": 1665,
+        "notInformed": 0
+      }
+    },
+    "5221197": {
+      "ibgeCode": "5221197",
+      "tseCode": "93220",
+      "name": "Terezópolis de Goiás",
+      "electorate": 6835,
+      "stateSharePct": 0.1345,
+      "stateRank": 119,
+      "zoneCount": 1,
+      "biometrics": 6583,
+      "biometricsPct": 96.31,
+      "registeredDisability": 49,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 691,
+        "percentage": 10.11
+      },
+      "gender": {
+        "female": 3542,
+        "male": 3293,
+        "notInformed": 0
+      }
+    },
+    "5221304": {
+      "ibgeCode": "5221304",
+      "tseCode": "96237",
+      "name": "Três Ranchos",
+      "electorate": 3909,
+      "stateSharePct": 0.0769,
+      "stateRank": 182,
+      "zoneCount": 1,
+      "biometrics": 3800,
+      "biometricsPct": 97.21,
+      "registeredDisability": 36,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 362,
+        "percentage": 9.26
+      },
+      "gender": {
+        "female": 1860,
+        "male": 2049,
+        "notInformed": 0
+      }
+    },
+    "5221403": {
+      "ibgeCode": "5221403",
+      "tseCode": "96253",
+      "name": "Trindade",
+      "electorate": 95993,
+      "stateSharePct": 1.8893,
+      "stateRank": 8,
+      "zoneCount": 1,
+      "biometrics": 90165,
+      "biometricsPct": 93.93,
+      "registeredDisability": 1221,
+      "socialName": 18,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 10233,
+        "percentage": 10.66
+      },
+      "gender": {
+        "female": 51733,
+        "male": 44260,
+        "notInformed": 0
+      }
+    },
+    "5221452": {
+      "ibgeCode": "5221452",
+      "tseCode": "92789",
+      "name": "Trombas",
+      "electorate": 3071,
+      "stateSharePct": 0.0604,
+      "stateRank": 222,
+      "zoneCount": 1,
+      "biometrics": 2920,
+      "biometricsPct": 95.08,
+      "registeredDisability": 29,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 277,
+        "percentage": 9.02
+      },
+      "gender": {
+        "female": 1499,
+        "male": 1572,
+        "notInformed": 0
+      }
+    },
+    "5221502": {
+      "ibgeCode": "5221502",
+      "tseCode": "96318",
+      "name": "Turvânia",
+      "electorate": 4593,
+      "stateSharePct": 0.0904,
+      "stateRank": 151,
+      "zoneCount": 1,
+      "biometrics": 4462,
+      "biometricsPct": 97.15,
+      "registeredDisability": 36,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 447,
+        "percentage": 9.73
+      },
+      "gender": {
+        "female": 2309,
+        "male": 2284,
+        "notInformed": 0
+      }
+    },
+    "5221551": {
+      "ibgeCode": "5221551",
+      "tseCode": "92800",
+      "name": "Turvelândia",
+      "electorate": 4207,
+      "stateSharePct": 0.0828,
+      "stateRank": 164,
+      "zoneCount": 1,
+      "biometrics": 4014,
+      "biometricsPct": 95.41,
+      "registeredDisability": 21,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 435,
+        "percentage": 10.34
+      },
+      "gender": {
+        "female": 2038,
+        "male": 2169,
+        "notInformed": 0
+      }
+    },
+    "5221577": {
+      "ibgeCode": "5221577",
+      "tseCode": "93246",
+      "name": "Uirapuru",
+      "electorate": 3086,
+      "stateSharePct": 0.0607,
+      "stateRank": 220,
+      "zoneCount": 1,
+      "biometrics": 2966,
+      "biometricsPct": 96.11,
+      "registeredDisability": 31,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "55 a 59 anos",
+        "electorate": 280,
+        "percentage": 9.07
+      },
+      "gender": {
+        "female": 1489,
+        "male": 1597,
+        "notInformed": 0
+      }
+    },
+    "5221601": {
+      "ibgeCode": "5221601",
+      "tseCode": "96334",
+      "name": "Uruaçu",
+      "electorate": 30499,
+      "stateSharePct": 0.6003,
+      "stateRank": 29,
+      "zoneCount": 1,
+      "biometrics": 28933,
+      "biometricsPct": 94.87,
+      "registeredDisability": 182,
+      "socialName": 5,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 2980,
+        "percentage": 9.77
+      },
+      "gender": {
+        "female": 16249,
+        "male": 14250,
+        "notInformed": 0
+      }
+    },
+    "5221700": {
+      "ibgeCode": "5221700",
+      "tseCode": "96350",
+      "name": "Uruana",
+      "electorate": 10818,
+      "stateSharePct": 0.2129,
+      "stateRank": 72,
+      "zoneCount": 1,
+      "biometrics": 10068,
+      "biometricsPct": 93.07,
+      "registeredDisability": 84,
+      "socialName": 1,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1025,
+        "percentage": 9.47
+      },
+      "gender": {
+        "female": 5619,
+        "male": 5199,
+        "notInformed": 0
+      }
+    },
+    "5221809": {
+      "ibgeCode": "5221809",
+      "tseCode": "96377",
+      "name": "Urutaí",
+      "electorate": 3966,
+      "stateSharePct": 0.0781,
+      "stateRank": 178,
+      "zoneCount": 1,
+      "biometrics": 3814,
+      "biometricsPct": 96.17,
+      "registeredDisability": 18,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 477,
+        "percentage": 12.03
+      },
+      "gender": {
+        "female": 1907,
+        "male": 2059,
+        "notInformed": 0
+      }
+    },
+    "5221858": {
+      "ibgeCode": "5221858",
+      "tseCode": "93300",
+      "name": "Valparaíso de Goiás",
+      "electorate": 99338,
+      "stateSharePct": 1.9552,
+      "stateRank": 7,
+      "zoneCount": 1,
+      "biometrics": 90871,
+      "biometricsPct": 91.48,
+      "registeredDisability": 641,
+      "socialName": 35,
+      "topAgeGroup": {
+        "label": "25 a 29 anos",
+        "electorate": 11403,
+        "percentage": 11.48
+      },
+      "gender": {
+        "female": 54062,
+        "male": 45276,
+        "notInformed": 0
+      }
+    },
+    "5221908": {
+      "ibgeCode": "5221908",
+      "tseCode": "96393",
+      "name": "Varjão",
+      "electorate": 4458,
+      "stateSharePct": 0.0877,
+      "stateRank": 156,
+      "zoneCount": 1,
+      "biometrics": 4295,
+      "biometricsPct": 96.34,
+      "registeredDisability": 27,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 426,
+        "percentage": 9.56
+      },
+      "gender": {
+        "female": 2208,
+        "male": 2250,
+        "notInformed": 0
+      }
+    },
+    "5222005": {
+      "ibgeCode": "5222005",
+      "tseCode": "96415",
+      "name": "Vianópolis",
+      "electorate": 11284,
+      "stateSharePct": 0.2221,
+      "stateRank": 71,
+      "zoneCount": 1,
+      "biometrics": 10451,
+      "biometricsPct": 92.62,
+      "registeredDisability": 85,
+      "socialName": 3,
+      "topAgeGroup": {
+        "label": "45 a 49 anos",
+        "electorate": 1122,
+        "percentage": 9.94
+      },
+      "gender": {
+        "female": 5915,
+        "male": 5369,
+        "notInformed": 0
+      }
+    },
+    "5222054": {
+      "ibgeCode": "5222054",
+      "tseCode": "96571",
+      "name": "Vicentinópolis",
+      "electorate": 7116,
+      "stateSharePct": 0.1401,
+      "stateRank": 115,
+      "zoneCount": 1,
+      "biometrics": 6670,
+      "biometricsPct": 93.73,
+      "registeredDisability": 39,
+      "socialName": 4,
+      "topAgeGroup": {
+        "label": "35 a 39 anos",
+        "electorate": 750,
+        "percentage": 10.54
+      },
+      "gender": {
+        "female": 3542,
+        "male": 3574,
+        "notInformed": 0
+      }
+    },
+    "5222203": {
+      "ibgeCode": "5222203",
+      "tseCode": "93289",
+      "name": "Vila Boa",
+      "electorate": 4029,
+      "stateSharePct": 0.0793,
+      "stateRank": 173,
+      "zoneCount": 1,
+      "biometrics": 3796,
+      "biometricsPct": 94.22,
+      "registeredDisability": 43,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "40 a 44 anos",
+        "electorate": 435,
+        "percentage": 10.8
+      },
+      "gender": {
+        "female": 1977,
+        "male": 2052,
+        "notInformed": 0
+      }
+    },
+    "5222302": {
+      "ibgeCode": "5222302",
+      "tseCode": "93505",
+      "name": "Vila Propício",
+      "electorate": 6036,
+      "stateSharePct": 0.1188,
+      "stateRank": 126,
+      "zoneCount": 1,
+      "biometrics": 5779,
+      "biometricsPct": 95.74,
+      "registeredDisability": 41,
+      "socialName": 0,
+      "topAgeGroup": {
+        "label": "50 a 54 anos",
+        "electorate": 585,
+        "percentage": 9.69
+      },
+      "gender": {
+        "female": 2894,
+        "male": 3142,
+        "notInformed": 0
+      }
+    }
+  }
+}

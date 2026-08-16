@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "state": "RS",
+    "municipalityCount": 1
+  },
+  "municipalities": {
+    "4314902": {
+      "ibgeCode": "4314902",
+      "tseCode": "88013",
+      "name": "TESTELANDIA",
+      "electorate": 600
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+ "metadata": {
+  "state": "GO",
+  "status": "pendente",
+  "years": [],
+  "offices": [],
+  "rounds": [],
+  "source": "TSE",
+  "dataset": "Votação por seção",
+  "sourceUrl": "https://dadosabertos.tse.jus.br/",
+  "processedAtUtc": "1970-01-01T00:00:00+00:00",
+  "municipalityCount": 0,
+  "contestCount": 0,
+  "municipalResultCount": 0,
+  "sourceRows": 0,
+  "selectedRows": 0,
+  "privacyLevel": "Resultados públicos agregados por município.",
+  "inputFiles": {},
+  "note": "Dados de Goiás ainda não gerados. Rode `bash gerar_dados.sh` na raiz do projeto para baixar do TSE/IBGE e preencher este arquivo."
+ },
+ "contests": []
+}

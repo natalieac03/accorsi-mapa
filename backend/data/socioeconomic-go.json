@@ -1,0 +1,3822 @@
+{
+  "metadata": {
+    "state": "GO",
+    "municipalityCount": 246,
+    "source": "IBGE — Cidades e Estados (API de Pesquisas v1)",
+    "sourceUrl": "https://servicodados.ibge.gov.br/api/docs/pesquisas",
+    "apiVersion": "1",
+    "retrievedAtUtc": "2026-08-16T20:32:25+00:00",
+    "indicatorCount": 9,
+    "indicators": [
+      {
+        "code": "populationEstimate",
+        "ibgeIndicatorId": 29171,
+        "label": "População estimada",
+        "shortLabel": "População estimada",
+        "description": "Estimativa oficial da população residente no município.",
+        "referenceYear": 2025,
+        "unit": "pessoas",
+        "valueFormat": "integer",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "censusPopulation",
+        "ibgeIndicatorId": 96385,
+        "label": "População no último Censo",
+        "shortLabel": "População do Censo",
+        "description": "População residente recenseada pelo Censo Demográfico 2022.",
+        "referenceYear": 2022,
+        "unit": "pessoas",
+        "valueFormat": "integer",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "populationDensity",
+        "ibgeIndicatorId": 96386,
+        "label": "Densidade demográfica",
+        "shortLabel": "Densidade",
+        "description": "Habitantes por quilômetro quadrado no Censo 2022.",
+        "referenceYear": 2022,
+        "unit": "hab./km²",
+        "valueFormat": "decimal",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "gdpPerCapita",
+        "ibgeIndicatorId": 47001,
+        "label": "PIB per capita",
+        "shortLabel": "PIB per capita",
+        "description": "Produto Interno Bruto municipal por habitante.",
+        "referenceYear": 2023,
+        "unit": "R$ por pessoa",
+        "valueFormat": "currency",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "schoolAttendance",
+        "ibgeIndicatorId": 60045,
+        "label": "Escolarização de 6 a 14 anos",
+        "shortLabel": "Escolarização",
+        "description": "Percentual das crianças de 6 a 14 anos que frequentam a escola.",
+        "referenceYear": 2022,
+        "unit": "% da faixa etária",
+        "valueFormat": "percent",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "occupiedPopulation",
+        "ibgeIndicatorId": 60036,
+        "label": "População ocupada",
+        "shortLabel": "População ocupada",
+        "description": "Pessoas ocupadas em relação à população do município.",
+        "referenceYear": 2022,
+        "unit": "% da população",
+        "valueFormat": "percent",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "formalAverageSalary",
+        "ibgeIndicatorId": 143558,
+        "label": "Salário médio dos trabalhadores formais",
+        "shortLabel": "Salário formal",
+        "description": "Rendimento médio mensal dos trabalhadores formais.",
+        "referenceYear": 2024,
+        "unit": "salários mínimos",
+        "valueFormat": "decimal",
+        "requiredCoverage": true,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "adequateSanitation",
+        "ibgeIndicatorId": 60030,
+        "label": "Esgotamento sanitário adequado",
+        "shortLabel": "Saneamento adequado",
+        "description": "Domicílios com esgotamento sanitário considerado adequado.",
+        "referenceYear": 2022,
+        "unit": "% dos domicílios",
+        "valueFormat": "percent",
+        "requiredCoverage": false,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      },
+      {
+        "code": "lowIncomePopulation",
+        "ibgeIndicatorId": 60037,
+        "label": "População com renda per capita de até 1/2 salário mínimo",
+        "shortLabel": "Renda baixa",
+        "description": "Indicador histórico de população com renda nominal mensal per capita de até meio salário mínimo.",
+        "referenceYear": 2010,
+        "unit": "% da população",
+        "valueFormat": "percent",
+        "requiredCoverage": false,
+        "coverageCount": 246,
+        "missingMunicipalityCodes": []
+      }
+    ]
+  },
+  "municipalities": {
+    "5200050": {
+      "ibgeCode": "5200050",
+      "name": "Abadia de Goiás",
+      "values": {
+        "populationEstimate": 22052,
+        "censusPopulation": 19128,
+        "populationDensity": 133.43,
+        "gdpPerCapita": 24988.67,
+        "schoolAttendance": 94.48,
+        "occupiedPopulation": 17.05,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 15.94,
+        "lowIncomePopulation": 30.6
+      }
+    },
+    "5200100": {
+      "ibgeCode": "5200100",
+      "name": "Abadiânia",
+      "values": {
+        "populationEstimate": 17738,
+        "censusPopulation": 17232,
+        "populationDensity": 16.5,
+        "gdpPerCapita": 36735.42,
+        "schoolAttendance": 99.0,
+        "occupiedPopulation": 18.7,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 55.48,
+        "lowIncomePopulation": 35.9
+      }
+    },
+    "5200134": {
+      "ibgeCode": "5200134",
+      "name": "Acreúna",
+      "values": {
+        "populationEstimate": 22079,
+        "censusPopulation": 21568,
+        "populationDensity": 13.77,
+        "gdpPerCapita": 55089.91,
+        "schoolAttendance": 98.22,
+        "occupiedPopulation": 20.01,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 33.25,
+        "lowIncomePopulation": 35.8
+      }
+    },
+    "5200159": {
+      "ibgeCode": "5200159",
+      "name": "Adelândia",
+      "values": {
+        "populationEstimate": 2282,
+        "censusPopulation": 2297,
+        "populationDensity": 19.91,
+        "gdpPerCapita": 25897.08,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 22.55,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.4,
+        "lowIncomePopulation": 34.7
+      }
+    },
+    "5200175": {
+      "ibgeCode": "5200175",
+      "name": "Água Fria de Goiás",
+      "values": {
+        "populationEstimate": 4979,
+        "censusPopulation": 4954,
+        "populationDensity": 2.45,
+        "gdpPerCapita": 96142.06,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.89,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 1.79,
+        "lowIncomePopulation": 44.4
+      }
+    },
+    "5200209": {
+      "ibgeCode": "5200209",
+      "name": "Água Limpa",
+      "values": {
+        "populationEstimate": 1843,
+        "censusPopulation": 1858,
+        "populationDensity": 4.05,
+        "gdpPerCapita": 40331.17,
+        "schoolAttendance": 99.14,
+        "occupiedPopulation": 21.04,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 1.25,
+        "lowIncomePopulation": 34.9
+      }
+    },
+    "5200258": {
+      "ibgeCode": "5200258",
+      "name": "Águas Lindas de Goiás",
+      "values": {
+        "populationEstimate": 245352,
+        "censusPopulation": 225693,
+        "populationDensity": 1176.61,
+        "gdpPerCapita": 13567.92,
+        "schoolAttendance": 98.1,
+        "occupiedPopulation": 8.51,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 49.69,
+        "lowIncomePopulation": 35.4
+      }
+    },
+    "5200308": {
+      "ibgeCode": "5200308",
+      "name": "Alexânia",
+      "values": {
+        "populationEstimate": 28244,
+        "censusPopulation": 27008,
+        "populationDensity": 31.89,
+        "gdpPerCapita": 67842.14,
+        "schoolAttendance": 97.7,
+        "occupiedPopulation": 26.33,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 2.24,
+        "lowIncomePopulation": 37.1
+      }
+    },
+    "5200506": {
+      "ibgeCode": "5200506",
+      "name": "Aloândia",
+      "values": {
+        "populationEstimate": 1977,
+        "censusPopulation": 1973,
+        "populationDensity": 19.33,
+        "gdpPerCapita": 33658.5,
+        "schoolAttendance": 98.71,
+        "occupiedPopulation": 14.8,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 2.18,
+        "lowIncomePopulation": 33.6
+      }
+    },
+    "5200555": {
+      "ibgeCode": "5200555",
+      "name": "Alto Horizonte",
+      "values": {
+        "populationEstimate": 6487,
+        "censusPopulation": 6072,
+        "populationDensity": 12.14,
+        "gdpPerCapita": 102603.04,
+        "schoolAttendance": 98.04,
+        "occupiedPopulation": 55.78,
+        "formalAverageSalary": 4.1,
+        "adequateSanitation": 24.44,
+        "lowIncomePopulation": 32.2
+      }
+    },
+    "5200605": {
+      "ibgeCode": "5200605",
+      "name": "Alto Paraíso de Goiás",
+      "values": {
+        "populationEstimate": 11182,
+        "censusPopulation": 10306,
+        "populationDensity": 3.97,
+        "gdpPerCapita": 39619.83,
+        "schoolAttendance": 97.98,
+        "occupiedPopulation": 28.06,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.1,
+        "lowIncomePopulation": 35.0
+      }
+    },
+    "5200803": {
+      "ibgeCode": "5200803",
+      "name": "Alvorada do Norte",
+      "values": {
+        "populationEstimate": 8619,
+        "censusPopulation": 8446,
+        "populationDensity": 6.66,
+        "gdpPerCapita": 26415.93,
+        "schoolAttendance": 98.31,
+        "occupiedPopulation": 18.96,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 42.87,
+        "lowIncomePopulation": 41.1
+      }
+    },
+    "5200829": {
+      "ibgeCode": "5200829",
+      "name": "Amaralina",
+      "values": {
+        "populationEstimate": 3267,
+        "censusPopulation": 3268,
+        "populationDensity": 2.43,
+        "gdpPerCapita": 38127.48,
+        "schoolAttendance": 98.31,
+        "occupiedPopulation": 10.65,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.74,
+        "lowIncomePopulation": 50.0
+      }
+    },
+    "5200852": {
+      "ibgeCode": "5200852",
+      "name": "Americano do Brasil",
+      "values": {
+        "populationEstimate": 5260,
+        "censusPopulation": 5259,
+        "populationDensity": 39.29,
+        "gdpPerCapita": 20174.66,
+        "schoolAttendance": 98.55,
+        "occupiedPopulation": 15.84,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 9.76,
+        "lowIncomePopulation": 38.7
+      }
+    },
+    "5200902": {
+      "ibgeCode": "5200902",
+      "name": "Amorinópolis",
+      "values": {
+        "populationEstimate": 2906,
+        "censusPopulation": 3007,
+        "populationDensity": 7.39,
+        "gdpPerCapita": 43513.34,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 12.14,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.97,
+        "lowIncomePopulation": 38.7
+      }
+    },
+    "5201108": {
+      "ibgeCode": "5201108",
+      "name": "Anápolis",
+      "values": {
+        "populationEstimate": 420300,
+        "censusPopulation": 398869,
+        "populationDensity": 426.29,
+        "gdpPerCapita": 51225.11,
+        "schoolAttendance": 98.29,
+        "occupiedPopulation": 34.16,
+        "formalAverageSalary": 2.5,
+        "adequateSanitation": 63.05,
+        "lowIncomePopulation": 31.9
+      }
+    },
+    "5201207": {
+      "ibgeCode": "5201207",
+      "name": "Anhanguera",
+      "values": {
+        "populationEstimate": 913,
+        "censusPopulation": 924,
+        "populationDensity": 16.63,
+        "gdpPerCapita": 28936.7,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 18.07,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.95,
+        "lowIncomePopulation": 27.6
+      }
+    },
+    "5201306": {
+      "ibgeCode": "5201306",
+      "name": "Anicuns",
+      "values": {
+        "populationEstimate": 18306,
+        "censusPopulation": 18503,
+        "populationDensity": 18.96,
+        "gdpPerCapita": 39481.4,
+        "schoolAttendance": 99.42,
+        "occupiedPopulation": 21.68,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 39.06,
+        "lowIncomePopulation": 35.3
+      }
+    },
+    "5201405": {
+      "ibgeCode": "5201405",
+      "name": "Aparecida de Goiânia",
+      "values": {
+        "populationEstimate": 556021,
+        "censusPopulation": 527796,
+        "populationDensity": 1885.3,
+        "gdpPerCapita": 39577.67,
+        "schoolAttendance": 96.31,
+        "occupiedPopulation": 27.18,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 58.53,
+        "lowIncomePopulation": 29.6
+      }
+    },
+    "5201454": {
+      "ibgeCode": "5201454",
+      "name": "Aparecida do Rio Doce",
+      "values": {
+        "populationEstimate": 3045,
+        "censusPopulation": 2907,
+        "populationDensity": 4.82,
+        "gdpPerCapita": 52059.61,
+        "schoolAttendance": 98.96,
+        "occupiedPopulation": 16.99,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 75.7,
+        "lowIncomePopulation": 36.5
+      }
+    },
+    "5201504": {
+      "ibgeCode": "5201504",
+      "name": "Aporé",
+      "values": {
+        "populationEstimate": 4488,
+        "censusPopulation": 4325,
+        "populationDensity": 1.49,
+        "gdpPerCapita": 119903.44,
+        "schoolAttendance": 98.65,
+        "occupiedPopulation": 26.68,
+        "formalAverageSalary": 3.0,
+        "adequateSanitation": 7.53,
+        "lowIncomePopulation": 31.8
+      }
+    },
+    "5201603": {
+      "ibgeCode": "5201603",
+      "name": "Araçu",
+      "values": {
+        "populationEstimate": 3840,
+        "censusPopulation": 3799,
+        "populationDensity": 25.36,
+        "gdpPerCapita": 22961.79,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.43,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 1.97,
+        "lowIncomePopulation": 36.4
+      }
+    },
+    "5201702": {
+      "ibgeCode": "5201702",
+      "name": "Aragarças",
+      "values": {
+        "populationEstimate": 18601,
+        "censusPopulation": 18390,
+        "populationDensity": 27.79,
+        "gdpPerCapita": 19607.04,
+        "schoolAttendance": 98.22,
+        "occupiedPopulation": 15.08,
+        "formalAverageSalary": 4.7,
+        "adequateSanitation": 2.63,
+        "lowIncomePopulation": 34.2
+      }
+    },
+    "5201801": {
+      "ibgeCode": "5201801",
+      "name": "Aragoiânia",
+      "values": {
+        "populationEstimate": 12806,
+        "censusPopulation": 11890,
+        "populationDensity": 54.51,
+        "gdpPerCapita": 20007.46,
+        "schoolAttendance": 91.12,
+        "occupiedPopulation": 13.68,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 3.44,
+        "lowIncomePopulation": 33.2
+      }
+    },
+    "5202155": {
+      "ibgeCode": "5202155",
+      "name": "Araguapaz",
+      "values": {
+        "populationEstimate": 7152,
+        "censusPopulation": 7153,
+        "populationDensity": 3.27,
+        "gdpPerCapita": 35344.29,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.17,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 45.46,
+        "lowIncomePopulation": 35.9
+      }
+    },
+    "5202353": {
+      "ibgeCode": "5202353",
+      "name": "Arenópolis",
+      "values": {
+        "populationEstimate": 2904,
+        "censusPopulation": 2946,
+        "populationDensity": 2.74,
+        "gdpPerCapita": 91292.31,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 22.37,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 3.05,
+        "lowIncomePopulation": 38.8
+      }
+    },
+    "5202502": {
+      "ibgeCode": "5202502",
+      "name": "Aruanã",
+      "values": {
+        "populationEstimate": 8570,
+        "censusPopulation": 8300,
+        "populationDensity": 2.72,
+        "gdpPerCapita": 45773.57,
+        "schoolAttendance": 99.08,
+        "occupiedPopulation": 21.29,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 32.62,
+        "lowIncomePopulation": 33.1
+      }
+    },
+    "5202601": {
+      "ibgeCode": "5202601",
+      "name": "Aurilândia",
+      "values": {
+        "populationEstimate": 3237,
+        "censusPopulation": 3284,
+        "populationDensity": 5.81,
+        "gdpPerCapita": 33910.67,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 13.86,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 2.91,
+        "lowIncomePopulation": 35.7
+      }
+    },
+    "5202809": {
+      "ibgeCode": "5202809",
+      "name": "Avelinópolis",
+      "values": {
+        "populationEstimate": 2993,
+        "censusPopulation": 2868,
+        "populationDensity": 16.85,
+        "gdpPerCapita": 29152.11,
+        "schoolAttendance": 98.14,
+        "occupiedPopulation": 17.99,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 1.32,
+        "lowIncomePopulation": 35.2
+      }
+    },
+    "5203104": {
+      "ibgeCode": "5203104",
+      "name": "Baliza",
+      "values": {
+        "populationEstimate": 3306,
+        "censusPopulation": 3351,
+        "populationDensity": 1.88,
+        "gdpPerCapita": 52361.15,
+        "schoolAttendance": 99.2,
+        "occupiedPopulation": 9.82,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 0.6,
+        "lowIncomePopulation": 51.6
+      }
+    },
+    "5203203": {
+      "ibgeCode": "5203203",
+      "name": "Barro Alto",
+      "values": {
+        "populationEstimate": 10853,
+        "censusPopulation": 10371,
+        "populationDensity": 9.6,
+        "gdpPerCapita": 162586.72,
+        "schoolAttendance": 98.69,
+        "occupiedPopulation": 45.29,
+        "formalAverageSalary": 3.0,
+        "adequateSanitation": 2.52,
+        "lowIncomePopulation": 31.5
+      }
+    },
+    "5203302": {
+      "ibgeCode": "5203302",
+      "name": "Bela Vista de Goiás",
+      "values": {
+        "populationEstimate": 37305,
+        "censusPopulation": 34445,
+        "populationDensity": 27.04,
+        "gdpPerCapita": 57574.87,
+        "schoolAttendance": 97.43,
+        "occupiedPopulation": 20.01,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 39.96,
+        "lowIncomePopulation": 30.6
+      }
+    },
+    "5203401": {
+      "ibgeCode": "5203401",
+      "name": "Bom Jardim de Goiás",
+      "values": {
+        "populationEstimate": 7775,
+        "censusPopulation": 7826,
+        "populationDensity": 4.12,
+        "gdpPerCapita": 53432.9,
+        "schoolAttendance": 99.47,
+        "occupiedPopulation": 12.29,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 33.28,
+        "lowIncomePopulation": 39.1
+      }
+    },
+    "5203500": {
+      "ibgeCode": "5203500",
+      "name": "Bom Jesus de Goiás",
+      "values": {
+        "populationEstimate": 24925,
+        "censusPopulation": 23958,
+        "populationDensity": 17.04,
+        "gdpPerCapita": 63122.76,
+        "schoolAttendance": 97.61,
+        "occupiedPopulation": 18.56,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 88.97,
+        "lowIncomePopulation": 33.5
+      }
+    },
+    "5203559": {
+      "ibgeCode": "5203559",
+      "name": "Bonfinópolis",
+      "values": {
+        "populationEstimate": 11025,
+        "censusPopulation": 10296,
+        "populationDensity": 84.45,
+        "gdpPerCapita": 15396.24,
+        "schoolAttendance": 99.28,
+        "occupiedPopulation": 11.17,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 1.46,
+        "lowIncomePopulation": 32.4
+      }
+    },
+    "5203575": {
+      "ibgeCode": "5203575",
+      "name": "Bonópolis",
+      "values": {
+        "populationEstimate": 3289,
+        "censusPopulation": 3299,
+        "populationDensity": 2.02,
+        "gdpPerCapita": 85569.5,
+        "schoolAttendance": 98.33,
+        "occupiedPopulation": 18.61,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 8.99,
+        "lowIncomePopulation": 41.7
+      }
+    },
+    "5203609": {
+      "ibgeCode": "5203609",
+      "name": "Brazabrantes",
+      "values": {
+        "populationEstimate": 4201,
+        "censusPopulation": 3992,
+        "populationDensity": 31.85,
+        "gdpPerCapita": 26656.32,
+        "schoolAttendance": 98.56,
+        "occupiedPopulation": 15.23,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.85,
+        "lowIncomePopulation": 33.3
+      }
+    },
+    "5203807": {
+      "ibgeCode": "5203807",
+      "name": "Britânia",
+      "values": {
+        "populationEstimate": 5798,
+        "censusPopulation": 5695,
+        "populationDensity": 3.9,
+        "gdpPerCapita": 53643.01,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 19.77,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 62.7,
+        "lowIncomePopulation": 36.8
+      }
+    },
+    "5203906": {
+      "ibgeCode": "5203906",
+      "name": "Buriti Alegre",
+      "values": {
+        "populationEstimate": 10930,
+        "censusPopulation": 10495,
+        "populationDensity": 11.64,
+        "gdpPerCapita": 53513.2,
+        "schoolAttendance": 96.38,
+        "occupiedPopulation": 24.57,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 8.56,
+        "lowIncomePopulation": 29.5
+      }
+    },
+    "5203939": {
+      "ibgeCode": "5203939",
+      "name": "Buriti de Goiás",
+      "values": {
+        "populationEstimate": 2800,
+        "censusPopulation": 2732,
+        "populationDensity": 13.49,
+        "gdpPerCapita": 28905.95,
+        "schoolAttendance": 98.71,
+        "occupiedPopulation": 21.45,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 22.04,
+        "lowIncomePopulation": 30.0
+      }
+    },
+    "5203962": {
+      "ibgeCode": "5203962",
+      "name": "Buritinópolis",
+      "values": {
+        "populationEstimate": 3140,
+        "censusPopulation": 3145,
+        "populationDensity": 12.78,
+        "gdpPerCapita": 21624.87,
+        "schoolAttendance": 99.28,
+        "occupiedPopulation": 14.85,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.67,
+        "lowIncomePopulation": 46.4
+      }
+    },
+    "5204003": {
+      "ibgeCode": "5204003",
+      "name": "Cabeceiras",
+      "values": {
+        "populationEstimate": 7689,
+        "censusPopulation": 7560,
+        "populationDensity": 6.71,
+        "gdpPerCapita": 64064.49,
+        "schoolAttendance": 98.2,
+        "occupiedPopulation": 16.93,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 3.14,
+        "lowIncomePopulation": 40.3
+      }
+    },
+    "5204102": {
+      "ibgeCode": "5204102",
+      "name": "Cachoeira Alta",
+      "values": {
+        "populationEstimate": 11854,
+        "censusPopulation": 11513,
+        "populationDensity": 6.95,
+        "gdpPerCapita": 31716.3,
+        "schoolAttendance": 97.57,
+        "occupiedPopulation": 14.21,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 65.27,
+        "lowIncomePopulation": 29.2
+      }
+    },
+    "5204201": {
+      "ibgeCode": "5204201",
+      "name": "Cachoeira de Goiás",
+      "values": {
+        "populationEstimate": 1417,
+        "censusPopulation": 1405,
+        "populationDensity": 3.31,
+        "gdpPerCapita": 32400.28,
+        "schoolAttendance": 93.38,
+        "occupiedPopulation": 17.58,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 4.41,
+        "lowIncomePopulation": 37.0
+      }
+    },
+    "5204250": {
+      "ibgeCode": "5204250",
+      "name": "Cachoeira Dourada",
+      "values": {
+        "populationEstimate": 7762,
+        "censusPopulation": 7782,
+        "populationDensity": 14.73,
+        "gdpPerCapita": 114440.47,
+        "schoolAttendance": 99.67,
+        "occupiedPopulation": 32.88,
+        "formalAverageSalary": 3.1,
+        "adequateSanitation": 44.99,
+        "lowIncomePopulation": 35.6
+      }
+    },
+    "5204300": {
+      "ibgeCode": "5204300",
+      "name": "Caçu",
+      "values": {
+        "populationEstimate": 14034,
+        "censusPopulation": 13774,
+        "populationDensity": 6.11,
+        "gdpPerCapita": 88571.53,
+        "schoolAttendance": 97.0,
+        "occupiedPopulation": 31.7,
+        "formalAverageSalary": 2.7,
+        "adequateSanitation": 80.6,
+        "lowIncomePopulation": 28.9
+      }
+    },
+    "5204409": {
+      "ibgeCode": "5204409",
+      "name": "Caiapônia",
+      "values": {
+        "populationEstimate": 16628,
+        "censusPopulation": 16513,
+        "populationDensity": 1.91,
+        "gdpPerCapita": 88193.41,
+        "schoolAttendance": 99.37,
+        "occupiedPopulation": 15.22,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 71.38,
+        "lowIncomePopulation": 37.8
+      }
+    },
+    "5204508": {
+      "ibgeCode": "5204508",
+      "name": "Caldas Novas",
+      "values": {
+        "populationEstimate": 106820,
+        "censusPopulation": 98622,
+        "populationDensity": 61.31,
+        "gdpPerCapita": 38348.69,
+        "schoolAttendance": 98.41,
+        "occupiedPopulation": 34.0,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 43.72,
+        "lowIncomePopulation": 29.3
+      }
+    },
+    "5204557": {
+      "ibgeCode": "5204557",
+      "name": "Caldazinha",
+      "values": {
+        "populationEstimate": 4819,
+        "censusPopulation": 4507,
+        "populationDensity": 17.9,
+        "gdpPerCapita": 22964.63,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 11.58,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 0.91,
+        "lowIncomePopulation": 39.4
+      }
+    },
+    "5204607": {
+      "ibgeCode": "5204607",
+      "name": "Campestre de Goiás",
+      "values": {
+        "populationEstimate": 3879,
+        "censusPopulation": 3755,
+        "populationDensity": 13.77,
+        "gdpPerCapita": 20841.57,
+        "schoolAttendance": 98.32,
+        "occupiedPopulation": 13.08,
+        "formalAverageSalary": 1.4,
+        "adequateSanitation": 0.45,
+        "lowIncomePopulation": 38.5
+      }
+    },
+    "5204656": {
+      "ibgeCode": "5204656",
+      "name": "Campinaçu",
+      "values": {
+        "populationEstimate": 3760,
+        "censusPopulation": 3708,
+        "populationDensity": 1.87,
+        "gdpPerCapita": 36667.92,
+        "schoolAttendance": 99.3,
+        "occupiedPopulation": 16.45,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 0.16,
+        "lowIncomePopulation": 40.5
+      }
+    },
+    "5204706": {
+      "ibgeCode": "5204706",
+      "name": "Campinorte",
+      "values": {
+        "populationEstimate": 12983,
+        "censusPopulation": 12510,
+        "populationDensity": 11.75,
+        "gdpPerCapita": 33786.65,
+        "schoolAttendance": 98.33,
+        "occupiedPopulation": 15.58,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 0.93,
+        "lowIncomePopulation": 35.5
+      }
+    },
+    "5204805": {
+      "ibgeCode": "5204805",
+      "name": "Campo Alegre de Goiás",
+      "values": {
+        "populationEstimate": 7807,
+        "censusPopulation": 7422,
+        "populationDensity": 3.03,
+        "gdpPerCapita": 130003.37,
+        "schoolAttendance": 99.35,
+        "occupiedPopulation": 20.13,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 5.03,
+        "lowIncomePopulation": 32.9
+      }
+    },
+    "5204854": {
+      "ibgeCode": "5204854",
+      "name": "Campo Limpo de Goiás",
+      "values": {
+        "populationEstimate": 8579,
+        "censusPopulation": 8081,
+        "populationDensity": 51.76,
+        "gdpPerCapita": 29420.98,
+        "schoolAttendance": 99.58,
+        "occupiedPopulation": 23.14,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 1.1,
+        "lowIncomePopulation": 33.9
+      }
+    },
+    "5204904": {
+      "ibgeCode": "5204904",
+      "name": "Campos Belos",
+      "values": {
+        "populationEstimate": 18227,
+        "censusPopulation": 18108,
+        "populationDensity": 24.63,
+        "gdpPerCapita": 22357.19,
+        "schoolAttendance": 99.63,
+        "occupiedPopulation": 17.03,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 69.9,
+        "lowIncomePopulation": 40.8
+      }
+    },
+    "5204953": {
+      "ibgeCode": "5204953",
+      "name": "Campos Verdes",
+      "values": {
+        "populationEstimate": 3822,
+        "censusPopulation": 4005,
+        "populationDensity": 9.04,
+        "gdpPerCapita": 20215.75,
+        "schoolAttendance": 99.6,
+        "occupiedPopulation": 17.33,
+        "formalAverageSalary": 1.3,
+        "adequateSanitation": 0.75,
+        "lowIncomePopulation": 47.5
+      }
+    },
+    "5205000": {
+      "ibgeCode": "5205000",
+      "name": "Carmo do Rio Verde",
+      "values": {
+        "populationEstimate": 9988,
+        "censusPopulation": 9710,
+        "populationDensity": 23.13,
+        "gdpPerCapita": 55986.32,
+        "schoolAttendance": 99.57,
+        "occupiedPopulation": 18.56,
+        "formalAverageSalary": 2.9,
+        "adequateSanitation": 0.49,
+        "lowIncomePopulation": 37.3
+      }
+    },
+    "5205059": {
+      "ibgeCode": "5205059",
+      "name": "Castelândia",
+      "values": {
+        "populationEstimate": 2871,
+        "censusPopulation": 2985,
+        "populationDensity": 9.98,
+        "gdpPerCapita": 47008.69,
+        "schoolAttendance": 99.36,
+        "occupiedPopulation": 15.78,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 1.11,
+        "lowIncomePopulation": 38.9
+      }
+    },
+    "5205109": {
+      "ibgeCode": "5205109",
+      "name": "Catalão",
+      "values": {
+        "populationEstimate": 122760,
+        "censusPopulation": 114427,
+        "populationDensity": 29.9,
+        "gdpPerCapita": 90415.66,
+        "schoolAttendance": 97.37,
+        "occupiedPopulation": 31.98,
+        "formalAverageSalary": 2.5,
+        "adequateSanitation": 60.53,
+        "lowIncomePopulation": 28.9
+      }
+    },
+    "5205208": {
+      "ibgeCode": "5205208",
+      "name": "Caturaí",
+      "values": {
+        "populationEstimate": 5352,
+        "censusPopulation": 5184,
+        "populationDensity": 25.28,
+        "gdpPerCapita": 24435.96,
+        "schoolAttendance": 98.63,
+        "occupiedPopulation": 15.07,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 3.4,
+        "lowIncomePopulation": 35.2
+      }
+    },
+    "5205307": {
+      "ibgeCode": "5205307",
+      "name": "Cavalcante",
+      "values": {
+        "populationEstimate": 9730,
+        "censusPopulation": 9583,
+        "populationDensity": 1.38,
+        "gdpPerCapita": 38945.91,
+        "schoolAttendance": 99.71,
+        "occupiedPopulation": 13.14,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 1.87,
+        "lowIncomePopulation": 48.0
+      }
+    },
+    "5205406": {
+      "ibgeCode": "5205406",
+      "name": "Ceres",
+      "values": {
+        "populationEstimate": 22570,
+        "censusPopulation": 22046,
+        "populationDensity": 103.47,
+        "gdpPerCapita": 44727.26,
+        "schoolAttendance": 99.47,
+        "occupiedPopulation": 39.86,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 76.23,
+        "lowIncomePopulation": 30.5
+      }
+    },
+    "5205455": {
+      "ibgeCode": "5205455",
+      "name": "Cezarina",
+      "values": {
+        "populationEstimate": 8301,
+        "censusPopulation": 8090,
+        "populationDensity": 19.4,
+        "gdpPerCapita": 65904.82,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 37.13,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 21.14,
+        "lowIncomePopulation": 37.5
+      }
+    },
+    "5205471": {
+      "ibgeCode": "5205471",
+      "name": "Chapadão do Céu",
+      "values": {
+        "populationEstimate": 14321,
+        "censusPopulation": 12870,
+        "populationDensity": 5.89,
+        "gdpPerCapita": 193162.87,
+        "schoolAttendance": 99.67,
+        "occupiedPopulation": 38.06,
+        "formalAverageSalary": 3.6,
+        "adequateSanitation": 77.01,
+        "lowIncomePopulation": 28.4
+      }
+    },
+    "5205497": {
+      "ibgeCode": "5205497",
+      "name": "Cidade Ocidental",
+      "values": {
+        "populationEstimate": 101570,
+        "censusPopulation": 91767,
+        "populationDensity": 235.31,
+        "gdpPerCapita": 14722.21,
+        "schoolAttendance": 98.28,
+        "occupiedPopulation": 9.02,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 31.9,
+        "lowIncomePopulation": 33.4
+      }
+    },
+    "5205513": {
+      "ibgeCode": "5205513",
+      "name": "Cocalzinho de Goiás",
+      "values": {
+        "populationEstimate": 27196,
+        "censusPopulation": 25016,
+        "populationDensity": 14.01,
+        "gdpPerCapita": 21193.77,
+        "schoolAttendance": 98.75,
+        "occupiedPopulation": 8.97,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 7.36,
+        "lowIncomePopulation": 38.9
+      }
+    },
+    "5205521": {
+      "ibgeCode": "5205521",
+      "name": "Colinas do Sul",
+      "values": {
+        "populationEstimate": 4188,
+        "censusPopulation": 4030,
+        "populationDensity": 2.36,
+        "gdpPerCapita": 21686.6,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 11.81,
+        "formalAverageSalary": 2.5,
+        "adequateSanitation": 1.17,
+        "lowIncomePopulation": 39.4
+      }
+    },
+    "5205703": {
+      "ibgeCode": "5205703",
+      "name": "Córrego do Ouro",
+      "values": {
+        "populationEstimate": 2441,
+        "censusPopulation": 2454,
+        "populationDensity": 5.36,
+        "gdpPerCapita": 35603.05,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 16.42,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.49,
+        "lowIncomePopulation": 33.7
+      }
+    },
+    "5205802": {
+      "ibgeCode": "5205802",
+      "name": "Corumbá de Goiás",
+      "values": {
+        "populationEstimate": 10724,
+        "censusPopulation": 10562,
+        "populationDensity": 9.92,
+        "gdpPerCapita": 32234.52,
+        "schoolAttendance": 98.07,
+        "occupiedPopulation": 13.93,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 1.27,
+        "lowIncomePopulation": 36.2
+      }
+    },
+    "5205901": {
+      "ibgeCode": "5205901",
+      "name": "Corumbaíba",
+      "values": {
+        "populationEstimate": 9484,
+        "censusPopulation": 9164,
+        "populationDensity": 4.92,
+        "gdpPerCapita": 118035.62,
+        "schoolAttendance": 99.16,
+        "occupiedPopulation": 32.53,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 71.82,
+        "lowIncomePopulation": 33.1
+      }
+    },
+    "5206206": {
+      "ibgeCode": "5206206",
+      "name": "Cristalina",
+      "values": {
+        "populationEstimate": 66827,
+        "censusPopulation": 62337,
+        "populationDensity": 10.13,
+        "gdpPerCapita": 91562.29,
+        "schoolAttendance": 98.14,
+        "occupiedPopulation": 26.17,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 36.28,
+        "lowIncomePopulation": 35.5
+      }
+    },
+    "5206305": {
+      "ibgeCode": "5206305",
+      "name": "Cristianópolis",
+      "values": {
+        "populationEstimate": 3670,
+        "censusPopulation": 3504,
+        "populationDensity": 15.81,
+        "gdpPerCapita": 38450.93,
+        "schoolAttendance": 99.06,
+        "occupiedPopulation": 18.24,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 14.67,
+        "lowIncomePopulation": 31.8
+      }
+    },
+    "5206404": {
+      "ibgeCode": "5206404",
+      "name": "Crixás",
+      "values": {
+        "populationEstimate": 17532,
+        "censusPopulation": 17065,
+        "populationDensity": 3.65,
+        "gdpPerCapita": 35854.61,
+        "schoolAttendance": 99.04,
+        "occupiedPopulation": 29.92,
+        "formalAverageSalary": 2.8,
+        "adequateSanitation": 1.48,
+        "lowIncomePopulation": 39.1
+      }
+    },
+    "5206503": {
+      "ibgeCode": "5206503",
+      "name": "Cromínia",
+      "values": {
+        "populationEstimate": 3999,
+        "censusPopulation": 3883,
+        "populationDensity": 10.64,
+        "gdpPerCapita": 36301.65,
+        "schoolAttendance": 99.44,
+        "occupiedPopulation": 18.18,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 2.81,
+        "lowIncomePopulation": 33.6
+      }
+    },
+    "5206602": {
+      "ibgeCode": "5206602",
+      "name": "Cumari",
+      "values": {
+        "populationEstimate": 2951,
+        "censusPopulation": 2927,
+        "populationDensity": 5.15,
+        "gdpPerCapita": 39419.63,
+        "schoolAttendance": 98.35,
+        "occupiedPopulation": 14.45,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 67.88,
+        "lowIncomePopulation": 32.1
+      }
+    },
+    "5206701": {
+      "ibgeCode": "5206701",
+      "name": "Damianópolis",
+      "values": {
+        "populationEstimate": 3917,
+        "censusPopulation": 3770,
+        "populationDensity": 9.03,
+        "gdpPerCapita": 15790.22,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 13.9,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 1.96,
+        "lowIncomePopulation": 47.6
+      }
+    },
+    "5206800": {
+      "ibgeCode": "5206800",
+      "name": "Damolândia",
+      "values": {
+        "populationEstimate": 2753,
+        "censusPopulation": 2724,
+        "populationDensity": 31.65,
+        "gdpPerCapita": 22248.12,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 22.17,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.74,
+        "lowIncomePopulation": 33.7
+      }
+    },
+    "5206909": {
+      "ibgeCode": "5206909",
+      "name": "Davinópolis",
+      "values": {
+        "populationEstimate": 1889,
+        "censusPopulation": 1902,
+        "populationDensity": 3.94,
+        "gdpPerCapita": 261043.27,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 28.55,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 5.21,
+        "lowIncomePopulation": 29.7
+      }
+    },
+    "5207105": {
+      "ibgeCode": "5207105",
+      "name": "Diorama",
+      "values": {
+        "populationEstimate": 1991,
+        "censusPopulation": 2062,
+        "populationDensity": 3.01,
+        "gdpPerCapita": 59035.3,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 14.94,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.19,
+        "lowIncomePopulation": 37.7
+      }
+    },
+    "5207253": {
+      "ibgeCode": "5207253",
+      "name": "Doverlândia",
+      "values": {
+        "populationEstimate": 6823,
+        "censusPopulation": 6956,
+        "populationDensity": 2.16,
+        "gdpPerCapita": 98060.32,
+        "schoolAttendance": 96.64,
+        "occupiedPopulation": 8.53,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 1.04,
+        "lowIncomePopulation": 40.4
+      }
+    },
+    "5207352": {
+      "ibgeCode": "5207352",
+      "name": "Edealina",
+      "values": {
+        "populationEstimate": 4104,
+        "censusPopulation": 4001,
+        "populationDensity": 6.69,
+        "gdpPerCapita": 129033.42,
+        "schoolAttendance": 95.49,
+        "occupiedPopulation": 24.02,
+        "formalAverageSalary": 2.6,
+        "adequateSanitation": 1.06,
+        "lowIncomePopulation": 32.7
+      }
+    },
+    "5207402": {
+      "ibgeCode": "5207402",
+      "name": "Edéia",
+      "values": {
+        "populationEstimate": 11982,
+        "censusPopulation": 11747,
+        "populationDensity": 8.0,
+        "gdpPerCapita": 101837.28,
+        "schoolAttendance": 99.21,
+        "occupiedPopulation": 31.17,
+        "formalAverageSalary": 2.7,
+        "adequateSanitation": 80.52,
+        "lowIncomePopulation": 31.8
+      }
+    },
+    "5207501": {
+      "ibgeCode": "5207501",
+      "name": "Estrela do Norte",
+      "values": {
+        "populationEstimate": 3214,
+        "censusPopulation": 3205,
+        "populationDensity": 10.64,
+        "gdpPerCapita": 35473.09,
+        "schoolAttendance": 99.42,
+        "occupiedPopulation": 17.82,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.34,
+        "lowIncomePopulation": 35.1
+      }
+    },
+    "5207535": {
+      "ibgeCode": "5207535",
+      "name": "Faina",
+      "values": {
+        "populationEstimate": 7167,
+        "censusPopulation": 7070,
+        "populationDensity": 3.63,
+        "gdpPerCapita": 29893.52,
+        "schoolAttendance": 99.31,
+        "occupiedPopulation": 14.27,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.23,
+        "lowIncomePopulation": 39.6
+      }
+    },
+    "5207600": {
+      "ibgeCode": "5207600",
+      "name": "Fazenda Nova",
+      "values": {
+        "populationEstimate": 5842,
+        "censusPopulation": 5877,
+        "populationDensity": 4.59,
+        "gdpPerCapita": 42336.07,
+        "schoolAttendance": 99.68,
+        "occupiedPopulation": 13.7,
+        "formalAverageSalary": 1.2,
+        "adequateSanitation": 0.6,
+        "lowIncomePopulation": 36.5
+      }
+    },
+    "5207808": {
+      "ibgeCode": "5207808",
+      "name": "Firminópolis",
+      "values": {
+        "populationEstimate": 10274,
+        "censusPopulation": 10419,
+        "populationDensity": 24.67,
+        "gdpPerCapita": 33689.67,
+        "schoolAttendance": 99.49,
+        "occupiedPopulation": 16.18,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 0.75,
+        "lowIncomePopulation": 32.9
+      }
+    },
+    "5207907": {
+      "ibgeCode": "5207907",
+      "name": "Flores de Goiás",
+      "values": {
+        "populationEstimate": 14273,
+        "censusPopulation": 13744,
+        "populationDensity": 3.72,
+        "gdpPerCapita": 20923.23,
+        "schoolAttendance": 99.7,
+        "occupiedPopulation": 7.44,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.36,
+        "lowIncomePopulation": 51.2
+      }
+    },
+    "5208004": {
+      "ibgeCode": "5208004",
+      "name": "Formosa",
+      "values": {
+        "populationEstimate": 121559,
+        "censusPopulation": 115901,
+        "populationDensity": 19.97,
+        "gdpPerCapita": 33806.77,
+        "schoolAttendance": 99.01,
+        "occupiedPopulation": 22.21,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 72.12,
+        "lowIncomePopulation": 34.1
+      }
+    },
+    "5208103": {
+      "ibgeCode": "5208103",
+      "name": "Formoso",
+      "values": {
+        "populationEstimate": 4662,
+        "censusPopulation": 4660,
+        "populationDensity": 5.53,
+        "gdpPerCapita": 28652.28,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.79,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.43,
+        "lowIncomePopulation": 39.9
+      }
+    },
+    "5208152": {
+      "ibgeCode": "5208152",
+      "name": "Gameleira de Goiás",
+      "values": {
+        "populationEstimate": 3563,
+        "censusPopulation": 3456,
+        "populationDensity": 5.87,
+        "gdpPerCapita": 70712.27,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 14.12,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 2.0,
+        "lowIncomePopulation": 35.3
+      }
+    },
+    "5208301": {
+      "ibgeCode": "5208301",
+      "name": "Divinópolis de Goiás",
+      "values": {
+        "populationEstimate": 4405,
+        "censusPopulation": 4457,
+        "populationDensity": 5.38,
+        "gdpPerCapita": 25502.55,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 10.43,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 1.28,
+        "lowIncomePopulation": 47.8
+      }
+    },
+    "5208400": {
+      "ibgeCode": "5208400",
+      "name": "Goianápolis",
+      "values": {
+        "populationEstimate": 14758,
+        "censusPopulation": 13967,
+        "populationDensity": 83.81,
+        "gdpPerCapita": 28378.27,
+        "schoolAttendance": 95.06,
+        "occupiedPopulation": 20.2,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 3.5,
+        "lowIncomePopulation": 37.2
+      }
+    },
+    "5208509": {
+      "ibgeCode": "5208509",
+      "name": "Goiandira",
+      "values": {
+        "populationEstimate": 4962,
+        "censusPopulation": 4973,
+        "populationDensity": 8.73,
+        "gdpPerCapita": 42375.28,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 23.57,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.59,
+        "lowIncomePopulation": 29.8
+      }
+    },
+    "5208608": {
+      "ibgeCode": "5208608",
+      "name": "Goianésia",
+      "values": {
+        "populationEstimate": 78009,
+        "censusPopulation": 73707,
+        "populationDensity": 47.64,
+        "gdpPerCapita": 36519.49,
+        "schoolAttendance": 98.07,
+        "occupiedPopulation": 29.79,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 81.44,
+        "lowIncomePopulation": 31.0
+      }
+    },
+    "5208707": {
+      "ibgeCode": "5208707",
+      "name": "Goiânia",
+      "values": {
+        "populationEstimate": 1503256,
+        "censusPopulation": 1437366,
+        "populationDensity": 1970.9,
+        "gdpPerCapita": 52722.02,
+        "schoolAttendance": 97.73,
+        "occupiedPopulation": 54.26,
+        "formalAverageSalary": 2.9,
+        "adequateSanitation": 76.97,
+        "lowIncomePopulation": 27.8
+      }
+    },
+    "5208806": {
+      "ibgeCode": "5208806",
+      "name": "Goianira",
+      "values": {
+        "populationEstimate": 81495,
+        "censusPopulation": 71916,
+        "populationDensity": 336.41,
+        "gdpPerCapita": 22313.35,
+        "schoolAttendance": 96.99,
+        "occupiedPopulation": 12.24,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 25.71,
+        "lowIncomePopulation": 31.6
+      }
+    },
+    "5208905": {
+      "ibgeCode": "5208905",
+      "name": "Goiás",
+      "values": {
+        "populationEstimate": 24172,
+        "censusPopulation": 24071,
+        "populationDensity": 7.74,
+        "gdpPerCapita": 32983.56,
+        "schoolAttendance": 98.88,
+        "occupiedPopulation": 16.02,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 44.93,
+        "lowIncomePopulation": 34.7
+      }
+    },
+    "5209101": {
+      "ibgeCode": "5209101",
+      "name": "Goiatuba",
+      "values": {
+        "populationEstimate": 36984,
+        "censusPopulation": 35664,
+        "populationDensity": 14.38,
+        "gdpPerCapita": 76413.19,
+        "schoolAttendance": 99.47,
+        "occupiedPopulation": 33.74,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 43.91,
+        "lowIncomePopulation": 30.9
+      }
+    },
+    "5209150": {
+      "ibgeCode": "5209150",
+      "name": "Gouvelândia",
+      "values": {
+        "populationEstimate": 4313,
+        "censusPopulation": 4390,
+        "populationDensity": 5.31,
+        "gdpPerCapita": 77029.64,
+        "schoolAttendance": 99.69,
+        "occupiedPopulation": 23.23,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 4.57,
+        "lowIncomePopulation": 32.8
+      }
+    },
+    "5209200": {
+      "ibgeCode": "5209200",
+      "name": "Guapó",
+      "values": {
+        "populationEstimate": 20985,
+        "censusPopulation": 19545,
+        "populationDensity": 38.01,
+        "gdpPerCapita": 25445.59,
+        "schoolAttendance": 97.74,
+        "occupiedPopulation": 13.67,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 46.74,
+        "lowIncomePopulation": 33.9
+      }
+    },
+    "5209291": {
+      "ibgeCode": "5209291",
+      "name": "Guaraíta",
+      "values": {
+        "populationEstimate": 2170,
+        "censusPopulation": 2188,
+        "populationDensity": 10.65,
+        "gdpPerCapita": 27680.58,
+        "schoolAttendance": 99.11,
+        "occupiedPopulation": 13.76,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 0.78,
+        "lowIncomePopulation": 40.5
+      }
+    },
+    "5209408": {
+      "ibgeCode": "5209408",
+      "name": "Guarani de Goiás",
+      "values": {
+        "populationEstimate": 4091,
+        "censusPopulation": 4085,
+        "populationDensity": 3.35,
+        "gdpPerCapita": 24507.97,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 12.02,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 1.25,
+        "lowIncomePopulation": 50.5
+      }
+    },
+    "5209457": {
+      "ibgeCode": "5209457",
+      "name": "Guarinos",
+      "values": {
+        "populationEstimate": 2154,
+        "censusPopulation": 2161,
+        "populationDensity": 3.64,
+        "gdpPerCapita": 34033.64,
+        "schoolAttendance": 99.1,
+        "occupiedPopulation": 14.95,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 5.0,
+        "lowIncomePopulation": 47.0
+      }
+    },
+    "5209606": {
+      "ibgeCode": "5209606",
+      "name": "Heitoraí",
+      "values": {
+        "populationEstimate": 3342,
+        "censusPopulation": 3354,
+        "populationDensity": 14.67,
+        "gdpPerCapita": 28788.6,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 18.63,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 0.9,
+        "lowIncomePopulation": 37.4
+      }
+    },
+    "5209705": {
+      "ibgeCode": "5209705",
+      "name": "Hidrolândia",
+      "values": {
+        "populationEstimate": 30587,
+        "censusPopulation": 27742,
+        "populationDensity": 29.14,
+        "gdpPerCapita": 55084.3,
+        "schoolAttendance": 98.53,
+        "occupiedPopulation": 25.15,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 9.71,
+        "lowIncomePopulation": 30.5
+      }
+    },
+    "5209804": {
+      "ibgeCode": "5209804",
+      "name": "Hidrolina",
+      "values": {
+        "populationEstimate": 3477,
+        "censusPopulation": 3545,
+        "populationDensity": 6.07,
+        "gdpPerCapita": 31310.82,
+        "schoolAttendance": 96.69,
+        "occupiedPopulation": 16.87,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 1.41,
+        "lowIncomePopulation": 37.8
+      }
+    },
+    "5209903": {
+      "ibgeCode": "5209903",
+      "name": "Iaciara",
+      "values": {
+        "populationEstimate": 10289,
+        "censusPopulation": 10584,
+        "populationDensity": 6.84,
+        "gdpPerCapita": 25093.75,
+        "schoolAttendance": 99.55,
+        "occupiedPopulation": 13.66,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 2.57,
+        "lowIncomePopulation": 45.9
+      }
+    },
+    "5209937": {
+      "ibgeCode": "5209937",
+      "name": "Inaciolândia",
+      "values": {
+        "populationEstimate": 6076,
+        "censusPopulation": 5954,
+        "populationDensity": 8.64,
+        "gdpPerCapita": 62707.54,
+        "schoolAttendance": 97.92,
+        "occupiedPopulation": 18.26,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 12.23,
+        "lowIncomePopulation": 34.7
+      }
+    },
+    "5209952": {
+      "ibgeCode": "5209952",
+      "name": "Indiara",
+      "values": {
+        "populationEstimate": 17985,
+        "censusPopulation": 17061,
+        "populationDensity": 17.86,
+        "gdpPerCapita": 44197.1,
+        "schoolAttendance": 98.74,
+        "occupiedPopulation": 20.67,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 1.94,
+        "lowIncomePopulation": 35.4
+      }
+    },
+    "5210000": {
+      "ibgeCode": "5210000",
+      "name": "Inhumas",
+      "values": {
+        "populationEstimate": 53884,
+        "censusPopulation": 52204,
+        "populationDensity": 84.9,
+        "gdpPerCapita": 36024.89,
+        "schoolAttendance": 98.55,
+        "occupiedPopulation": 26.45,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 60.78,
+        "lowIncomePopulation": 30.1
+      }
+    },
+    "5210109": {
+      "ibgeCode": "5210109",
+      "name": "Ipameri",
+      "values": {
+        "populationEstimate": 26223,
+        "censusPopulation": 25548,
+        "populationDensity": 5.83,
+        "gdpPerCapita": 109517.99,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 20.41,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 49.57,
+        "lowIncomePopulation": 34.2
+      }
+    },
+    "5210158": {
+      "ibgeCode": "5210158",
+      "name": "Ipiranga de Goiás",
+      "values": {
+        "populationEstimate": 2968,
+        "censusPopulation": 2919,
+        "populationDensity": 11.95,
+        "gdpPerCapita": 32827.06,
+        "schoolAttendance": 99.53,
+        "occupiedPopulation": 19.36,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.93,
+        "lowIncomePopulation": 36.7
+      }
+    },
+    "5210208": {
+      "ibgeCode": "5210208",
+      "name": "Iporá",
+      "values": {
+        "populationEstimate": 37283,
+        "censusPopulation": 35684,
+        "populationDensity": 34.74,
+        "gdpPerCapita": 34402.84,
+        "schoolAttendance": 99.58,
+        "occupiedPopulation": 21.92,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 47.36,
+        "lowIncomePopulation": 33.3
+      }
+    },
+    "5210307": {
+      "ibgeCode": "5210307",
+      "name": "Israelândia",
+      "values": {
+        "populationEstimate": 2515,
+        "censusPopulation": 2560,
+        "populationDensity": 4.42,
+        "gdpPerCapita": 35539.03,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 17.85,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 2.72,
+        "lowIncomePopulation": 38.1
+      }
+    },
+    "5210406": {
+      "ibgeCode": "5210406",
+      "name": "Itaberaí",
+      "values": {
+        "populationEstimate": 47603,
+        "censusPopulation": 44734,
+        "populationDensity": 30.6,
+        "gdpPerCapita": 51540.42,
+        "schoolAttendance": 97.27,
+        "occupiedPopulation": 30.69,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 44.79,
+        "lowIncomePopulation": 30.7
+      }
+    },
+    "5210562": {
+      "ibgeCode": "5210562",
+      "name": "Itaguari",
+      "values": {
+        "populationEstimate": 5120,
+        "censusPopulation": 4963,
+        "populationDensity": 34.79,
+        "gdpPerCapita": 25514.87,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 19.18,
+        "formalAverageSalary": 1.4,
+        "adequateSanitation": 2.38,
+        "lowIncomePopulation": 28.3
+      }
+    },
+    "5210604": {
+      "ibgeCode": "5210604",
+      "name": "Itaguaru",
+      "values": {
+        "populationEstimate": 4837,
+        "censusPopulation": 4904,
+        "populationDensity": 20.35,
+        "gdpPerCapita": 24447.25,
+        "schoolAttendance": 98.33,
+        "occupiedPopulation": 11.93,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 4.64,
+        "lowIncomePopulation": 33.4
+      }
+    },
+    "5210802": {
+      "ibgeCode": "5210802",
+      "name": "Itajá",
+      "values": {
+        "populationEstimate": 4276,
+        "censusPopulation": 4380,
+        "populationDensity": 2.1,
+        "gdpPerCapita": 42992.13,
+        "schoolAttendance": 98.44,
+        "occupiedPopulation": 14.77,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 74.99,
+        "lowIncomePopulation": 32.8
+      }
+    },
+    "5210901": {
+      "ibgeCode": "5210901",
+      "name": "Itapaci",
+      "values": {
+        "populationEstimate": 21891,
+        "censusPopulation": 21087,
+        "populationDensity": 22.13,
+        "gdpPerCapita": 28449.2,
+        "schoolAttendance": 99.08,
+        "occupiedPopulation": 20.09,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 3.23,
+        "lowIncomePopulation": 35.5
+      }
+    },
+    "5211008": {
+      "ibgeCode": "5211008",
+      "name": "Itapirapuã",
+      "values": {
+        "populationEstimate": 8133,
+        "censusPopulation": 8007,
+        "populationDensity": 3.91,
+        "gdpPerCapita": 37498.52,
+        "schoolAttendance": 98.23,
+        "occupiedPopulation": 14.74,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.69,
+        "lowIncomePopulation": 37.3
+      }
+    },
+    "5211206": {
+      "ibgeCode": "5211206",
+      "name": "Itapuranga",
+      "values": {
+        "populationEstimate": 26553,
+        "censusPopulation": 26113,
+        "populationDensity": 20.38,
+        "gdpPerCapita": 28143.55,
+        "schoolAttendance": 94.47,
+        "occupiedPopulation": 18.1,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 66.1,
+        "lowIncomePopulation": 34.8
+      }
+    },
+    "5211305": {
+      "ibgeCode": "5211305",
+      "name": "Itarumã",
+      "values": {
+        "populationEstimate": 6124,
+        "censusPopulation": 6101,
+        "populationDensity": 1.77,
+        "gdpPerCapita": 67588.8,
+        "schoolAttendance": 98.07,
+        "occupiedPopulation": 19.32,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 63.91,
+        "lowIncomePopulation": 31.9
+      }
+    },
+    "5211404": {
+      "ibgeCode": "5211404",
+      "name": "Itauçu",
+      "values": {
+        "populationEstimate": 7636,
+        "censusPopulation": 7736,
+        "populationDensity": 20.19,
+        "gdpPerCapita": 46490.53,
+        "schoolAttendance": 98.32,
+        "occupiedPopulation": 21.69,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 75.36,
+        "lowIncomePopulation": 31.1
+      }
+    },
+    "5211503": {
+      "ibgeCode": "5211503",
+      "name": "Itumbiara",
+      "values": {
+        "populationEstimate": 113322,
+        "censusPopulation": 107970,
+        "populationDensity": 44.12,
+        "gdpPerCapita": 60714.79,
+        "schoolAttendance": 99.09,
+        "occupiedPopulation": 35.1,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 94.75,
+        "lowIncomePopulation": 29.2
+      }
+    },
+    "5211602": {
+      "ibgeCode": "5211602",
+      "name": "Ivolândia",
+      "values": {
+        "populationEstimate": 2731,
+        "censusPopulation": 2693,
+        "populationDensity": 2.14,
+        "gdpPerCapita": 54111.32,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 14.3,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 2.31,
+        "lowIncomePopulation": 37.2
+      }
+    },
+    "5211701": {
+      "ibgeCode": "5211701",
+      "name": "Jandaia",
+      "values": {
+        "populationEstimate": 6365,
+        "censusPopulation": 6272,
+        "populationDensity": 7.27,
+        "gdpPerCapita": 71224.89,
+        "schoolAttendance": 99.71,
+        "occupiedPopulation": 33.2,
+        "formalAverageSalary": 2.9,
+        "adequateSanitation": 34.02,
+        "lowIncomePopulation": 33.5
+      }
+    },
+    "5211800": {
+      "ibgeCode": "5211800",
+      "name": "Jaraguá",
+      "values": {
+        "populationEstimate": 46633,
+        "censusPopulation": 45223,
+        "populationDensity": 24.46,
+        "gdpPerCapita": 26652.27,
+        "schoolAttendance": 99.68,
+        "occupiedPopulation": 18.67,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 25.18,
+        "lowIncomePopulation": 30.6
+      }
+    },
+    "5211909": {
+      "ibgeCode": "5211909",
+      "name": "Jataí",
+      "values": {
+        "populationEstimate": 111634,
+        "censusPopulation": 105729,
+        "populationDensity": 14.73,
+        "gdpPerCapita": 94828.45,
+        "schoolAttendance": 98.98,
+        "occupiedPopulation": 27.42,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 83.2,
+        "lowIncomePopulation": 30.0
+      }
+    },
+    "5212006": {
+      "ibgeCode": "5212006",
+      "name": "Jaupaci",
+      "values": {
+        "populationEstimate": 2939,
+        "censusPopulation": 2924,
+        "populationDensity": 5.53,
+        "gdpPerCapita": 38511.41,
+        "schoolAttendance": 98.07,
+        "occupiedPopulation": 14.53,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 16.57,
+        "lowIncomePopulation": 36.4
+      }
+    },
+    "5212055": {
+      "ibgeCode": "5212055",
+      "name": "Jesúpolis",
+      "values": {
+        "populationEstimate": 2112,
+        "censusPopulation": 2123,
+        "populationDensity": 18.43,
+        "gdpPerCapita": 24131.66,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 10.98,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.24,
+        "lowIncomePopulation": 36.7
+      }
+    },
+    "5212105": {
+      "ibgeCode": "5212105",
+      "name": "Joviânia",
+      "values": {
+        "populationEstimate": 7247,
+        "censusPopulation": 7159,
+        "populationDensity": 16.04,
+        "gdpPerCapita": 59109.53,
+        "schoolAttendance": 99.12,
+        "occupiedPopulation": 18.61,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 84.91,
+        "lowIncomePopulation": 32.4
+      }
+    },
+    "5212204": {
+      "ibgeCode": "5212204",
+      "name": "Jussara",
+      "values": {
+        "populationEstimate": 19926,
+        "censusPopulation": 19620,
+        "populationDensity": 4.79,
+        "gdpPerCapita": 45074.74,
+        "schoolAttendance": 99.0,
+        "occupiedPopulation": 24.32,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 62.12,
+        "lowIncomePopulation": 33.8
+      }
+    },
+    "5212253": {
+      "ibgeCode": "5212253",
+      "name": "Lagoa Santa",
+      "values": {
+        "populationEstimate": 1435,
+        "censusPopulation": 1390,
+        "populationDensity": 3.0,
+        "gdpPerCapita": 48382.18,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 23.88,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 75.52,
+        "lowIncomePopulation": 32.9
+      }
+    },
+    "5212303": {
+      "ibgeCode": "5212303",
+      "name": "Leopoldo de Bulhões",
+      "values": {
+        "populationEstimate": 9123,
+        "censusPopulation": 8745,
+        "populationDensity": 18.37,
+        "gdpPerCapita": 51725.79,
+        "schoolAttendance": 94.91,
+        "occupiedPopulation": 24.83,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 1.6,
+        "lowIncomePopulation": 35.2
+      }
+    },
+    "5212501": {
+      "ibgeCode": "5212501",
+      "name": "Luziânia",
+      "values": {
+        "populationEstimate": 221262,
+        "censusPopulation": 209129,
+        "populationDensity": 52.78,
+        "gdpPerCapita": 29956.01,
+        "schoolAttendance": 98.56,
+        "occupiedPopulation": 16.32,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 24.27,
+        "lowIncomePopulation": 35.0
+      }
+    },
+    "5212600": {
+      "ibgeCode": "5212600",
+      "name": "Mairipotaba",
+      "values": {
+        "populationEstimate": 2631,
+        "censusPopulation": 2561,
+        "populationDensity": 5.47,
+        "gdpPerCapita": 39573.56,
+        "schoolAttendance": 99.19,
+        "occupiedPopulation": 18.9,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 0.79,
+        "lowIncomePopulation": 37.1
+      }
+    },
+    "5212709": {
+      "ibgeCode": "5212709",
+      "name": "Mambaí",
+      "values": {
+        "populationEstimate": 8493,
+        "censusPopulation": 8124,
+        "populationDensity": 9.47,
+        "gdpPerCapita": 17189.8,
+        "schoolAttendance": 99.54,
+        "occupiedPopulation": 15.72,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 0.69,
+        "lowIncomePopulation": 46.0
+      }
+    },
+    "5212808": {
+      "ibgeCode": "5212808",
+      "name": "Mara Rosa",
+      "values": {
+        "populationEstimate": 10806,
+        "censusPopulation": 10700,
+        "populationDensity": 6.31,
+        "gdpPerCapita": 38460.53,
+        "schoolAttendance": 99.46,
+        "occupiedPopulation": 23.82,
+        "formalAverageSalary": 2.9,
+        "adequateSanitation": 41.49,
+        "lowIncomePopulation": 37.4
+      }
+    },
+    "5212907": {
+      "ibgeCode": "5212907",
+      "name": "Marzagão",
+      "values": {
+        "populationEstimate": 2942,
+        "censusPopulation": 2758,
+        "populationDensity": 12.23,
+        "gdpPerCapita": 27658.13,
+        "schoolAttendance": 97.32,
+        "occupiedPopulation": 17.62,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.47,
+        "lowIncomePopulation": 33.4
+      }
+    },
+    "5212956": {
+      "ibgeCode": "5212956",
+      "name": "Matrinchã",
+      "values": {
+        "populationEstimate": 4004,
+        "censusPopulation": 4042,
+        "populationDensity": 3.51,
+        "gdpPerCapita": 55674.15,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 17.64,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 14.56,
+        "lowIncomePopulation": 37.2
+      }
+    },
+    "5213004": {
+      "ibgeCode": "5213004",
+      "name": "Maurilândia",
+      "values": {
+        "populationEstimate": 10145,
+        "censusPopulation": 10304,
+        "populationDensity": 26.42,
+        "gdpPerCapita": 31784.55,
+        "schoolAttendance": 98.33,
+        "occupiedPopulation": 16.59,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 4.51,
+        "lowIncomePopulation": 35.9
+      }
+    },
+    "5213053": {
+      "ibgeCode": "5213053",
+      "name": "Mimoso de Goiás",
+      "values": {
+        "populationEstimate": 2626,
+        "censusPopulation": 2614,
+        "populationDensity": 1.89,
+        "gdpPerCapita": 68541.72,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 13.96,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 43.61,
+        "lowIncomePopulation": 43.3
+      }
+    },
+    "5213087": {
+      "ibgeCode": "5213087",
+      "name": "Minaçu",
+      "values": {
+        "populationEstimate": 26616,
+        "censusPopulation": 27075,
+        "populationDensity": 9.49,
+        "gdpPerCapita": 47516.03,
+        "schoolAttendance": 98.25,
+        "occupiedPopulation": 22.42,
+        "formalAverageSalary": 2.6,
+        "adequateSanitation": 54.76,
+        "lowIncomePopulation": 39.9
+      }
+    },
+    "5213103": {
+      "ibgeCode": "5213103",
+      "name": "Mineiros",
+      "values": {
+        "populationEstimate": 74999,
+        "censusPopulation": 70081,
+        "populationDensity": 7.75,
+        "gdpPerCapita": 64729.74,
+        "schoolAttendance": 98.46,
+        "occupiedPopulation": 30.4,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 88.86,
+        "lowIncomePopulation": 30.9
+      }
+    },
+    "5213400": {
+      "ibgeCode": "5213400",
+      "name": "Moiporá",
+      "values": {
+        "populationEstimate": 1687,
+        "censusPopulation": 1685,
+        "populationDensity": 3.73,
+        "gdpPerCapita": 43404.34,
+        "schoolAttendance": 96.86,
+        "occupiedPopulation": 17.33,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 4.1,
+        "lowIncomePopulation": 39.3
+      }
+    },
+    "5213509": {
+      "ibgeCode": "5213509",
+      "name": "Monte Alegre de Goiás",
+      "values": {
+        "populationEstimate": 6534,
+        "censusPopulation": 6692,
+        "populationDensity": 2.14,
+        "gdpPerCapita": 21188.05,
+        "schoolAttendance": 98.28,
+        "occupiedPopulation": 9.43,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.73,
+        "lowIncomePopulation": 48.1
+      }
+    },
+    "5213707": {
+      "ibgeCode": "5213707",
+      "name": "Montes Claros de Goiás",
+      "values": {
+        "populationEstimate": 9024,
+        "censusPopulation": 8756,
+        "populationDensity": 3.02,
+        "gdpPerCapita": 93427.3,
+        "schoolAttendance": 98.91,
+        "occupiedPopulation": 23.8,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 23.1,
+        "lowIncomePopulation": 35.5
+      }
+    },
+    "5213756": {
+      "ibgeCode": "5213756",
+      "name": "Montividiu",
+      "values": {
+        "populationEstimate": 13094,
+        "censusPopulation": 12521,
+        "populationDensity": 6.7,
+        "gdpPerCapita": 129369.75,
+        "schoolAttendance": 97.37,
+        "occupiedPopulation": 26.52,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 39.54,
+        "lowIncomePopulation": 33.8
+      }
+    },
+    "5213772": {
+      "ibgeCode": "5213772",
+      "name": "Montividiu do Norte",
+      "values": {
+        "populationEstimate": 3743,
+        "censusPopulation": 3779,
+        "populationDensity": 2.83,
+        "gdpPerCapita": 32816.95,
+        "schoolAttendance": 97.07,
+        "occupiedPopulation": 12.07,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 1.03,
+        "lowIncomePopulation": 52.5
+      }
+    },
+    "5213806": {
+      "ibgeCode": "5213806",
+      "name": "Morrinhos",
+      "values": {
+        "populationEstimate": 54326,
+        "censusPopulation": 51351,
+        "populationDensity": 18.04,
+        "gdpPerCapita": 49152.36,
+        "schoolAttendance": 98.13,
+        "occupiedPopulation": 26.51,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 58.38,
+        "lowIncomePopulation": 29.6
+      }
+    },
+    "5213855": {
+      "ibgeCode": "5213855",
+      "name": "Morro Agudo de Goiás",
+      "values": {
+        "populationEstimate": 2505,
+        "censusPopulation": 2456,
+        "populationDensity": 8.7,
+        "gdpPerCapita": 28089.66,
+        "schoolAttendance": 99.64,
+        "occupiedPopulation": 15.27,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 0.41,
+        "lowIncomePopulation": 36.4
+      }
+    },
+    "5213905": {
+      "ibgeCode": "5213905",
+      "name": "Mossâmedes",
+      "values": {
+        "populationEstimate": 4626,
+        "censusPopulation": 4654,
+        "populationDensity": 6.8,
+        "gdpPerCapita": 36734.69,
+        "schoolAttendance": 98.61,
+        "occupiedPopulation": 19.3,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 17.76,
+        "lowIncomePopulation": 35.2
+      }
+    },
+    "5214002": {
+      "ibgeCode": "5214002",
+      "name": "Mozarlândia",
+      "values": {
+        "populationEstimate": 15199,
+        "censusPopulation": 14750,
+        "populationDensity": 8.48,
+        "gdpPerCapita": 92677.01,
+        "schoolAttendance": 99.15,
+        "occupiedPopulation": 31.5,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 0.74,
+        "lowIncomePopulation": 32.5
+      }
+    },
+    "5214051": {
+      "ibgeCode": "5214051",
+      "name": "Mundo Novo",
+      "values": {
+        "populationEstimate": 6202,
+        "censusPopulation": 6189,
+        "populationDensity": 2.89,
+        "gdpPerCapita": 51685.2,
+        "schoolAttendance": 99.5,
+        "occupiedPopulation": 11.25,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 4.92,
+        "lowIncomePopulation": 41.2
+      }
+    },
+    "5214101": {
+      "ibgeCode": "5214101",
+      "name": "Mutunópolis",
+      "values": {
+        "populationEstimate": 3540,
+        "censusPopulation": 3564,
+        "populationDensity": 3.73,
+        "gdpPerCapita": 29660.75,
+        "schoolAttendance": 97.34,
+        "occupiedPopulation": 10.35,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 0.91,
+        "lowIncomePopulation": 41.0
+      }
+    },
+    "5214408": {
+      "ibgeCode": "5214408",
+      "name": "Nazário",
+      "values": {
+        "populationEstimate": 8349,
+        "censusPopulation": 8189,
+        "populationDensity": 29.13,
+        "gdpPerCapita": 38253.55,
+        "schoolAttendance": 98.52,
+        "occupiedPopulation": 24.64,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 1.86,
+        "lowIncomePopulation": 31.9
+      }
+    },
+    "5214507": {
+      "ibgeCode": "5214507",
+      "name": "Nerópolis",
+      "values": {
+        "populationEstimate": 34273,
+        "censusPopulation": 31932,
+        "populationDensity": 155.98,
+        "gdpPerCapita": 48493.42,
+        "schoolAttendance": 97.86,
+        "occupiedPopulation": 34.6,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 2.65,
+        "lowIncomePopulation": 33.0
+      }
+    },
+    "5214606": {
+      "ibgeCode": "5214606",
+      "name": "Niquelândia",
+      "values": {
+        "populationEstimate": 33890,
+        "censusPopulation": 34964,
+        "populationDensity": 3.55,
+        "gdpPerCapita": 43362.41,
+        "schoolAttendance": 99.06,
+        "occupiedPopulation": 23.89,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 42.15,
+        "lowIncomePopulation": 39.0
+      }
+    },
+    "5214705": {
+      "ibgeCode": "5214705",
+      "name": "Nova América",
+      "values": {
+        "populationEstimate": 2380,
+        "censusPopulation": 2337,
+        "populationDensity": 11.16,
+        "gdpPerCapita": 25982.28,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 23.32,
+        "formalAverageSalary": 1.4,
+        "adequateSanitation": 2.48,
+        "lowIncomePopulation": 32.2
+      }
+    },
+    "5214804": {
+      "ibgeCode": "5214804",
+      "name": "Nova Aurora",
+      "values": {
+        "populationEstimate": 2132,
+        "censusPopulation": 2101,
+        "populationDensity": 6.84,
+        "gdpPerCapita": 33969.08,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 12.9,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 5.56,
+        "lowIncomePopulation": 28.1
+      }
+    },
+    "5214838": {
+      "ibgeCode": "5214838",
+      "name": "Nova Crixás",
+      "values": {
+        "populationEstimate": 13153,
+        "censusPopulation": 12815,
+        "populationDensity": 1.75,
+        "gdpPerCapita": 72741.75,
+        "schoolAttendance": 99.36,
+        "occupiedPopulation": 16.29,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 2.18,
+        "lowIncomePopulation": 39.0
+      }
+    },
+    "5214861": {
+      "ibgeCode": "5214861",
+      "name": "Nova Glória",
+      "values": {
+        "populationEstimate": 8356,
+        "censusPopulation": 8310,
+        "populationDensity": 20.18,
+        "gdpPerCapita": 23606.26,
+        "schoolAttendance": 99.27,
+        "occupiedPopulation": 12.02,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 0.6,
+        "lowIncomePopulation": 38.2
+      }
+    },
+    "5214879": {
+      "ibgeCode": "5214879",
+      "name": "Nova Iguaçu de Goiás",
+      "values": {
+        "populationEstimate": 3084,
+        "censusPopulation": 3010,
+        "populationDensity": 4.81,
+        "gdpPerCapita": 24244.02,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 10.76,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.86,
+        "lowIncomePopulation": 39.9
+      }
+    },
+    "5214903": {
+      "ibgeCode": "5214903",
+      "name": "Nova Roma",
+      "values": {
+        "populationEstimate": 3022,
+        "censusPopulation": 3076,
+        "populationDensity": 1.44,
+        "gdpPerCapita": 26303.6,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 14.86,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 3.0,
+        "lowIncomePopulation": 43.2
+      }
+    },
+    "5215009": {
+      "ibgeCode": "5215009",
+      "name": "Nova Veneza",
+      "values": {
+        "populationEstimate": 9883,
+        "censusPopulation": 9481,
+        "populationDensity": 77.49,
+        "gdpPerCapita": 27602.68,
+        "schoolAttendance": 98.31,
+        "occupiedPopulation": 29.5,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.78,
+        "lowIncomePopulation": 32.4
+      }
+    },
+    "5215207": {
+      "ibgeCode": "5215207",
+      "name": "Novo Brasil",
+      "values": {
+        "populationEstimate": 3567,
+        "censusPopulation": 3527,
+        "populationDensity": 5.43,
+        "gdpPerCapita": 29965.14,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 14.89,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.7,
+        "lowIncomePopulation": 32.7
+      }
+    },
+    "5215231": {
+      "ibgeCode": "5215231",
+      "name": "Novo Gama",
+      "values": {
+        "populationEstimate": 107663,
+        "censusPopulation": 103804,
+        "populationDensity": 539.84,
+        "gdpPerCapita": 13005.12,
+        "schoolAttendance": 98.88,
+        "occupiedPopulation": 7.26,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 36.19,
+        "lowIncomePopulation": 36.2
+      }
+    },
+    "5215256": {
+      "ibgeCode": "5215256",
+      "name": "Novo Planalto",
+      "values": {
+        "populationEstimate": 3703,
+        "censusPopulation": 3716,
+        "populationDensity": 2.96,
+        "gdpPerCapita": 51362.21,
+        "schoolAttendance": 98.98,
+        "occupiedPopulation": 14.83,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 1.35,
+        "lowIncomePopulation": 44.2
+      }
+    },
+    "5215306": {
+      "ibgeCode": "5215306",
+      "name": "Orizona",
+      "values": {
+        "populationEstimate": 17035,
+        "censusPopulation": 16399,
+        "populationDensity": 8.32,
+        "gdpPerCapita": 69978.92,
+        "schoolAttendance": 99.4,
+        "occupiedPopulation": 19.79,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 16.42,
+        "lowIncomePopulation": 34.0
+      }
+    },
+    "5215405": {
+      "ibgeCode": "5215405",
+      "name": "Ouro Verde de Goiás",
+      "values": {
+        "populationEstimate": 4109,
+        "censusPopulation": 4057,
+        "populationDensity": 19.43,
+        "gdpPerCapita": 53568.08,
+        "schoolAttendance": 99.21,
+        "occupiedPopulation": 10.53,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 1.04,
+        "lowIncomePopulation": 39.2
+      }
+    },
+    "5215504": {
+      "ibgeCode": "5215504",
+      "name": "Ouvidor",
+      "values": {
+        "populationEstimate": 7665,
+        "censusPopulation": 7200,
+        "populationDensity": 17.5,
+        "gdpPerCapita": 67599.6,
+        "schoolAttendance": 95.31,
+        "occupiedPopulation": 27.54,
+        "formalAverageSalary": 3.9,
+        "adequateSanitation": 1.99,
+        "lowIncomePopulation": 32.0
+      }
+    },
+    "5215603": {
+      "ibgeCode": "5215603",
+      "name": "Padre Bernardo",
+      "values": {
+        "populationEstimate": 37207,
+        "censusPopulation": 34967,
+        "populationDensity": 11.13,
+        "gdpPerCapita": 29631.96,
+        "schoolAttendance": 98.69,
+        "occupiedPopulation": 10.91,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 35.07,
+        "lowIncomePopulation": 38.4
+      }
+    },
+    "5215652": {
+      "ibgeCode": "5215652",
+      "name": "Palestina de Goiás",
+      "values": {
+        "populationEstimate": 3113,
+        "censusPopulation": 3132,
+        "populationDensity": 2.38,
+        "gdpPerCapita": 82863.26,
+        "schoolAttendance": 98.85,
+        "occupiedPopulation": 11.43,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 0.83,
+        "lowIncomePopulation": 36.0
+      }
+    },
+    "5215702": {
+      "ibgeCode": "5215702",
+      "name": "Palmeiras de Goiás",
+      "values": {
+        "populationEstimate": 34375,
+        "censusPopulation": 31858,
+        "populationDensity": 20.72,
+        "gdpPerCapita": 65399.16,
+        "schoolAttendance": 98.43,
+        "occupiedPopulation": 28.44,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 82.81,
+        "lowIncomePopulation": 31.6
+      }
+    },
+    "5215801": {
+      "ibgeCode": "5215801",
+      "name": "Palmelo",
+      "values": {
+        "populationEstimate": 2266,
+        "censusPopulation": 2259,
+        "populationDensity": 37.77,
+        "gdpPerCapita": 26091.43,
+        "schoolAttendance": 98.75,
+        "occupiedPopulation": 21.82,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.57,
+        "lowIncomePopulation": 29.2
+      }
+    },
+    "5215900": {
+      "ibgeCode": "5215900",
+      "name": "Palminópolis",
+      "values": {
+        "populationEstimate": 3959,
+        "censusPopulation": 3851,
+        "populationDensity": 9.79,
+        "gdpPerCapita": 60704.25,
+        "schoolAttendance": 98.91,
+        "occupiedPopulation": 20.23,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 1.4,
+        "lowIncomePopulation": 35.6
+      }
+    },
+    "5216007": {
+      "ibgeCode": "5216007",
+      "name": "Panamá",
+      "values": {
+        "populationEstimate": 2432,
+        "censusPopulation": 2455,
+        "populationDensity": 5.68,
+        "gdpPerCapita": 84715.75,
+        "schoolAttendance": 97.52,
+        "occupiedPopulation": 19.19,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 5.43,
+        "lowIncomePopulation": 31.2
+      }
+    },
+    "5216304": {
+      "ibgeCode": "5216304",
+      "name": "Paranaiguara",
+      "values": {
+        "populationEstimate": 7356,
+        "censusPopulation": 7607,
+        "populationDensity": 6.6,
+        "gdpPerCapita": 41781.25,
+        "schoolAttendance": 98.56,
+        "occupiedPopulation": 17.02,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 91.7,
+        "lowIncomePopulation": 32.3
+      }
+    },
+    "5216403": {
+      "ibgeCode": "5216403",
+      "name": "Paraúna",
+      "values": {
+        "populationEstimate": 10727,
+        "censusPopulation": 10659,
+        "populationDensity": 2.81,
+        "gdpPerCapita": 171201.43,
+        "schoolAttendance": 99.02,
+        "occupiedPopulation": 31.21,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 77.49,
+        "lowIncomePopulation": 34.7
+      }
+    },
+    "5216452": {
+      "ibgeCode": "5216452",
+      "name": "Perolândia",
+      "values": {
+        "populationEstimate": 2999,
+        "censusPopulation": 2964,
+        "populationDensity": 2.87,
+        "gdpPerCapita": 266805.22,
+        "schoolAttendance": 96.53,
+        "occupiedPopulation": 43.99,
+        "formalAverageSalary": 2.9,
+        "adequateSanitation": 16.02,
+        "lowIncomePopulation": 36.7
+      }
+    },
+    "5216809": {
+      "ibgeCode": "5216809",
+      "name": "Petrolina de Goiás",
+      "values": {
+        "populationEstimate": 9519,
+        "censusPopulation": 9573,
+        "populationDensity": 18.05,
+        "gdpPerCapita": 25576.4,
+        "schoolAttendance": 98.17,
+        "occupiedPopulation": 15.0,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 12.95,
+        "lowIncomePopulation": 33.2
+      }
+    },
+    "5216908": {
+      "ibgeCode": "5216908",
+      "name": "Pilar de Goiás",
+      "values": {
+        "populationEstimate": 2254,
+        "censusPopulation": 2328,
+        "populationDensity": 2.57,
+        "gdpPerCapita": 52038.93,
+        "schoolAttendance": 98.12,
+        "occupiedPopulation": 40.25,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 45.45,
+        "lowIncomePopulation": 39.6
+      }
+    },
+    "5217104": {
+      "ibgeCode": "5217104",
+      "name": "Piracanjuba",
+      "values": {
+        "populationEstimate": 25373,
+        "censusPopulation": 24883,
+        "populationDensity": 10.48,
+        "gdpPerCapita": 52716.61,
+        "schoolAttendance": 98.01,
+        "occupiedPopulation": 15.95,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 69.11,
+        "lowIncomePopulation": 33.3
+      }
+    },
+    "5217203": {
+      "ibgeCode": "5217203",
+      "name": "Piranhas",
+      "values": {
+        "populationEstimate": 11940,
+        "censusPopulation": 11712,
+        "populationDensity": 5.73,
+        "gdpPerCapita": 81379.14,
+        "schoolAttendance": 99.65,
+        "occupiedPopulation": 16.44,
+        "formalAverageSalary": 2.5,
+        "adequateSanitation": 5.76,
+        "lowIncomePopulation": 36.7
+      }
+    },
+    "5217302": {
+      "ibgeCode": "5217302",
+      "name": "Pirenópolis",
+      "values": {
+        "populationEstimate": 28028,
+        "censusPopulation": 26690,
+        "populationDensity": 12.13,
+        "gdpPerCapita": 31101.13,
+        "schoolAttendance": 98.6,
+        "occupiedPopulation": 21.44,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 11.48,
+        "lowIncomePopulation": 32.8
+      }
+    },
+    "5217401": {
+      "ibgeCode": "5217401",
+      "name": "Pires do Rio",
+      "values": {
+        "populationEstimate": 33736,
+        "censusPopulation": 32373,
+        "populationDensity": 30.04,
+        "gdpPerCapita": 59566.98,
+        "schoolAttendance": 99.65,
+        "occupiedPopulation": 30.1,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 36.56,
+        "lowIncomePopulation": 32.7
+      }
+    },
+    "5217609": {
+      "ibgeCode": "5217609",
+      "name": "Planaltina",
+      "values": {
+        "populationEstimate": 112304,
+        "censusPopulation": 105031,
+        "populationDensity": 41.04,
+        "gdpPerCapita": 18469.82,
+        "schoolAttendance": 98.45,
+        "occupiedPopulation": 9.79,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 66.16,
+        "lowIncomePopulation": 36.5
+      }
+    },
+    "5217708": {
+      "ibgeCode": "5217708",
+      "name": "Pontalina",
+      "values": {
+        "populationEstimate": 18763,
+        "censusPopulation": 18309,
+        "populationDensity": 12.77,
+        "gdpPerCapita": 45881.91,
+        "schoolAttendance": 96.27,
+        "occupiedPopulation": 20.38,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 71.28,
+        "lowIncomePopulation": 32.6
+      }
+    },
+    "5218003": {
+      "ibgeCode": "5218003",
+      "name": "Porangatu",
+      "values": {
+        "populationEstimate": 45512,
+        "censusPopulation": 44317,
+        "populationDensity": 9.18,
+        "gdpPerCapita": 46772.74,
+        "schoolAttendance": 97.46,
+        "occupiedPopulation": 20.81,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 31.3,
+        "lowIncomePopulation": 35.3
+      }
+    },
+    "5218052": {
+      "ibgeCode": "5218052",
+      "name": "Porteirão",
+      "values": {
+        "populationEstimate": 4276,
+        "censusPopulation": 4070,
+        "populationDensity": 6.71,
+        "gdpPerCapita": 95414.87,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 24.3,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 0.71,
+        "lowIncomePopulation": 32.9
+      }
+    },
+    "5218102": {
+      "ibgeCode": "5218102",
+      "name": "Portelândia",
+      "values": {
+        "populationEstimate": 3191,
+        "censusPopulation": 3280,
+        "populationDensity": 5.93,
+        "gdpPerCapita": 93165.83,
+        "schoolAttendance": 95.49,
+        "occupiedPopulation": 24.33,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 2.26,
+        "lowIncomePopulation": 34.9
+      }
+    },
+    "5218300": {
+      "ibgeCode": "5218300",
+      "name": "Posse",
+      "values": {
+        "populationEstimate": 36291,
+        "censusPopulation": 34914,
+        "populationDensity": 16.81,
+        "gdpPerCapita": 26869.6,
+        "schoolAttendance": 98.63,
+        "occupiedPopulation": 20.63,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 58.53,
+        "lowIncomePopulation": 41.1
+      }
+    },
+    "5218391": {
+      "ibgeCode": "5218391",
+      "name": "Professor Jamil",
+      "values": {
+        "populationEstimate": 3750,
+        "censusPopulation": 3649,
+        "populationDensity": 10.24,
+        "gdpPerCapita": 23793.65,
+        "schoolAttendance": 98.46,
+        "occupiedPopulation": 13.04,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 1.04,
+        "lowIncomePopulation": 36.0
+      }
+    },
+    "5218508": {
+      "ibgeCode": "5218508",
+      "name": "Quirinópolis",
+      "values": {
+        "populationEstimate": 50329,
+        "censusPopulation": 48447,
+        "populationDensity": 12.8,
+        "gdpPerCapita": 64472.6,
+        "schoolAttendance": 99.6,
+        "occupiedPopulation": 34.13,
+        "formalAverageSalary": 2.4,
+        "adequateSanitation": 88.19,
+        "lowIncomePopulation": 29.9
+      }
+    },
+    "5218607": {
+      "ibgeCode": "5218607",
+      "name": "Rialma",
+      "values": {
+        "populationEstimate": 12665,
+        "censusPopulation": 12165,
+        "populationDensity": 45.34,
+        "gdpPerCapita": 33770.19,
+        "schoolAttendance": 99.37,
+        "occupiedPopulation": 24.88,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 2.76,
+        "lowIncomePopulation": 32.6
+      }
+    },
+    "5218706": {
+      "ibgeCode": "5218706",
+      "name": "Rianápolis",
+      "values": {
+        "populationEstimate": 3893,
+        "censusPopulation": 3980,
+        "populationDensity": 25.29,
+        "gdpPerCapita": 31508.06,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 16.23,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.71,
+        "lowIncomePopulation": 33.2
+      }
+    },
+    "5218789": {
+      "ibgeCode": "5218789",
+      "name": "Rio Quente",
+      "values": {
+        "populationEstimate": 4033,
+        "censusPopulation": 3864,
+        "populationDensity": 15.79,
+        "gdpPerCapita": 149884.46,
+        "schoolAttendance": 98.51,
+        "occupiedPopulation": 92.88,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 15.19,
+        "lowIncomePopulation": 28.8
+      }
+    },
+    "5218805": {
+      "ibgeCode": "5218805",
+      "name": "Rio Verde",
+      "values": {
+        "populationEstimate": 241494,
+        "censusPopulation": 225696,
+        "populationDensity": 26.95,
+        "gdpPerCapita": 98849.92,
+        "schoolAttendance": 98.27,
+        "occupiedPopulation": 37.22,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 84.22,
+        "lowIncomePopulation": 30.0
+      }
+    },
+    "5218904": {
+      "ibgeCode": "5218904",
+      "name": "Rubiataba",
+      "values": {
+        "populationEstimate": 20186,
+        "censusPopulation": 19788,
+        "populationDensity": 26.36,
+        "gdpPerCapita": 38782.06,
+        "schoolAttendance": 97.8,
+        "occupiedPopulation": 26.65,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 71.51,
+        "lowIncomePopulation": 34.5
+      }
+    },
+    "5219001": {
+      "ibgeCode": "5219001",
+      "name": "Sanclerlândia",
+      "values": {
+        "populationEstimate": 8085,
+        "censusPopulation": 7918,
+        "populationDensity": 15.54,
+        "gdpPerCapita": 35271.29,
+        "schoolAttendance": 99.45,
+        "occupiedPopulation": 26.67,
+        "formalAverageSalary": 1.4,
+        "adequateSanitation": 50.38,
+        "lowIncomePopulation": 29.3
+      }
+    },
+    "5219100": {
+      "ibgeCode": "5219100",
+      "name": "Santa Bárbara de Goiás",
+      "values": {
+        "populationEstimate": 6306,
+        "censusPopulation": 6149,
+        "populationDensity": 43.62,
+        "gdpPerCapita": 29831.03,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 32.05,
+        "formalAverageSalary": 1.4,
+        "adequateSanitation": 1.15,
+        "lowIncomePopulation": 33.1
+      }
+    },
+    "5219209": {
+      "ibgeCode": "5219209",
+      "name": "Santa Cruz de Goiás",
+      "values": {
+        "populationEstimate": 3004,
+        "censusPopulation": 3002,
+        "populationDensity": 2.71,
+        "gdpPerCapita": 97678.05,
+        "schoolAttendance": 98.82,
+        "occupiedPopulation": 14.16,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.83,
+        "lowIncomePopulation": 36.0
+      }
+    },
+    "5219258": {
+      "ibgeCode": "5219258",
+      "name": "Santa Fé de Goiás",
+      "values": {
+        "populationEstimate": 5047,
+        "censusPopulation": 4951,
+        "populationDensity": 4.25,
+        "gdpPerCapita": 70870.73,
+        "schoolAttendance": 97.68,
+        "occupiedPopulation": 25.83,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 2.25,
+        "lowIncomePopulation": 31.3
+      }
+    },
+    "5219308": {
+      "ibgeCode": "5219308",
+      "name": "Santa Helena de Goiás",
+      "values": {
+        "populationEstimate": 39601,
+        "censusPopulation": 38492,
+        "populationDensity": 33.7,
+        "gdpPerCapita": 51848.48,
+        "schoolAttendance": 98.21,
+        "occupiedPopulation": 25.26,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 93.19,
+        "lowIncomePopulation": 32.9
+      }
+    },
+    "5219357": {
+      "ibgeCode": "5219357",
+      "name": "Santa Isabel",
+      "values": {
+        "populationEstimate": 3543,
+        "censusPopulation": 3538,
+        "populationDensity": 4.35,
+        "gdpPerCapita": 41744.95,
+        "schoolAttendance": 97.96,
+        "occupiedPopulation": 12.52,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 1.27,
+        "lowIncomePopulation": 37.7
+      }
+    },
+    "5219407": {
+      "ibgeCode": "5219407",
+      "name": "Santa Rita do Araguaia",
+      "values": {
+        "populationEstimate": 5765,
+        "censusPopulation": 5924,
+        "populationDensity": 4.36,
+        "gdpPerCapita": 36493.75,
+        "schoolAttendance": 87.06,
+        "occupiedPopulation": 13.86,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 2.13,
+        "lowIncomePopulation": 32.1
+      }
+    },
+    "5219456": {
+      "ibgeCode": "5219456",
+      "name": "Santa Rita do Novo Destino",
+      "values": {
+        "populationEstimate": 2611,
+        "censusPopulation": 2689,
+        "populationDensity": 2.77,
+        "gdpPerCapita": 66798.22,
+        "schoolAttendance": 91.66,
+        "occupiedPopulation": 26.44,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 2.05,
+        "lowIncomePopulation": 38.4
+      }
+    },
+    "5219506": {
+      "ibgeCode": "5219506",
+      "name": "Santa Rosa de Goiás",
+      "values": {
+        "populationEstimate": 2828,
+        "censusPopulation": 2820,
+        "populationDensity": 16.94,
+        "gdpPerCapita": 35736.42,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.21,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 2.38,
+        "lowIncomePopulation": 37.0
+      }
+    },
+    "5219605": {
+      "ibgeCode": "5219605",
+      "name": "Santa Tereza de Goiás",
+      "values": {
+        "populationEstimate": 3172,
+        "censusPopulation": 3293,
+        "populationDensity": 4.17,
+        "gdpPerCapita": 32029.76,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 15.49,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 0.24,
+        "lowIncomePopulation": 39.6
+      }
+    },
+    "5219704": {
+      "ibgeCode": "5219704",
+      "name": "Santa Terezinha de Goiás",
+      "values": {
+        "populationEstimate": 10837,
+        "censusPopulation": 10645,
+        "populationDensity": 8.82,
+        "gdpPerCapita": 24415.91,
+        "schoolAttendance": 92.51,
+        "occupiedPopulation": 12.36,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 3.25,
+        "lowIncomePopulation": 42.7
+      }
+    },
+    "5219712": {
+      "ibgeCode": "5219712",
+      "name": "Santo Antônio da Barra",
+      "values": {
+        "populationEstimate": 4279,
+        "censusPopulation": 4267,
+        "populationDensity": 9.48,
+        "gdpPerCapita": 77168.35,
+        "schoolAttendance": 99.53,
+        "occupiedPopulation": 34.78,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 0.47,
+        "lowIncomePopulation": 37.3
+      }
+    },
+    "5219738": {
+      "ibgeCode": "5219738",
+      "name": "Santo Antônio de Goiás",
+      "values": {
+        "populationEstimate": 8066,
+        "censusPopulation": 7386,
+        "populationDensity": 54.7,
+        "gdpPerCapita": 27092.59,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 48.35,
+        "formalAverageSalary": 3.3,
+        "adequateSanitation": 0.49,
+        "lowIncomePopulation": 32.3
+      }
+    },
+    "5219753": {
+      "ibgeCode": "5219753",
+      "name": "Santo Antônio do Descoberto",
+      "values": {
+        "populationEstimate": 75221,
+        "censusPopulation": 72127,
+        "populationDensity": 76.41,
+        "gdpPerCapita": 13488.69,
+        "schoolAttendance": 98.85,
+        "occupiedPopulation": 10.35,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 49.69,
+        "lowIncomePopulation": 36.7
+      }
+    },
+    "5219803": {
+      "ibgeCode": "5219803",
+      "name": "São Domingos",
+      "values": {
+        "populationEstimate": 9457,
+        "censusPopulation": 9711,
+        "populationDensity": 2.91,
+        "gdpPerCapita": 28505.14,
+        "schoolAttendance": 93.98,
+        "occupiedPopulation": 9.7,
+        "formalAverageSalary": 2.3,
+        "adequateSanitation": 0.71,
+        "lowIncomePopulation": 49.3
+      }
+    },
+    "5219902": {
+      "ibgeCode": "5219902",
+      "name": "São Francisco de Goiás",
+      "values": {
+        "populationEstimate": 6507,
+        "censusPopulation": 6378,
+        "populationDensity": 15.31,
+        "gdpPerCapita": 27260.7,
+        "schoolAttendance": 96.96,
+        "occupiedPopulation": 18.56,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 3.54,
+        "lowIncomePopulation": 34.7
+      }
+    },
+    "5220009": {
+      "ibgeCode": "5220009",
+      "name": "São João D'Aliança",
+      "values": {
+        "populationEstimate": 15026,
+        "censusPopulation": 14041,
+        "populationDensity": 4.21,
+        "gdpPerCapita": 42537.58,
+        "schoolAttendance": 99.11,
+        "occupiedPopulation": 12.55,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 6.04,
+        "lowIncomePopulation": 40.5
+      }
+    },
+    "5220058": {
+      "ibgeCode": "5220058",
+      "name": "São João da Paraúna",
+      "values": {
+        "populationEstimate": 1812,
+        "censusPopulation": 1774,
+        "populationDensity": 6.18,
+        "gdpPerCapita": 83825.54,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 19.22,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 69.84,
+        "lowIncomePopulation": 36.6
+      }
+    },
+    "5220108": {
+      "ibgeCode": "5220108",
+      "name": "São Luís de Montes Belos",
+      "values": {
+        "populationEstimate": 35288,
+        "censusPopulation": 33852,
+        "populationDensity": 40.8,
+        "gdpPerCapita": 59329.59,
+        "schoolAttendance": 97.96,
+        "occupiedPopulation": 29.44,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 72.96,
+        "lowIncomePopulation": 31.0
+      }
+    },
+    "5220157": {
+      "ibgeCode": "5220157",
+      "name": "São Luíz do Norte",
+      "values": {
+        "populationEstimate": 4939,
+        "censusPopulation": 4837,
+        "populationDensity": 8.28,
+        "gdpPerCapita": 45838.86,
+        "schoolAttendance": 99.19,
+        "occupiedPopulation": 16.17,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.2,
+        "lowIncomePopulation": 36.1
+      }
+    },
+    "5220207": {
+      "ibgeCode": "5220207",
+      "name": "São Miguel do Araguaia",
+      "values": {
+        "populationEstimate": 22040,
+        "censusPopulation": 21900,
+        "populationDensity": 3.56,
+        "gdpPerCapita": 40219.25,
+        "schoolAttendance": 98.49,
+        "occupiedPopulation": 18.84,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 43.74,
+        "lowIncomePopulation": 39.5
+      }
+    },
+    "5220264": {
+      "ibgeCode": "5220264",
+      "name": "São Miguel do Passa Quatro",
+      "values": {
+        "populationEstimate": 4671,
+        "censusPopulation": 4464,
+        "populationDensity": 8.31,
+        "gdpPerCapita": 75597.95,
+        "schoolAttendance": 94.19,
+        "occupiedPopulation": 16.58,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 8.29,
+        "lowIncomePopulation": 33.1
+      }
+    },
+    "5220280": {
+      "ibgeCode": "5220280",
+      "name": "São Patrício",
+      "values": {
+        "populationEstimate": 2200,
+        "censusPopulation": 2143,
+        "populationDensity": 12.4,
+        "gdpPerCapita": 30855.78,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 17.69,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 1.26,
+        "lowIncomePopulation": 36.2
+      }
+    },
+    "5220405": {
+      "ibgeCode": "5220405",
+      "name": "São Simão",
+      "values": {
+        "populationEstimate": 17181,
+        "censusPopulation": 17020,
+        "populationDensity": 41.01,
+        "gdpPerCapita": 149076.09,
+        "schoolAttendance": 98.33,
+        "occupiedPopulation": 27.68,
+        "formalAverageSalary": 2.5,
+        "adequateSanitation": 87.03,
+        "lowIncomePopulation": 31.3
+      }
+    },
+    "5220454": {
+      "ibgeCode": "5220454",
+      "name": "Senador Canedo",
+      "values": {
+        "populationEstimate": 175042,
+        "censusPopulation": 155635,
+        "populationDensity": 630.09,
+        "gdpPerCapita": 35307.32,
+        "schoolAttendance": 97.47,
+        "occupiedPopulation": 18.95,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 11.0,
+        "lowIncomePopulation": 31.8
+      }
+    },
+    "5220504": {
+      "ibgeCode": "5220504",
+      "name": "Serranópolis",
+      "values": {
+        "populationEstimate": 8237,
+        "censusPopulation": 8027,
+        "populationDensity": 1.45,
+        "gdpPerCapita": 102115.3,
+        "schoolAttendance": 99.35,
+        "occupiedPopulation": 25.48,
+        "formalAverageSalary": 2.2,
+        "adequateSanitation": 2.84,
+        "lowIncomePopulation": 32.5
+      }
+    },
+    "5220603": {
+      "ibgeCode": "5220603",
+      "name": "Silvânia",
+      "values": {
+        "populationEstimate": 23150,
+        "censusPopulation": 22245,
+        "populationDensity": 9.47,
+        "gdpPerCapita": 71665.15,
+        "schoolAttendance": 97.37,
+        "occupiedPopulation": 20.76,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 55.55,
+        "lowIncomePopulation": 31.5
+      }
+    },
+    "5220686": {
+      "ibgeCode": "5220686",
+      "name": "Simolândia",
+      "values": {
+        "populationEstimate": 5634,
+        "censusPopulation": 5742,
+        "populationDensity": 16.56,
+        "gdpPerCapita": 40637.23,
+        "schoolAttendance": 99.58,
+        "occupiedPopulation": 17.64,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 1.33,
+        "lowIncomePopulation": 44.0
+      }
+    },
+    "5220702": {
+      "ibgeCode": "5220702",
+      "name": "Sítio D'Abadia",
+      "values": {
+        "populationEstimate": 2978,
+        "censusPopulation": 2927,
+        "populationDensity": 1.82,
+        "gdpPerCapita": 35615.91,
+        "schoolAttendance": 98.03,
+        "occupiedPopulation": 11.65,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 4.12,
+        "lowIncomePopulation": 50.7
+      }
+    },
+    "5221007": {
+      "ibgeCode": "5221007",
+      "name": "Taquaral de Goiás",
+      "values": {
+        "populationEstimate": 4180,
+        "censusPopulation": 4026,
+        "populationDensity": 19.58,
+        "gdpPerCapita": 24115.71,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 22.58,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 2.61,
+        "lowIncomePopulation": 27.6
+      }
+    },
+    "5221080": {
+      "ibgeCode": "5221080",
+      "name": "Teresina de Goiás",
+      "values": {
+        "populationEstimate": 2660,
+        "censusPopulation": 2701,
+        "populationDensity": 3.44,
+        "gdpPerCapita": 17585.53,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 13.66,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 11.16,
+        "lowIncomePopulation": 42.6
+      }
+    },
+    "5221197": {
+      "ibgeCode": "5221197",
+      "name": "Terezópolis de Goiás",
+      "values": {
+        "populationEstimate": 8340,
+        "censusPopulation": 7944,
+        "populationDensity": 73.96,
+        "gdpPerCapita": 32533.77,
+        "schoolAttendance": 97.18,
+        "occupiedPopulation": 18.98,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 57.0,
+        "lowIncomePopulation": 35.9
+      }
+    },
+    "5221304": {
+      "ibgeCode": "5221304",
+      "name": "Três Ranchos",
+      "values": {
+        "populationEstimate": 2976,
+        "censusPopulation": 2921,
+        "populationDensity": 10.28,
+        "gdpPerCapita": 33124.24,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 21.47,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 31.61,
+        "lowIncomePopulation": 34.4
+      }
+    },
+    "5221403": {
+      "ibgeCode": "5221403",
+      "name": "Trindade",
+      "values": {
+        "populationEstimate": 153560,
+        "censusPopulation": 142431,
+        "populationDensity": 199.85,
+        "gdpPerCapita": 25497.43,
+        "schoolAttendance": 98.04,
+        "occupiedPopulation": 15.36,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 48.53,
+        "lowIncomePopulation": 31.8
+      }
+    },
+    "5221452": {
+      "ibgeCode": "5221452",
+      "name": "Trombas",
+      "values": {
+        "populationEstimate": 3080,
+        "censusPopulation": 3120,
+        "populationDensity": 3.89,
+        "gdpPerCapita": 26326.32,
+        "schoolAttendance": 97.37,
+        "occupiedPopulation": 16.28,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 1.51,
+        "lowIncomePopulation": 44.6
+      }
+    },
+    "5221502": {
+      "ibgeCode": "5221502",
+      "name": "Turvânia",
+      "values": {
+        "populationEstimate": 4449,
+        "censusPopulation": 4480,
+        "populationDensity": 9.29,
+        "gdpPerCapita": 80194.99,
+        "schoolAttendance": 98.63,
+        "occupiedPopulation": 14.4,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.25,
+        "lowIncomePopulation": 36.4
+      }
+    },
+    "5221551": {
+      "ibgeCode": "5221551",
+      "name": "Turvelândia",
+      "values": {
+        "populationEstimate": 5171,
+        "censusPopulation": 4985,
+        "populationDensity": 5.33,
+        "gdpPerCapita": 151920.88,
+        "schoolAttendance": 99.62,
+        "occupiedPopulation": 32.96,
+        "formalAverageSalary": 2.7,
+        "adequateSanitation": 1.46,
+        "lowIncomePopulation": 35.7
+      }
+    },
+    "5221577": {
+      "ibgeCode": "5221577",
+      "name": "Uirapuru",
+      "values": {
+        "populationEstimate": 2798,
+        "censusPopulation": 2798,
+        "populationDensity": 2.42,
+        "gdpPerCapita": 30976.56,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 13.08,
+        "formalAverageSalary": 1.6,
+        "adequateSanitation": 0.82,
+        "lowIncomePopulation": 39.2
+      }
+    },
+    "5221601": {
+      "ibgeCode": "5221601",
+      "name": "Uruaçu",
+      "values": {
+        "populationEstimate": 44533,
+        "censusPopulation": 42546,
+        "populationDensity": 19.86,
+        "gdpPerCapita": 38484.27,
+        "schoolAttendance": 99.03,
+        "occupiedPopulation": 27.68,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 57.76,
+        "lowIncomePopulation": 33.8
+      }
+    },
+    "5221700": {
+      "ibgeCode": "5221700",
+      "name": "Uruana",
+      "values": {
+        "populationEstimate": 13857,
+        "censusPopulation": 13729,
+        "populationDensity": 26.26,
+        "gdpPerCapita": 29547.95,
+        "schoolAttendance": 99.62,
+        "occupiedPopulation": 11.01,
+        "formalAverageSalary": 1.5,
+        "adequateSanitation": 5.72,
+        "lowIncomePopulation": 37.3
+      }
+    },
+    "5221809": {
+      "ibgeCode": "5221809",
+      "name": "Urutaí",
+      "values": {
+        "populationEstimate": 3700,
+        "censusPopulation": 3553,
+        "populationDensity": 5.7,
+        "gdpPerCapita": 42866.35,
+        "schoolAttendance": 99.45,
+        "occupiedPopulation": 23.59,
+        "formalAverageSalary": 4.2,
+        "adequateSanitation": 0.34,
+        "lowIncomePopulation": 33.8
+      }
+    },
+    "5221858": {
+      "ibgeCode": "5221858",
+      "name": "Valparaíso de Goiás",
+      "values": {
+        "populationEstimate": 218416,
+        "censusPopulation": 198861,
+        "populationDensity": 3234.14,
+        "gdpPerCapita": 18212.92,
+        "schoolAttendance": 98.75,
+        "occupiedPopulation": 13.39,
+        "formalAverageSalary": 2.0,
+        "adequateSanitation": 35.93,
+        "lowIncomePopulation": 32.2
+      }
+    },
+    "5221908": {
+      "ibgeCode": "5221908",
+      "name": "Varjão",
+      "values": {
+        "populationEstimate": 3770,
+        "censusPopulation": 3716,
+        "populationDensity": 7.18,
+        "gdpPerCapita": 32932.1,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 11.81,
+        "formalAverageSalary": 1.7,
+        "adequateSanitation": 0.27,
+        "lowIncomePopulation": 34.9
+      }
+    },
+    "5222005": {
+      "ibgeCode": "5222005",
+      "name": "Vianópolis",
+      "values": {
+        "populationEstimate": 15644,
+        "censusPopulation": 14956,
+        "populationDensity": 15.68,
+        "gdpPerCapita": 61175.68,
+        "schoolAttendance": 97.24,
+        "occupiedPopulation": 23.01,
+        "formalAverageSalary": 1.9,
+        "adequateSanitation": 15.78,
+        "lowIncomePopulation": 31.7
+      }
+    },
+    "5222054": {
+      "ibgeCode": "5222054",
+      "name": "Vicentinópolis",
+      "values": {
+        "populationEstimate": 9175,
+        "censusPopulation": 8768,
+        "populationDensity": 11.95,
+        "gdpPerCapita": 77280.98,
+        "schoolAttendance": 99.39,
+        "occupiedPopulation": 28.51,
+        "formalAverageSalary": 1.8,
+        "adequateSanitation": 0.8,
+        "lowIncomePopulation": 33.0
+      }
+    },
+    "5222203": {
+      "ibgeCode": "5222203",
+      "name": "Vila Boa",
+      "values": {
+        "populationEstimate": 4145,
+        "censusPopulation": 4215,
+        "populationDensity": 4.0,
+        "gdpPerCapita": 47887.65,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 26.57,
+        "formalAverageSalary": 1.1,
+        "adequateSanitation": 4.93,
+        "lowIncomePopulation": 38.0
+      }
+    },
+    "5222302": {
+      "ibgeCode": "5222302",
+      "name": "Vila Propício",
+      "values": {
+        "populationEstimate": 6028,
+        "censusPopulation": 5815,
+        "populationDensity": 2.67,
+        "gdpPerCapita": 76390.22,
+        "schoolAttendance": 100.0,
+        "occupiedPopulation": 26.36,
+        "formalAverageSalary": 2.1,
+        "adequateSanitation": 0.76,
+        "lowIncomePopulation": 46.2
+      }
+    }
+  }
+}

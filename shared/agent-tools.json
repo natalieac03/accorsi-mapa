@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "description": "Contrato único das ferramentas de consulta do agente de perguntas do Acquário Mapa. O modelo NUNCA calcula estatística: ele escolhe a ferramenta e os argumentos, e o motor do mapa calcula. Frontend (src/utils/agentTools.ts) e backend leem este mesmo arquivo.",
+  "tools": [
+    {
+      "name": "ranking_indicador",
+      "description": "Use para 'quais os maiores/menores municípios de Goiás em X', 'top 10 em Y', 'onde o indicador Z é mais alto'. Devolve o ranking dos municípios do Goiás em UM indicador da aba Análise, com o valor formatado, a faixa (quintil de 1 a 5) e a POSIÇÃO no ranking estadual — os mesmos números do mapa, porque o cálculo reusa o motor da aba Análise. Municípios sem dado ficam FORA do ranking (nunca contam como zero) e a quantidade deles aparece em 'avisos'. Cada indicador tem seu próprio ano de referência e sua fonte (TSE ou IBGE), devolvidos em 'fonte' — cite-os na resposta.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "indicador": {
+            "type": "string",
+            "description": "Indicador a ranquear. TSE 2026: electorate (eleitorado total), biometrics (% com biometria), disability (% com deficiência cadastrada), female (% de mulheres), socialName (nome social por 10 mil), electorsPerZone (eleitores por zona). IBGE: populationEstimate (população estimada 2025), censusPopulation (população do Censo 2022), populationDensity (hab./km² 2022), gdpPerCapita (PIB per capita 2023), schoolAttendance (escolarização de 6 a 14 anos), occupiedPopulation (% ocupada), formalAverageSalary (salário formal médio), adequateSanitation (% com esgotamento adequado), lowIncomePopulation (% com renda de até 1/2 salário mínimo, 2010), population16Plus (população de 16 anos ou mais, Censo 2022), electoralPenetration (eleitorado 2026 sobre a população 16+), share16to24 (% de 16 a 24 anos na população 16+), share60Plus (% de 60 anos ou mais na população 16+), literacyRate15Plus (% alfabetizada entre as pessoas de 15 anos ou mais).",
+            "enum": [
+              "electorate",
+              "biometrics",
+              "disability",
+              "female",
+              "socialName",
+              "electorsPerZone",
+              "populationEstimate",
+              "censusPopulation",
+              "populationDensity",
+              "gdpPerCapita",
+              "schoolAttendance",
+              "occupiedPopulation",
+              "formalAverageSalary",
+              "adequateSanitation",
+              "lowIncomePopulation",
+              "population16Plus",
+              "electoralPenetration",
+              "share16to24",
+              "share60Plus",
+              "literacyRate15Plus"
+            ]
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' devolve do maior valor para o menor (top N); 'menores' devolve do menor para o maior (bottom N). Padrão: maiores.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantas linhas devolver, de 1 a 50. Padrão: 10. Peça só o que for citar na resposta.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "municipios": {
+            "type": "array",
+            "description": "Opcional. Restringe o resultado a estes municípios (nome, código IBGE de 7 dígitos ou código TSE). A posição no ranking continua sendo a de Goiás inteiro, para bater com o mapa.",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 50
+          }
+        },
+        "required": ["indicador"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "perfil_municipio",
+      "description": "Use quando a pergunta for sobre UM município específico ('como é Pelotas?', 'qual o eleitorado de Caxias do Sul?', 'fale sobre Porto Alegre'). Devolve o retrato completo: eleitorado e composição do cadastro (biometria, deficiência, mulheres, nome social, zonas), todos os indicadores socioeconômicos e etários do IBGE com a posição do município no ranking estadual de cada um, o índice ideológico 0–10 no pleito mais recente e o número de locais de votação. Indicadores sem dado voltam como null e são listados nos avisos — nunca zero.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "municipio": {
+            "type": "string",
+            "description": "Nome do município (aceita sem acento e parcial), código IBGE de 7 dígitos ou código TSE."
+          }
+        },
+        "required": ["municipio"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "espectro_municipios",
+      "description": "Use para 'quais municípios votam mais à direita/esquerda', 'onde a esquerda foi mais forte', 'qual o índice ideológico de tal cidade num pleito'. Devolve, por município e num pleito, o índice ideológico de 0 (extrema esquerda) a 10 (extrema direita), a participação dos blocos esquerda/centro/direita nos votos com nota e a COBERTURA (percentual dos votos que caiu em partidos com nota no survey). O índice é a média das notas dos partidos ponderada pelos votos. Município cujos votos não caíram em nenhum partido com nota fica com índice null, fora do ranking. Sempre cite a onda do survey devolvida em 'fonte' — cada pleito usa a onda do seu ano.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "pleito": {
+            "type": "string",
+            "description": "Pleito analisado: identificador ('2022-3-2') ou texto livre ('2022 governador 2º turno'). Padrão: o pleito mais recente disponível."
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' = do mais à direita para o mais à esquerda; 'menores' = do mais à esquerda para o mais à direita. Padrão: maiores.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantos municípios devolver, de 1 a 50. Padrão: 10.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "municipios": {
+            "type": "array",
+            "description": "Opcional. Restringe o resultado a estes municípios (nome, código IBGE ou código TSE), mantendo a posição do ranking estadual.",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "espectro_submunicipal",
+      "description": "Use para perguntas DENTRO de um município: 'em Porto Alegre, em quais regiões teve mais gente votando na direita', 'quais bairros de Pelotas são mais à esquerda', 'qual local de votação de Canoas votou mais à direita'. Devolve o índice ideológico 0–10 por BAIRRO ou por LOCAL DE VOTAÇÃO dentro de um município e um pleito, com eleitorado, votos apurados, cobertura e blocos. O bairro é a soma dos votos dos locais daquele bairro (não é polígono de bairro), e a medida é do LOCAL ONDE SE VOTA, não do endereço de quem vota — diga isso na resposta. Se a camada submunicipal ainda não tiver sido gerada pelo ETL, a ferramenta responde com aviso explicando a pendência e nenhuma linha.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "municipio": {
+            "type": "string",
+            "description": "Município analisado: nome, código IBGE de 7 dígitos ou código TSE. Obrigatório — a camada submunicipal sempre olha um município por vez."
+          },
+          "unidade": {
+            "type": "string",
+            "description": "'bairro' agrega os locais de votação por bairro (padrão, melhor para 'quais regiões'); 'local' devolve local de votação por local de votação.",
+            "enum": ["bairro", "local"]
+          },
+          "pleito": {
+            "type": "string",
+            "description": "Pleito analisado: identificador ('2022-3-2') ou texto livre ('2022 governador 2º turno'). Padrão: o pleito mais recente disponível."
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' = do mais à direita para o mais à esquerda; 'menores' = do mais à esquerda para o mais à direita. Padrão: maiores.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantas unidades devolver, de 1 a 50. Padrão: 10.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": ["municipio"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "resultado_eleicao",
+      "description": "Use para a votação de UM candidato: 'onde fulano foi melhor', 'quantos votos beltrano teve em Santa Maria', 'em quais municípios ciclano ganhou'. Devolve, por município, os votos nominais do candidato, os votos válidos do município, a participação em percentual dos válidos e se ele liderou ali, além do total estadual. Só existem os pleitos presentes em 'fonte'; se o candidato não estiver no pleito, a ferramenta devolve ok:false explicando.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "candidato": {
+            "type": "string",
+            "description": "Nome de urna, nome completo ou número do candidato. Aceita texto sem acento e parcial."
+          },
+          "pleito": {
+            "type": "string",
+            "description": "Pleito: identificador ('2022-1-2') ou texto livre ('2022 presidente 2º turno'). Padrão: o pleito mais recente em que o candidato aparece."
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' = municípios com maior participação do candidato primeiro; 'menores' = menor participação primeiro. Padrão: maiores.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantos municípios devolver, de 1 a 50. Padrão: 10.",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "municipios": {
+            "type": "array",
+            "description": "Opcional. Restringe o resultado a estes municípios (nome, código IBGE ou código TSE) — use quando a pergunta citar cidades específicas.",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 50
+          }
+        },
+        "required": ["candidato"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "comparar_municipios",
+      "description": "Use quando a pergunta comparar cidades: 'Porto Alegre ou Caxias tem eleitorado mais jovem?', 'compare Pelotas, Rio Grande e Bagé'. Devolve até 3 municípios lado a lado nos principais indicadores (eleitorado, participação em Goiás, biometria, mulheres, população estimada e do Censo, PIB per capita, densidade, população 16+, penetração eleitoral, 16–24, 60+, alfabetização 15+) com a posição de cada um no ranking estadual, mais o índice ideológico no pleito mais recente. Indicador sem dado vem como null, nunca zero.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "municipios": {
+            "type": "array",
+            "description": "De 2 a 3 municípios: nome, código IBGE de 7 dígitos ou código TSE.",
+            "items": { "type": "string" },
+            "minItems": 2,
+            "maxItems": 3
+          }
+        },
+        "required": ["municipios"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "cadastros_agregados",
+      "description": "Use para 'quantos apoiadores cadastramos em tal cidade/bairro', 'onde temos mais cadastros'. Devolve APENAS contagens agregadas de cadastros de apoiadores, por município ou por bairro, com a taxa por 10 mil eleitores. Regra de privacidade inegociável: todo grupo com menos de 5 cadastros é SUPRIMIDO do resultado e reportado apenas como contagem de grupos suprimidos por privacidade; a ferramenta nunca devolve registro individual, nome, endereço, CEP completo ou qualquer dado pessoal. Se a base for a demonstração sintética, o aviso diz isso — repita na resposta.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "agrupamento": {
+            "type": "string",
+            "description": "'municipio' conta por município (padrão); 'bairro' conta por bairro — combine com 'municipio' para olhar os bairros de uma cidade.",
+            "enum": ["municipio", "bairro"]
+          },
+          "municipio": {
+            "type": "string",
+            "description": "Opcional. Restringe a contagem a um município: nome, código IBGE de 7 dígitos ou código TSE."
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' = mais cadastros primeiro (padrão); 'menores' = menos cadastros primeiro.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantas linhas devolver, de 1 a 50. Padrão: 10.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

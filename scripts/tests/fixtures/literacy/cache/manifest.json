@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "apiVariant": "agregados",
+  "aggregate": "9542",
+  "variable": "950",
+  "referenceYear": 2022,
+  "retrievedAtUtc": "2026-08-16T00:00:00+00:00",
+  "notes": [
+    "FIXTURE SINTÉTICO: valores de alfabetização inventados por scripts/tests/literacy_fixture.py; apenas códigos e nomes municipais são reais."
+  ],
+  "batches": [
+    {
+      "file": "agregados_9542_state.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/9542/periodos/2022/variaveis/950?localidades=N3[43]&classificacao=59[all]",
+      "level": "N3",
+      "localities": [
+        "43"
+      ],
+      "sha256": "60b9119a1899720fdef6bf0d4eeca5afb669af08d9ef64b5083180ddda6667fd"
+    },
+    {
+      "file": "agregados_9542_batch_001.json",
+      "url": "https://servicodados.ibge.gov.br/api/v3/agregados/9542/periodos/2022/variaveis/950?localidades=N6[4300034,4314902]&classificacao=59[all]",
+      "level": "N6",
+      "localities": [
+        "4300034",
+        "4314902"
+      ],
+      "sha256": "6e9c234bdd3a2410bed193d38c2e8c7ef40d299791ceef7e5d33473e64f3262f"
+    }
+  ]
+}

@@ -1,0 +1,1271 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "state": "GO",
+    "source": "IBGE — Censo Demográfico 2022",
+    "dataset": "Pessoas de 15 anos ou mais de idade, total e as alfabetizadas (Tabela 9542, variável 950, classificação C59)",
+    "aggregate": "9542",
+    "variable": "950",
+    "classification": "59",
+    "apiVariant": "agregados",
+    "sourceUrls": [
+      "https://sidra.ibge.gov.br/tabela/9542",
+      "https://servicodados.ibge.gov.br/api/docs/agregados?versao=3",
+      "https://apisidra.ibge.gov.br/desctabapi.aspx?c=9542"
+    ],
+    "referenceYear": 2022,
+    "retrievedAtUtc": "2026-08-16T21:40:47+00:00",
+    "processedAtUtc": "2026-08-16T21:40:47+00:00",
+    "municipalityCount": 246,
+    "stateTotals": {
+      "literate15Plus": 5316507,
+      "population15Plus": 5625206,
+      "literacyRate": 94.5
+    },
+    "rawResponseSha256": {
+      "agregados_9542_state.json": "e3b11f5504e6cbc433b3fb55af6b41b7eaea94097ad3248ffc3495d07ab4f90e",
+      "agregados_9542_batch_001.json": "176e47baba0b836f83cc8d634b5a1812d1a443377454dcac008986660ca9beb9",
+      "agregados_9542_batch_002.json": "5371b77b63fb6d3638140916193f75732c05d81bd03766f7cf64d67de9f0b534",
+      "agregados_9542_batch_003.json": "3a86ed2e581e9bb15eb7e7034af3cd6bfefdc2af622cfee0bc0d0111ea80e181",
+      "agregados_9542_batch_004.json": "4c2ef9b3d4efde34266fb9e32d8b06a12f9e8bff76867fe0817c09d479ab1e52",
+      "agregados_9542_batch_005.json": "0849e79d4630034f700e115097a03d442cddd04e36983fd1586e9490abec93de"
+    },
+    "cacheDir": "/home/pc/Downloads/accorsifinal/dados_tse/cache_ibge_alfabetizacao",
+    "notes": [
+      "literacyRate é alfabetizadas / população 15+ em %, com 1 casa decimal, calculada dos valores absolutos da tabela 9542.",
+      "Para agregar recortes territoriais some literate15Plus e population15Plus separadamente e divida — nunca faça média das taxas municipais."
+    ]
+  },
+  "municipalities": {
+    "5200050": {
+      "literate15Plus": 13498,
+      "population15Plus": 14318,
+      "literacyRate": 94.3
+    },
+    "5200100": {
+      "literate15Plus": 12648,
+      "population15Plus": 13635,
+      "literacyRate": 92.8
+    },
+    "5200134": {
+      "literate15Plus": 15635,
+      "population15Plus": 17239,
+      "literacyRate": 90.7
+    },
+    "5200159": {
+      "literate15Plus": 1722,
+      "population15Plus": 1918,
+      "literacyRate": 89.8
+    },
+    "5200175": {
+      "literate15Plus": 3487,
+      "population15Plus": 3915,
+      "literacyRate": 89.1
+    },
+    "5200209": {
+      "literate15Plus": 1391,
+      "population15Plus": 1532,
+      "literacyRate": 90.8
+    },
+    "5200258": {
+      "literate15Plus": 159586,
+      "population15Plus": 168413,
+      "literacyRate": 94.8
+    },
+    "5200308": {
+      "literate15Plus": 19342,
+      "population15Plus": 21219,
+      "literacyRate": 91.2
+    },
+    "5200506": {
+      "literate15Plus": 1488,
+      "population15Plus": 1671,
+      "literacyRate": 89.0
+    },
+    "5200555": {
+      "literate15Plus": 4418,
+      "population15Plus": 4714,
+      "literacyRate": 93.7
+    },
+    "5200605": {
+      "literate15Plus": 7460,
+      "population15Plus": 7932,
+      "literacyRate": 94.0
+    },
+    "5200803": {
+      "literate15Plus": 5734,
+      "population15Plus": 6576,
+      "literacyRate": 87.2
+    },
+    "5200829": {
+      "literate15Plus": 2383,
+      "population15Plus": 2696,
+      "literacyRate": 88.4
+    },
+    "5200852": {
+      "literate15Plus": 3903,
+      "population15Plus": 4407,
+      "literacyRate": 88.6
+    },
+    "5200902": {
+      "literate15Plus": 2237,
+      "population15Plus": 2576,
+      "literacyRate": 86.8
+    },
+    "5201108": {
+      "literate15Plus": 306615,
+      "population15Plus": 318707,
+      "literacyRate": 96.2
+    },
+    "5201207": {
+      "literate15Plus": 751,
+      "population15Plus": 773,
+      "literacyRate": 97.2
+    },
+    "5201306": {
+      "literate15Plus": 14069,
+      "population15Plus": 15316,
+      "literacyRate": 91.9
+    },
+    "5201405": {
+      "literate15Plus": 402295,
+      "population15Plus": 417640,
+      "literacyRate": 96.3
+    },
+    "5201454": {
+      "literate15Plus": 2146,
+      "population15Plus": 2344,
+      "literacyRate": 91.6
+    },
+    "5201504": {
+      "literate15Plus": 3105,
+      "population15Plus": 3346,
+      "literacyRate": 92.8
+    },
+    "5201603": {
+      "literate15Plus": 2830,
+      "population15Plus": 3184,
+      "literacyRate": 88.9
+    },
+    "5201702": {
+      "literate15Plus": 13837,
+      "population15Plus": 14852,
+      "literacyRate": 93.2
+    },
+    "5201801": {
+      "literate15Plus": 8724,
+      "population15Plus": 9545,
+      "literacyRate": 91.4
+    },
+    "5202155": {
+      "literate15Plus": 4930,
+      "population15Plus": 5861,
+      "literacyRate": 84.1
+    },
+    "5202353": {
+      "literate15Plus": 2207,
+      "population15Plus": 2454,
+      "literacyRate": 89.9
+    },
+    "5202502": {
+      "literate15Plus": 5976,
+      "population15Plus": 6546,
+      "literacyRate": 91.3
+    },
+    "5202601": {
+      "literate15Plus": 2493,
+      "population15Plus": 2798,
+      "literacyRate": 89.1
+    },
+    "5202809": {
+      "literate15Plus": 2128,
+      "population15Plus": 2407,
+      "literacyRate": 88.4
+    },
+    "5203104": {
+      "literate15Plus": 2432,
+      "population15Plus": 2716,
+      "literacyRate": 89.5
+    },
+    "5203203": {
+      "literate15Plus": 7407,
+      "population15Plus": 8101,
+      "literacyRate": 91.4
+    },
+    "5203302": {
+      "literate15Plus": 26247,
+      "population15Plus": 27910,
+      "literacyRate": 94.0
+    },
+    "5203401": {
+      "literate15Plus": 5865,
+      "population15Plus": 6514,
+      "literacyRate": 90.0
+    },
+    "5203500": {
+      "literate15Plus": 17476,
+      "population15Plus": 19011,
+      "literacyRate": 91.9
+    },
+    "5203559": {
+      "literate15Plus": 7633,
+      "population15Plus": 8229,
+      "literacyRate": 92.8
+    },
+    "5203575": {
+      "literate15Plus": 2273,
+      "population15Plus": 2620,
+      "literacyRate": 86.8
+    },
+    "5203609": {
+      "literate15Plus": 3014,
+      "population15Plus": 3270,
+      "literacyRate": 92.2
+    },
+    "5203807": {
+      "literate15Plus": 4100,
+      "population15Plus": 4584,
+      "literacyRate": 89.4
+    },
+    "5203906": {
+      "literate15Plus": 7980,
+      "population15Plus": 8588,
+      "literacyRate": 92.9
+    },
+    "5203939": {
+      "literate15Plus": 2035,
+      "population15Plus": 2264,
+      "literacyRate": 89.9
+    },
+    "5203962": {
+      "literate15Plus": 2014,
+      "population15Plus": 2481,
+      "literacyRate": 81.2
+    },
+    "5204003": {
+      "literate15Plus": 5356,
+      "population15Plus": 5953,
+      "literacyRate": 90.0
+    },
+    "5204102": {
+      "literate15Plus": 8482,
+      "population15Plus": 9226,
+      "literacyRate": 91.9
+    },
+    "5204201": {
+      "literate15Plus": 1017,
+      "population15Plus": 1178,
+      "literacyRate": 86.3
+    },
+    "5204250": {
+      "literate15Plus": 5730,
+      "population15Plus": 6401,
+      "literacyRate": 89.5
+    },
+    "5204300": {
+      "literate15Plus": 10361,
+      "population15Plus": 11250,
+      "literacyRate": 92.1
+    },
+    "5204409": {
+      "literate15Plus": 12250,
+      "population15Plus": 13598,
+      "literacyRate": 90.1
+    },
+    "5204508": {
+      "literate15Plus": 74749,
+      "population15Plus": 78224,
+      "literacyRate": 95.6
+    },
+    "5204557": {
+      "literate15Plus": 3409,
+      "population15Plus": 3636,
+      "literacyRate": 93.8
+    },
+    "5204607": {
+      "literate15Plus": 2705,
+      "population15Plus": 3000,
+      "literacyRate": 90.2
+    },
+    "5204656": {
+      "literate15Plus": 2653,
+      "population15Plus": 2983,
+      "literacyRate": 88.9
+    },
+    "5204706": {
+      "literate15Plus": 9347,
+      "population15Plus": 9917,
+      "literacyRate": 94.3
+    },
+    "5204805": {
+      "literate15Plus": 5510,
+      "population15Plus": 5840,
+      "literacyRate": 94.3
+    },
+    "5204854": {
+      "literate15Plus": 5791,
+      "population15Plus": 6123,
+      "literacyRate": 94.6
+    },
+    "5204904": {
+      "literate15Plus": 12594,
+      "population15Plus": 14088,
+      "literacyRate": 89.4
+    },
+    "5204953": {
+      "literate15Plus": 2729,
+      "population15Plus": 3229,
+      "literacyRate": 84.5
+    },
+    "5205000": {
+      "literate15Plus": 7334,
+      "population15Plus": 8000,
+      "literacyRate": 91.7
+    },
+    "5205059": {
+      "literate15Plus": 2010,
+      "population15Plus": 2461,
+      "literacyRate": 81.7
+    },
+    "5205109": {
+      "literate15Plus": 89507,
+      "population15Plus": 92603,
+      "literacyRate": 96.7
+    },
+    "5205208": {
+      "literate15Plus": 3793,
+      "population15Plus": 4208,
+      "literacyRate": 90.1
+    },
+    "5205307": {
+      "literate15Plus": 6088,
+      "population15Plus": 7227,
+      "literacyRate": 84.2
+    },
+    "5205406": {
+      "literate15Plus": 17389,
+      "population15Plus": 18211,
+      "literacyRate": 95.5
+    },
+    "5205455": {
+      "literate15Plus": 5811,
+      "population15Plus": 6561,
+      "literacyRate": 88.6
+    },
+    "5205471": {
+      "literate15Plus": 9232,
+      "population15Plus": 9595,
+      "literacyRate": 96.2
+    },
+    "5205497": {
+      "literate15Plus": 66804,
+      "population15Plus": 69527,
+      "literacyRate": 96.1
+    },
+    "5205513": {
+      "literate15Plus": 17928,
+      "population15Plus": 19721,
+      "literacyRate": 90.9
+    },
+    "5205521": {
+      "literate15Plus": 2729,
+      "population15Plus": 3091,
+      "literacyRate": 88.3
+    },
+    "5205703": {
+      "literate15Plus": 1896,
+      "population15Plus": 2084,
+      "literacyRate": 91.0
+    },
+    "5205802": {
+      "literate15Plus": 7676,
+      "population15Plus": 8540,
+      "literacyRate": 89.9
+    },
+    "5205901": {
+      "literate15Plus": 6998,
+      "population15Plus": 7401,
+      "literacyRate": 94.6
+    },
+    "5206206": {
+      "literate15Plus": 44474,
+      "population15Plus": 47403,
+      "literacyRate": 93.8
+    },
+    "5206305": {
+      "literate15Plus": 2737,
+      "population15Plus": 2898,
+      "literacyRate": 94.4
+    },
+    "5206404": {
+      "literate15Plus": 12369,
+      "population15Plus": 13664,
+      "literacyRate": 90.5
+    },
+    "5206503": {
+      "literate15Plus": 2980,
+      "population15Plus": 3209,
+      "literacyRate": 92.9
+    },
+    "5206602": {
+      "literate15Plus": 2145,
+      "population15Plus": 2422,
+      "literacyRate": 88.6
+    },
+    "5206701": {
+      "literate15Plus": 2642,
+      "population15Plus": 3011,
+      "literacyRate": 87.7
+    },
+    "5206800": {
+      "literate15Plus": 2057,
+      "population15Plus": 2309,
+      "literacyRate": 89.1
+    },
+    "5206909": {
+      "literate15Plus": 1438,
+      "population15Plus": 1566,
+      "literacyRate": 91.8
+    },
+    "5207105": {
+      "literate15Plus": 1556,
+      "population15Plus": 1728,
+      "literacyRate": 90.0
+    },
+    "5207253": {
+      "literate15Plus": 5070,
+      "population15Plus": 5683,
+      "literacyRate": 89.2
+    },
+    "5207352": {
+      "literate15Plus": 3018,
+      "population15Plus": 3299,
+      "literacyRate": 91.5
+    },
+    "5207402": {
+      "literate15Plus": 8661,
+      "population15Plus": 9481,
+      "literacyRate": 91.4
+    },
+    "5207501": {
+      "literate15Plus": 2295,
+      "population15Plus": 2597,
+      "literacyRate": 88.4
+    },
+    "5207535": {
+      "literate15Plus": 5082,
+      "population15Plus": 5881,
+      "literacyRate": 86.4
+    },
+    "5207600": {
+      "literate15Plus": 4485,
+      "population15Plus": 4945,
+      "literacyRate": 90.7
+    },
+    "5207808": {
+      "literate15Plus": 7888,
+      "population15Plus": 8645,
+      "literacyRate": 91.2
+    },
+    "5207907": {
+      "literate15Plus": 9666,
+      "population15Plus": 10821,
+      "literacyRate": 89.3
+    },
+    "5208004": {
+      "literate15Plus": 85831,
+      "population15Plus": 91027,
+      "literacyRate": 94.3
+    },
+    "5208103": {
+      "literate15Plus": 3445,
+      "population15Plus": 3819,
+      "literacyRate": 90.2
+    },
+    "5208152": {
+      "literate15Plus": 2551,
+      "population15Plus": 2786,
+      "literacyRate": 91.6
+    },
+    "5208301": {
+      "literate15Plus": 3078,
+      "population15Plus": 3574,
+      "literacyRate": 86.1
+    },
+    "5208400": {
+      "literate15Plus": 10243,
+      "population15Plus": 11024,
+      "literacyRate": 92.9
+    },
+    "5208509": {
+      "literate15Plus": 3959,
+      "population15Plus": 4176,
+      "literacyRate": 94.8
+    },
+    "5208608": {
+      "literate15Plus": 55004,
+      "population15Plus": 59032,
+      "literacyRate": 93.2
+    },
+    "5208707": {
+      "literate15Plus": 1148923,
+      "population15Plus": 1178225,
+      "literacyRate": 97.5
+    },
+    "5208806": {
+      "literate15Plus": 52101,
+      "population15Plus": 54722,
+      "literacyRate": 95.2
+    },
+    "5208905": {
+      "literate15Plus": 18388,
+      "population15Plus": 20187,
+      "literacyRate": 91.1
+    },
+    "5209101": {
+      "literate15Plus": 27534,
+      "population15Plus": 29198,
+      "literacyRate": 94.3
+    },
+    "5209150": {
+      "literate15Plus": 3028,
+      "population15Plus": 3480,
+      "literacyRate": 87.0
+    },
+    "5209200": {
+      "literate15Plus": 13984,
+      "population15Plus": 15255,
+      "literacyRate": 91.7
+    },
+    "5209291": {
+      "literate15Plus": 1679,
+      "population15Plus": 1865,
+      "literacyRate": 90.0
+    },
+    "5209408": {
+      "literate15Plus": 2680,
+      "population15Plus": 3258,
+      "literacyRate": 82.3
+    },
+    "5209457": {
+      "literate15Plus": 1554,
+      "population15Plus": 1809,
+      "literacyRate": 85.9
+    },
+    "5209606": {
+      "literate15Plus": 2504,
+      "population15Plus": 2810,
+      "literacyRate": 89.1
+    },
+    "5209705": {
+      "literate15Plus": 20759,
+      "population15Plus": 21860,
+      "literacyRate": 95.0
+    },
+    "5209804": {
+      "literate15Plus": 2688,
+      "population15Plus": 2962,
+      "literacyRate": 90.7
+    },
+    "5209903": {
+      "literate15Plus": 7177,
+      "population15Plus": 8182,
+      "literacyRate": 87.7
+    },
+    "5209937": {
+      "literate15Plus": 4192,
+      "population15Plus": 4789,
+      "literacyRate": 87.5
+    },
+    "5209952": {
+      "literate15Plus": 12578,
+      "population15Plus": 13704,
+      "literacyRate": 91.8
+    },
+    "5210000": {
+      "literate15Plus": 39655,
+      "population15Plus": 42775,
+      "literacyRate": 92.7
+    },
+    "5210109": {
+      "literate15Plus": 19438,
+      "population15Plus": 20861,
+      "literacyRate": 93.2
+    },
+    "5210158": {
+      "literate15Plus": 2242,
+      "population15Plus": 2445,
+      "literacyRate": 91.7
+    },
+    "5210208": {
+      "literate15Plus": 27341,
+      "population15Plus": 29399,
+      "literacyRate": 93.0
+    },
+    "5210307": {
+      "literate15Plus": 1969,
+      "population15Plus": 2203,
+      "literacyRate": 89.4
+    },
+    "5210406": {
+      "literate15Plus": 33059,
+      "population15Plus": 35626,
+      "literacyRate": 92.8
+    },
+    "5210562": {
+      "literate15Plus": 3756,
+      "population15Plus": 4124,
+      "literacyRate": 91.1
+    },
+    "5210604": {
+      "literate15Plus": 3716,
+      "population15Plus": 4203,
+      "literacyRate": 88.4
+    },
+    "5210802": {
+      "literate15Plus": 3243,
+      "population15Plus": 3591,
+      "literacyRate": 90.3
+    },
+    "5210901": {
+      "literate15Plus": 15401,
+      "population15Plus": 16818,
+      "literacyRate": 91.6
+    },
+    "5211008": {
+      "literate15Plus": 5763,
+      "population15Plus": 6601,
+      "literacyRate": 87.3
+    },
+    "5211206": {
+      "literate15Plus": 19794,
+      "population15Plus": 21811,
+      "literacyRate": 90.8
+    },
+    "5211305": {
+      "literate15Plus": 4379,
+      "population15Plus": 4887,
+      "literacyRate": 89.6
+    },
+    "5211404": {
+      "literate15Plus": 6008,
+      "population15Plus": 6491,
+      "literacyRate": 92.6
+    },
+    "5211503": {
+      "literate15Plus": 82339,
+      "population15Plus": 87140,
+      "literacyRate": 94.5
+    },
+    "5211602": {
+      "literate15Plus": 2019,
+      "population15Plus": 2233,
+      "literacyRate": 90.4
+    },
+    "5211701": {
+      "literate15Plus": 4807,
+      "population15Plus": 5227,
+      "literacyRate": 92.0
+    },
+    "5211800": {
+      "literate15Plus": 33776,
+      "population15Plus": 36389,
+      "literacyRate": 92.8
+    },
+    "5211909": {
+      "literate15Plus": 80289,
+      "population15Plus": 84284,
+      "literacyRate": 95.3
+    },
+    "5212006": {
+      "literate15Plus": 2165,
+      "population15Plus": 2454,
+      "literacyRate": 88.2
+    },
+    "5212055": {
+      "literate15Plus": 1472,
+      "population15Plus": 1699,
+      "literacyRate": 86.6
+    },
+    "5212105": {
+      "literate15Plus": 5382,
+      "population15Plus": 5836,
+      "literacyRate": 92.2
+    },
+    "5212204": {
+      "literate15Plus": 14548,
+      "population15Plus": 16010,
+      "literacyRate": 90.9
+    },
+    "5212253": {
+      "literate15Plus": 1028,
+      "population15Plus": 1088,
+      "literacyRate": 94.5
+    },
+    "5212303": {
+      "literate15Plus": 6488,
+      "population15Plus": 7035,
+      "literacyRate": 92.2
+    },
+    "5212501": {
+      "literate15Plus": 151129,
+      "population15Plus": 160453,
+      "literacyRate": 94.2
+    },
+    "5212600": {
+      "literate15Plus": 1939,
+      "population15Plus": 2156,
+      "literacyRate": 89.9
+    },
+    "5212709": {
+      "literate15Plus": 5245,
+      "population15Plus": 6117,
+      "literacyRate": 85.7
+    },
+    "5212808": {
+      "literate15Plus": 7695,
+      "population15Plus": 8707,
+      "literacyRate": 88.4
+    },
+    "5212907": {
+      "literate15Plus": 2028,
+      "population15Plus": 2185,
+      "literacyRate": 92.8
+    },
+    "5212956": {
+      "literate15Plus": 2960,
+      "population15Plus": 3339,
+      "literacyRate": 88.6
+    },
+    "5213004": {
+      "literate15Plus": 7111,
+      "population15Plus": 8057,
+      "literacyRate": 88.3
+    },
+    "5213053": {
+      "literate15Plus": 1742,
+      "population15Plus": 2095,
+      "literacyRate": 83.2
+    },
+    "5213087": {
+      "literate15Plus": 19586,
+      "population15Plus": 21796,
+      "literacyRate": 89.9
+    },
+    "5213103": {
+      "literate15Plus": 51850,
+      "population15Plus": 54616,
+      "literacyRate": 94.9
+    },
+    "5213400": {
+      "literate15Plus": 1287,
+      "population15Plus": 1420,
+      "literacyRate": 90.6
+    },
+    "5213509": {
+      "literate15Plus": 4176,
+      "population15Plus": 4991,
+      "literacyRate": 83.7
+    },
+    "5213707": {
+      "literate15Plus": 6503,
+      "population15Plus": 7134,
+      "literacyRate": 91.2
+    },
+    "5213756": {
+      "literate15Plus": 9058,
+      "population15Plus": 9824,
+      "literacyRate": 92.2
+    },
+    "5213772": {
+      "literate15Plus": 2625,
+      "population15Plus": 3066,
+      "literacyRate": 85.6
+    },
+    "5213806": {
+      "literate15Plus": 39745,
+      "population15Plus": 41778,
+      "literacyRate": 95.1
+    },
+    "5213855": {
+      "literate15Plus": 1804,
+      "population15Plus": 2015,
+      "literacyRate": 89.5
+    },
+    "5213905": {
+      "literate15Plus": 3544,
+      "population15Plus": 3910,
+      "literacyRate": 90.6
+    },
+    "5214002": {
+      "literate15Plus": 10499,
+      "population15Plus": 11557,
+      "literacyRate": 90.8
+    },
+    "5214051": {
+      "literate15Plus": 4376,
+      "population15Plus": 5060,
+      "literacyRate": 86.5
+    },
+    "5214101": {
+      "literate15Plus": 2555,
+      "population15Plus": 2928,
+      "literacyRate": 87.3
+    },
+    "5214408": {
+      "literate15Plus": 5997,
+      "population15Plus": 6598,
+      "literacyRate": 90.9
+    },
+    "5214507": {
+      "literate15Plus": 23523,
+      "population15Plus": 25075,
+      "literacyRate": 93.8
+    },
+    "5214606": {
+      "literate15Plus": 25279,
+      "population15Plus": 28585,
+      "literacyRate": 88.4
+    },
+    "5214705": {
+      "literate15Plus": 1721,
+      "population15Plus": 1921,
+      "literacyRate": 89.6
+    },
+    "5214804": {
+      "literate15Plus": 1628,
+      "population15Plus": 1743,
+      "literacyRate": 93.4
+    },
+    "5214838": {
+      "literate15Plus": 8842,
+      "population15Plus": 10145,
+      "literacyRate": 87.2
+    },
+    "5214861": {
+      "literate15Plus": 6155,
+      "population15Plus": 6950,
+      "literacyRate": 88.6
+    },
+    "5214879": {
+      "literate15Plus": 2164,
+      "population15Plus": 2374,
+      "literacyRate": 91.2
+    },
+    "5214903": {
+      "literate15Plus": 2140,
+      "population15Plus": 2448,
+      "literacyRate": 87.4
+    },
+    "5215009": {
+      "literate15Plus": 7272,
+      "population15Plus": 7763,
+      "literacyRate": 93.7
+    },
+    "5215207": {
+      "literate15Plus": 2676,
+      "population15Plus": 2964,
+      "literacyRate": 90.3
+    },
+    "5215231": {
+      "literate15Plus": 74037,
+      "population15Plus": 78807,
+      "literacyRate": 93.9
+    },
+    "5215256": {
+      "literate15Plus": 2661,
+      "population15Plus": 2998,
+      "literacyRate": 88.8
+    },
+    "5215306": {
+      "literate15Plus": 12755,
+      "population15Plus": 13531,
+      "literacyRate": 94.3
+    },
+    "5215405": {
+      "literate15Plus": 3028,
+      "population15Plus": 3330,
+      "literacyRate": 90.9
+    },
+    "5215504": {
+      "literate15Plus": 5623,
+      "population15Plus": 5871,
+      "literacyRate": 95.8
+    },
+    "5215603": {
+      "literate15Plus": 24333,
+      "population15Plus": 26914,
+      "literacyRate": 90.4
+    },
+    "5215652": {
+      "literate15Plus": 2274,
+      "population15Plus": 2562,
+      "literacyRate": 88.8
+    },
+    "5215702": {
+      "literate15Plus": 23714,
+      "population15Plus": 25328,
+      "literacyRate": 93.6
+    },
+    "5215801": {
+      "literate15Plus": 1780,
+      "population15Plus": 1905,
+      "literacyRate": 93.4
+    },
+    "5215900": {
+      "literate15Plus": 2953,
+      "population15Plus": 3187,
+      "literacyRate": 92.7
+    },
+    "5216007": {
+      "literate15Plus": 1819,
+      "population15Plus": 2021,
+      "literacyRate": 90.0
+    },
+    "5216304": {
+      "literate15Plus": 5670,
+      "population15Plus": 6303,
+      "literacyRate": 90.0
+    },
+    "5216403": {
+      "literate15Plus": 8047,
+      "population15Plus": 8631,
+      "literacyRate": 93.2
+    },
+    "5216452": {
+      "literate15Plus": 2131,
+      "population15Plus": 2345,
+      "literacyRate": 90.9
+    },
+    "5216809": {
+      "literate15Plus": 7393,
+      "population15Plus": 8048,
+      "literacyRate": 91.9
+    },
+    "5216908": {
+      "literate15Plus": 1747,
+      "population15Plus": 1911,
+      "literacyRate": 91.4
+    },
+    "5217104": {
+      "literate15Plus": 19349,
+      "population15Plus": 20717,
+      "literacyRate": 93.4
+    },
+    "5217203": {
+      "literate15Plus": 8728,
+      "population15Plus": 9673,
+      "literacyRate": 90.2
+    },
+    "5217302": {
+      "literate15Plus": 20157,
+      "population15Plus": 21677,
+      "literacyRate": 93.0
+    },
+    "5217401": {
+      "literate15Plus": 25296,
+      "population15Plus": 26677,
+      "literacyRate": 94.8
+    },
+    "5217609": {
+      "literate15Plus": 74122,
+      "population15Plus": 79968,
+      "literacyRate": 92.7
+    },
+    "5217708": {
+      "literate15Plus": 14133,
+      "population15Plus": 15242,
+      "literacyRate": 92.7
+    },
+    "5218003": {
+      "literate15Plus": 32583,
+      "population15Plus": 35486,
+      "literacyRate": 91.8
+    },
+    "5218052": {
+      "literate15Plus": 2836,
+      "population15Plus": 3147,
+      "literacyRate": 90.1
+    },
+    "5218102": {
+      "literate15Plus": 2353,
+      "population15Plus": 2643,
+      "literacyRate": 89.0
+    },
+    "5218300": {
+      "literate15Plus": 24398,
+      "population15Plus": 26925,
+      "literacyRate": 90.6
+    },
+    "5218391": {
+      "literate15Plus": 2758,
+      "population15Plus": 3025,
+      "literacyRate": 91.2
+    },
+    "5218508": {
+      "literate15Plus": 36408,
+      "population15Plus": 39012,
+      "literacyRate": 93.3
+    },
+    "5218607": {
+      "literate15Plus": 9384,
+      "population15Plus": 9937,
+      "literacyRate": 94.4
+    },
+    "5218706": {
+      "literate15Plus": 2999,
+      "population15Plus": 3317,
+      "literacyRate": 90.4
+    },
+    "5218789": {
+      "literate15Plus": 2932,
+      "population15Plus": 3084,
+      "literacyRate": 95.1
+    },
+    "5218805": {
+      "literate15Plus": 169900,
+      "population15Plus": 178228,
+      "literacyRate": 95.3
+    },
+    "5218904": {
+      "literate15Plus": 15087,
+      "population15Plus": 16289,
+      "literacyRate": 92.6
+    },
+    "5219001": {
+      "literate15Plus": 6001,
+      "population15Plus": 6572,
+      "literacyRate": 91.3
+    },
+    "5219100": {
+      "literate15Plus": 4424,
+      "population15Plus": 4937,
+      "literacyRate": 89.6
+    },
+    "5219209": {
+      "literate15Plus": 2243,
+      "population15Plus": 2501,
+      "literacyRate": 89.7
+    },
+    "5219258": {
+      "literate15Plus": 3620,
+      "population15Plus": 3954,
+      "literacyRate": 91.6
+    },
+    "5219308": {
+      "literate15Plus": 28636,
+      "population15Plus": 31345,
+      "literacyRate": 91.4
+    },
+    "5219357": {
+      "literate15Plus": 2591,
+      "population15Plus": 2948,
+      "literacyRate": 87.9
+    },
+    "5219407": {
+      "literate15Plus": 4379,
+      "population15Plus": 4725,
+      "literacyRate": 92.7
+    },
+    "5219456": {
+      "literate15Plus": 1878,
+      "population15Plus": 2201,
+      "literacyRate": 85.3
+    },
+    "5219506": {
+      "literate15Plus": 2098,
+      "population15Plus": 2373,
+      "literacyRate": 88.4
+    },
+    "5219605": {
+      "literate15Plus": 2397,
+      "population15Plus": 2715,
+      "literacyRate": 88.3
+    },
+    "5219704": {
+      "literate15Plus": 7700,
+      "population15Plus": 8667,
+      "literacyRate": 88.8
+    },
+    "5219712": {
+      "literate15Plus": 2974,
+      "population15Plus": 3428,
+      "literacyRate": 86.8
+    },
+    "5219738": {
+      "literate15Plus": 5519,
+      "population15Plus": 5829,
+      "literacyRate": 94.7
+    },
+    "5219753": {
+      "literate15Plus": 50643,
+      "population15Plus": 54401,
+      "literacyRate": 93.1
+    },
+    "5219803": {
+      "literate15Plus": 6436,
+      "population15Plus": 7631,
+      "literacyRate": 84.3
+    },
+    "5219902": {
+      "literate15Plus": 4571,
+      "population15Plus": 5136,
+      "literacyRate": 89.0
+    },
+    "5220009": {
+      "literate15Plus": 10027,
+      "population15Plus": 10796,
+      "literacyRate": 92.9
+    },
+    "5220058": {
+      "literate15Plus": 1348,
+      "population15Plus": 1471,
+      "literacyRate": 91.6
+    },
+    "5220108": {
+      "literate15Plus": 26229,
+      "population15Plus": 27826,
+      "literacyRate": 94.3
+    },
+    "5220157": {
+      "literate15Plus": 3378,
+      "population15Plus": 3817,
+      "literacyRate": 88.5
+    },
+    "5220207": {
+      "literate15Plus": 15983,
+      "population15Plus": 17892,
+      "literacyRate": 89.3
+    },
+    "5220264": {
+      "literate15Plus": 3367,
+      "population15Plus": 3628,
+      "literacyRate": 92.8
+    },
+    "5220280": {
+      "literate15Plus": 1608,
+      "population15Plus": 1776,
+      "literacyRate": 90.5
+    },
+    "5220405": {
+      "literate15Plus": 12704,
+      "population15Plus": 13851,
+      "literacyRate": 91.7
+    },
+    "5220454": {
+      "literate15Plus": 113604,
+      "population15Plus": 118489,
+      "literacyRate": 95.9
+    },
+    "5220504": {
+      "literate15Plus": 5905,
+      "population15Plus": 6362,
+      "literacyRate": 92.8
+    },
+    "5220603": {
+      "literate15Plus": 17001,
+      "population15Plus": 18006,
+      "literacyRate": 94.4
+    },
+    "5220686": {
+      "literate15Plus": 3908,
+      "population15Plus": 4551,
+      "literacyRate": 85.9
+    },
+    "5220702": {
+      "literate15Plus": 1941,
+      "population15Plus": 2298,
+      "literacyRate": 84.5
+    },
+    "5221007": {
+      "literate15Plus": 3057,
+      "population15Plus": 3357,
+      "literacyRate": 91.1
+    },
+    "5221080": {
+      "literate15Plus": 1695,
+      "population15Plus": 1961,
+      "literacyRate": 86.4
+    },
+    "5221197": {
+      "literate15Plus": 5852,
+      "population15Plus": 6311,
+      "literacyRate": 92.7
+    },
+    "5221304": {
+      "literate15Plus": 2260,
+      "population15Plus": 2430,
+      "literacyRate": 93.0
+    },
+    "5221403": {
+      "literate15Plus": 104990,
+      "population15Plus": 111530,
+      "literacyRate": 94.1
+    },
+    "5221452": {
+      "literate15Plus": 2197,
+      "population15Plus": 2579,
+      "literacyRate": 85.2
+    },
+    "5221502": {
+      "literate15Plus": 3339,
+      "population15Plus": 3733,
+      "literacyRate": 89.4
+    },
+    "5221551": {
+      "literate15Plus": 3495,
+      "population15Plus": 3856,
+      "literacyRate": 90.6
+    },
+    "5221577": {
+      "literate15Plus": 2006,
+      "population15Plus": 2298,
+      "literacyRate": 87.3
+    },
+    "5221601": {
+      "literate15Plus": 31619,
+      "population15Plus": 34083,
+      "literacyRate": 92.8
+    },
+    "5221700": {
+      "literate15Plus": 10208,
+      "population15Plus": 11400,
+      "literacyRate": 89.5
+    },
+    "5221809": {
+      "literate15Plus": 2735,
+      "population15Plus": 2918,
+      "literacyRate": 93.7
+    },
+    "5221858": {
+      "literate15Plus": 148882,
+      "population15Plus": 153149,
+      "literacyRate": 97.2
+    },
+    "5221908": {
+      "literate15Plus": 2739,
+      "population15Plus": 3083,
+      "literacyRate": 88.8
+    },
+    "5222005": {
+      "literate15Plus": 11131,
+      "population15Plus": 11911,
+      "literacyRate": 93.5
+    },
+    "5222054": {
+      "literate15Plus": 6307,
+      "population15Plus": 6941,
+      "literacyRate": 90.9
+    },
+    "5222203": {
+      "literate15Plus": 2779,
+      "population15Plus": 3188,
+      "literacyRate": 87.2
+    },
+    "5222302": {
+      "literate15Plus": 3949,
+      "population15Plus": 4609,
+      "literacyRate": 85.7
+    }
+  }
+}

@@ -1,0 +1,150 @@
+[
+ {
+  "id": 950,
+  "variavel": "Pessoas de 15 anos ou mais de idade",
+  "unidade": "Pessoas",
+  "resultados": [
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93024": "Total"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "43",
+       "nivel": {
+        "id": "N3",
+        "nome": "Unidade da Federação"
+       },
+       "nome": "Rio Grande do Sul"
+      },
+      "serie": {
+       "2022": "28274"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93025": "Alfabetizadas"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "43",
+       "nivel": {
+        "id": "N3",
+        "nome": "Unidade da Federação"
+       },
+       "nome": "Rio Grande do Sul"
+      },
+      "serie": {
+       "2022": "27337"
+      }
+     }
+    ]
+   },
+   {
+    "classificacoes": [
+     {
+      "id": 2,
+      "nome": "Sexo",
+      "categoria": {
+       "6794": "Total"
+      }
+     },
+     {
+      "id": 86,
+      "nome": "Cor ou raça",
+      "categoria": {
+       "95251": "Total"
+      }
+     },
+     {
+      "id": 287,
+      "nome": "Idade",
+      "categoria": {
+       "100362": "Total"
+      }
+     },
+     {
+      "id": 59,
+      "nome": "Alfabetização",
+      "categoria": {
+       "93026": "Não alfabetizadas"
+      }
+     }
+    ],
+    "series": [
+     {
+      "localidade": {
+       "id": "43",
+       "nivel": {
+        "id": "N3",
+        "nome": "Unidade da Federação"
+       },
+       "nome": "Rio Grande do Sul"
+      },
+      "serie": {
+       "2022": "937"
+      }
+     }
+    ]
+   }
+  ]
+ }
+]

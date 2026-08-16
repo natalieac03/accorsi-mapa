@@ -1,0 +1,42 @@
+# ACCORSI — build do frontend para o Railway.
+#
+# Idêntico ao Dockerfile principal, exceto por copiar o Caddyfile.railway
+# (sem TLS próprio, escuta em $PORT) em vez do Caddyfile de VPS própria.
+# No serviço "web" do Railway, aponte o Dockerfile Path para este arquivo.
+
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+
+COPY . .
+
+ARG VITE_GOOGLE_MAPS_API_KEY
+ARG VITE_GOOGLE_MAPS_MAP_ID=""
+ARG VITE_AUTH_REQUIRED="true"
+ARG VITE_API_BASE_URL="/api/v1"
+ARG VITE_REGISTRATIONS_MODE="api"
+# Modo demonstração: quando definido, a tela de login pede só a senha.
+ARG VITE_DEMO_EMAIL=""
+
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY \
+    VITE_GOOGLE_MAPS_MAP_ID=$VITE_GOOGLE_MAPS_MAP_ID \
+    VITE_AUTH_REQUIRED=$VITE_AUTH_REQUIRED \
+    VITE_API_BASE_URL=$VITE_API_BASE_URL \
+    VITE_REGISTRATIONS_MODE=$VITE_REGISTRATIONS_MODE \
+    VITE_DEMO_EMAIL=$VITE_DEMO_EMAIL
+
+RUN test -n "$VITE_GOOGLE_MAPS_API_KEY" || \
+    (echo "ERRO: VITE_GOOGLE_MAPS_API_KEY não foi informada no build." && exit 1)
+
+RUN npm run build
+
+
+FROM caddy:2-alpine AS runtime
+
+COPY Caddyfile.railway /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
+
+# Sem EXPOSE fixo: o Railway injeta $PORT e o Caddyfile escuta nela.
