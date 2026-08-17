@@ -2,8 +2,6 @@ import {
   ArrowDown,
   ArrowUp,
   Building2,
-  Download,
-  ImageDown,
   LoaderCircle,
   MapPin,
   RotateCcw,
@@ -37,8 +35,13 @@ import {
 import {
   buildPollingMapExport,
   exportMapAsPng,
+  renderMapExportCanvas,
   type MapExportShape,
 } from "../../utils/mapExport";
+import { canvasToReportImage } from "../../utils/chartImage";
+import { useReportExport, type ReportFormat } from "../../hooks/useReportExport";
+import { buildPollingReport } from "../../utils/reportLayers";
+import { ExportActions } from "./ExportActions";
 import {
   createPollingCsv,
   describePollingLayer,
@@ -179,6 +182,32 @@ export function PollingPlacesPanel({
         ),
     );
   };
+
+  /* O mesmo desenho do PNG do mapa, reaproveitado como figura do relatório —
+     sem o mapa, o PDF perderia justamente o que se olha primeiro na reunião.
+     Só o PDF embute imagem; a planilha é para trabalhar os números. */
+  const imagensDoMapa = (formato: ReportFormat) => {
+    if (formato !== "pdf" || !mapShapes || mapShapes.length === 0) return [];
+    const exportData = buildPollingMapExport(model);
+    const canvas = renderMapExportCanvas(mapShapes, exportData);
+    const imagem = canvas
+      ? canvasToReportImage(canvas, {
+          title: "Mapa do recorte",
+          caption: `${exportData.title} · ${exportData.subtitle}`,
+        })
+      : null;
+    return imagem ? [imagem] : [];
+  };
+
+  const { exportando, exportar } = useReportExport(
+    (formato) =>
+      buildPollingReport({
+        model,
+        generatedAt: new Date(),
+        images: imagensDoMapa(formato),
+      }),
+    setExportMessage,
+  );
 
   return (
     <div className="sidebar-view" role="tabpanel" id="sidebar-polling-panel">
@@ -594,27 +623,20 @@ export function PollingPlacesPanel({
         )}
       </section>
 
-      <button
-        className="analysis-export-button"
-        type="button"
-        onClick={handleExport}
-        disabled={model.filteredUnits.length === 0}
-      >
-        <Download size={16} /> Baixar {unitLabel} em CSV
-      </button>
-      <button
-        className="analysis-export-button"
-        type="button"
-        onClick={handleImageExport}
-        disabled={!canExportImage}
-        title={
+      <ExportActions
+        exportando={exportando}
+        onExport={exportar}
+        onCsv={handleExport}
+        onImage={handleImageExport}
+        csvLabel={`Arquivo .csv com todas as colunas de ${unitLabel}, para cruzar em outra ferramenta`}
+        csvDisabled={model.filteredUnits.length === 0}
+        imageDisabled={!canExportImage}
+        imageTitle={
           canExportImage
             ? `Gera um PNG com ${isPartyShare ? `o percentual do ${model.partyCode || "partido"}` : "o índice"} agregado por município a partir dos locais`
             : "A imagem depende da malha municipal carregada e dos dados desta camada"
         }
-      >
-        <ImageDown size={16} /> Exportar imagem do mapa
-      </button>
+      />
       <div className="sr-only" role="status" aria-live="polite">
         {exportMessage}
       </div>

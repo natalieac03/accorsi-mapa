@@ -116,10 +116,16 @@ def linhas_candidatura(ano: int, cargo: int, uf: str, candidatos: list[tuple[str
 def linhas_voto(
     ano: int, cargo: int, uf: str, munis: list[tuple[str, str, str]],
     candidatos: list[tuple[str, str, str]],
+    turnos: tuple[int, ...] = (1, 2),
 ) -> list[dict]:
-    """1º e 2º turno, um voto por candidatura em cada município — cobertura total."""
+    """Um voto por candidatura em cada município — cobertura total.
+
+    `turnos` existe porque 2º turno NÃO é garantido: em Goiás o governador foi
+    decidido no 1º turno em 2018 e em 2022, e o script precisa aceitar isso
+    (era a premissa herdada do Rio Grande do Sul que derrubava tudo).
+    """
     linhas = []
-    for turno in (1, 2):
+    for turno in turnos:
         for indice, (ibge, tse, nome) in enumerate(munis):
             sq, partido, numero = candidatos[indice % len(candidatos)]
             linhas.append({
@@ -132,7 +138,7 @@ def linhas_voto(
     return linhas
 
 
-def build(destino: Path, intruso: str = "nenhum") -> None:
+def build(destino: Path, intruso: str = "nenhum", governador_1turno: bool = False) -> None:
     """intruso: candidatura presente na votação e AUSENTE do cadastro.
 
     Reproduz a falha que travou o pipeline em produção — "Candidatura <SQ> da
@@ -158,7 +164,10 @@ def build(destino: Path, intruso: str = "nenhum") -> None:
     )
 
     for ano in (2018, 2022):
-        linhas_gov = linhas_voto(ano, 3, "GO", munis, GOVERNADOR_GO[ano])
+        turnos_gov = (1,) if governador_1turno else (1, 2)
+        linhas_gov = linhas_voto(
+            ano, 3, "GO", munis, GOVERNADOR_GO[ano], turnos_gov
+        )
         if intruso != "nenhum":
             # Mesmo formato das demais, com um SQ que não existe em cadastro
             # nenhum do pacote. "pequeno" = 1 seção; "grande" = metade do
@@ -202,18 +211,17 @@ def check(caminho: Path) -> int:
     payload = json.loads(caminho.read_text(encoding="utf-8"))
     pleitos = {p["id"]: p for p in payload["contests"]}
 
-    esperados = {
-        f"{ano}-{cargo}-{turno}"
-        for ano in (2018, 2022) for cargo in (1, 3) for turno in (1, 2)
-    }
-    if set(pleitos) != esperados:
-        falhas.append(f"pleitos: {sorted(pleitos)} != {sorted(esperados)}")
+    obrigatorios = {f"{ano}-{cargo}-1" for ano in (2018, 2022) for cargo in (1, 3)}
+    if not obrigatorios <= set(pleitos):
+        falhas.append(
+            f"faltam 1ºs turnos: {sorted(obrigatorios - set(pleitos))}"
+        )
 
     for ano in (2018, 2022):
         for turno in (1, 2):
             governador = pleitos.get(f"{ano}-3-{turno}")
             if governador is None:
-                continue
+                continue  # 2º turno pode legitimamente não existir
             ids_candidatos = {c["id"] for c in governador["candidates"]}
             # O ponto central: os candidatos de GOIÁS ganharam votos, e a
             # candidatura-isca do "RS" NÃO aparece em lugar nenhum.
@@ -249,11 +257,16 @@ def main() -> None:
     parser.add_argument(
         "--intruso", choices=("nenhum", "pequeno", "grande"), default="nenhum"
     )
+    parser.add_argument(
+        "--governador-1turno",
+        action="store_true",
+        help="Forma REAL de Goiás: governador decidido no 1º turno (sem 2º).",
+    )
     args = parser.parse_args()
 
     if args.check:
         sys.exit(check(args.check.resolve()))
-    build(args.target.resolve(), args.intruso)
+    build(args.target.resolve(), args.intruso, args.governador_1turno)
     print(f"Fixture do histórico TSE gerado em: {args.target.resolve()}")
 
 

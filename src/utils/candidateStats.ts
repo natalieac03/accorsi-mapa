@@ -23,6 +23,7 @@ import type { MunicipalityProfile } from "../types/electorate";
 import { getAnalysisMetric, getAnalysisMetricValue } from "./analysis.ts";
 import { getOfficeShort } from "./candidate.ts";
 import { createCsv, formatCsvDecimal, type CsvCell } from "./csv.ts";
+import { formatInteger, formatPercent } from "./electorate.ts";
 
 /**
  * Motor da janela "Estatísticas" — agregados de carreira e o cruzamento
@@ -775,4 +776,81 @@ export function getScatterCsvFilename(
 
 export function getTrajectoryCsvFilename(dataset: CandidateDataset): string {
   return `estatisticas-trajetoria-${dataset.metadata.slug}.csv`;
+}
+
+/* -------------------------------------------------------------------------
+ * Cartões de resumo de um pleito
+ * ------------------------------------------------------------------------- */
+
+/** Um cartão já formatado: rótulo, valor e a nota que o qualifica. */
+export type ContestCard = { titulo: string; valor: string; nota: string };
+
+/**
+ * Os cartões de resumo de um pleito, como TEXTO já formatado.
+ *
+ * Mora aqui, e não no componente, porque agora existem dois consumidores: a
+ * tela (ContestCards) e o sumário do relatório exportado. Se cada um montasse
+ * os seus, o PDF que vai para a reunião poderia divergir do que a candidata
+ * viu na tela — e a régua de leitura (municipal × estadual) é justamente a
+ * parte que não pode divergir.
+ *
+ * A régua: prefeita e vereadora se disputam dentro de uma cidade, então os
+ * cartões são da cidade; em cargo estadual/federal o estado inteiro é uma
+ * disputa só e a leitura é estadual. Ausência sempre vira travessão.
+ */
+export function buildContestCards(contest: CandidateContest): ContestCard[] {
+  const escopo = getMunicipalScope(contest);
+  if (escopo) {
+    return [
+      {
+        titulo: `Votos em ${escopo.nome}`,
+        valor: formatInteger(escopo.votos),
+        nota: "votos nominais apurados na cidade",
+      },
+      {
+        titulo: "Posição na cidade",
+        valor:
+          escopo.posicaoNoMunicipio !== null
+            ? `${escopo.posicaoNoMunicipio}º`
+            : "—",
+        nota: `de ${formatInteger(escopo.candidaturasComVoto)} candidaturas com voto`,
+      },
+      {
+        titulo: "% dos válidos",
+        valor:
+          escopo.percentualValidos !== null
+            ? formatPercent(escopo.percentualValidos)
+            : "—",
+        nota:
+          escopo.percentualValidos !== null
+            ? `sobre ${formatInteger(escopo.validos)} votos válidos`
+            : "sem total de válidos apurado",
+      },
+    ];
+  }
+
+  const pctEstado = pctValidosNoEstado(contest);
+  return [
+    {
+      titulo: "Votos no estado",
+      valor: formatInteger(contest.votosNoEstado),
+      nota: `em ${formatInteger(contest.municipiosComVoto)} municípios com voto`,
+    },
+    {
+      titulo: "Posição no pleito",
+      valor:
+        contest.posicaoNoEstado !== null ? `${contest.posicaoNoEstado}º` : "—",
+      nota: `de ${formatInteger(contest.candidaturasNoPleito)} candidaturas do cargo`,
+    },
+    {
+      titulo: "% dos válidos no estado",
+      valor: pctEstado !== null ? formatPercent(pctEstado) : "—",
+      nota: "sobre os válidos dos municípios onde teve voto",
+    },
+    {
+      titulo: "Concentração top 5",
+      valor: formatPercent(contest.concentracaoPercentual.top5),
+      nota: `top 10 ${formatPercent(contest.concentracaoPercentual.top10)} · top 20 ${formatPercent(contest.concentracaoPercentual.top20)}`,
+    },
+  ];
 }

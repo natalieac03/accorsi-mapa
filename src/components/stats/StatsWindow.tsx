@@ -1,6 +1,8 @@
 import {
   BarChart3,
   Download,
+  FileSpreadsheet,
+  FileText,
   Landmark,
   ListOrdered,
   MapPin,
@@ -60,6 +62,15 @@ import {
   STATS_INDICATORS,
 } from "../../utils/candidateStats";
 import { formatInteger, formatPercent } from "../../utils/electorate";
+import { svgToReportImage } from "../../utils/chartImage";
+import { exportReportAsExcel } from "../../utils/exportExcel";
+import { exportReportAsPdf } from "../../utils/exportPdf";
+import type { ReportDocument, ReportImage } from "../../utils/reportModel";
+import {
+  buildContestReport,
+  buildGrowthReport,
+  buildTrajectoryReport,
+} from "../../utils/reportStats";
 
 /**
  * Janela "Estatísticas": overlay de tela inteira dedicado às campanhas da
@@ -125,6 +136,11 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     useState<CandidateRankingMetricId>("votos");
   const [indicatorId, setIndicatorId] = useState<StatsIndicatorId>("female");
   const [exportMessage, setExportMessage] = useState("");
+  /* Qual formato está sendo gerado agora: as bibliotecas de .xlsx e .pdf são
+     carregadas por import dinâmico, então o primeiro clique tem uma espera
+     real de rede e precisa aparecer no botão. */
+  const [exportando, setExportando] = useState<"excel" | "pdf" | null>(null);
+  const conteudoRef = useRef<HTMLDivElement | null>(null);
   /* Recortes comparados na visão Geral, guardados POR GRUPO: trocar de
      municipal para federal e voltar não deve perder a seleção anterior — e os
      ids de bairro e de município nem sequer são do mesmo universo. */
@@ -205,6 +221,104 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
 
   const anunciarExport = (linhas: number) =>
     setExportMessage(`${formatInteger(linhas)} linhas exportadas em CSV.`);
+
+  /* Título do gráfico embutido no PDF, por visão. O texto alternativo do
+     próprio SVG vira a legenda: ele já descreve o gráfico para leitor de tela
+     e serve igualmente bem a quem lê o relatório impresso. */
+  const tituloGrafico = grupoGeral
+    ? "Votos por eleição"
+    : contest
+      ? "Cruzamento com indicadores municipais"
+      : "Trajetória completa";
+
+  /**
+   * Monta o relatório do RECORTE VISÍVEL — o que estiver na tela é o que vai
+   * para o arquivo. Nenhuma visão exporta dados de outra: quem está olhando um
+   * pleito recebe aquele pleito, não a carreira inteira.
+   */
+  const montarRelatorio = async (
+    comImagens: boolean,
+  ): Promise<ReportDocument | null> => {
+    const generatedAt = new Date();
+    const images: ReportImage[] = [];
+    if (comImagens) {
+      const graficos =
+        conteudoRef.current?.querySelectorAll<SVGSVGElement>("svg.stats-chart") ??
+        [];
+      for (const grafico of graficos) {
+        const imagem = await svgToReportImage(grafico, {
+          title: tituloGrafico,
+          caption: grafico.getAttribute("aria-label") ?? undefined,
+        });
+        if (imagem) images.push(imagem);
+      }
+    }
+    if (grupoGeral && growth) {
+      return buildGrowthReport({
+        dataset,
+        grupo: grupoGeral,
+        model: growth,
+        generatedAt,
+        images,
+      });
+    }
+    if (contest) {
+      return buildContestReport({
+        dataset,
+        contest,
+        ranking,
+        rankingMetric,
+        scatter,
+        generatedAt,
+        images,
+      });
+    }
+    return buildTrajectoryReport({
+      dataset,
+      overview,
+      trajectory,
+      generatedAt,
+      images,
+    });
+  };
+
+  const exportarRelatorio = async (formato: "excel" | "pdf") => {
+    if (exportando) return;
+    setExportando(formato);
+    setExportMessage(
+      formato === "excel"
+        ? "Gerando a pasta de trabalho…"
+        : "Gerando o relatório em PDF…",
+    );
+    try {
+      // O Excel não embute imagem (a planilha é para trabalhar os números);
+      // rasterizar o gráfico à toa custaria segundos no clique.
+      const relatorio = await montarRelatorio(formato === "pdf");
+      if (!relatorio) {
+        setExportMessage("Não há dados neste recorte para exportar.");
+        return;
+      }
+      const gerado =
+        formato === "excel"
+          ? await exportReportAsExcel(relatorio)
+          : await exportReportAsPdf(relatorio);
+      setExportMessage(
+        gerado
+          ? formato === "excel"
+            ? "Pasta de trabalho .xlsx baixada."
+            : "Relatório em PDF baixado."
+          : "Este recorte não tem nenhuma tabela com linhas para exportar.",
+      );
+    } catch {
+      // Falha de rede no import dinâmico ou de memória na geração: a janela
+      // segue viva e a pessoa sabe o que aconteceu.
+      setExportMessage(
+        "Não foi possível gerar o arquivo. Tente novamente em instantes.",
+      );
+    } finally {
+      setExportando(null);
+    }
+  };
 
   return (
     <div
@@ -312,7 +426,11 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
             )}
           </nav>
 
-          <div className="stats-content">
+          <div className="stats-content" ref={conteudoRef}>
+            <BarraRelatorio
+              exportando={exportando}
+              onExportar={exportarRelatorio}
+            />
             {grupoGeral && growth ? (
               <GrowthView
                 model={growth}
@@ -384,6 +502,52 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
 
       <div className="sr-only" role="status" aria-live="polite">
         {exportMessage}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Exportação do recorte visível em arquivo de entrega: planilha formatada e
+ * relatório. O CSV continua onde sempre esteve — no cabeçalho de cada seção —
+ * porque é outro público: quem vai cruzar os números em outra ferramenta.
+ */
+function BarraRelatorio({
+  exportando,
+  onExportar,
+}: {
+  exportando: "excel" | "pdf" | null;
+  onExportar: (formato: "excel" | "pdf") => void;
+}) {
+  return (
+    <div className="stats-report-bar">
+      <p>
+        <strong>Exportar este recorte</strong>
+        <span>
+          Planilha com capa de procedência, uma aba por conjunto e filtros
+          prontos; relatório em PDF com os números de destaque, os gráficos e as
+          tabelas paginadas.
+        </span>
+      </p>
+      <div className="stats-report-bar__actions">
+        <button
+          type="button"
+          className="stats-report-button"
+          onClick={() => onExportar("excel")}
+          disabled={exportando !== null}
+        >
+          <FileSpreadsheet size={15} aria-hidden />
+          {exportando === "excel" ? "Gerando…" : "Excel"}
+        </button>
+        <button
+          type="button"
+          className="stats-report-button stats-report-button--pdf"
+          onClick={() => onExportar("pdf")}
+          disabled={exportando !== null}
+        >
+          <FileText size={15} aria-hidden />
+          {exportando === "pdf" ? "Gerando…" : "PDF"}
+        </button>
       </div>
     </div>
   );

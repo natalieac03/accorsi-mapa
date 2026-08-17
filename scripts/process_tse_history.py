@@ -584,18 +584,47 @@ def main() -> None:
             int(contest["round"]),
         )
     )
-    expected_ids = {
-        f"{year}-{office_code}-{round_number}"
-        for year in YEARS
-        for office_code in OFFICES
-        for round_number in (1, 2)
+    # 2º turno NÃO é obrigatório — ele só existe quando houve.
+    #
+    # Aqui havia a exigência fixa de OITO pleitos (2 anos x 2 cargos x 2
+    # turnos), herdada do projeto do Rio Grande do Sul, onde a eleição de
+    # governador foi para o 2º turno em 2018 e em 2022. Em Goiás, Ronaldo
+    # Caiado venceu no 1º turno das duas vezes, então os pleitos de governador
+    # de 2º turno NÃO EXISTEM — e exigi-los derrubava o processamento com uma
+    # lista que, lida com atenção, estava correta.
+    #
+    # O que continua sendo obrigatório é o 1º turno de cada cargo em cada ano:
+    # esse sempre acontece, e a ausência dele é sinal de dado faltando.
+    encontrados = {contest["id"] for contest in finalized_contests}
+    obrigatorios = {
+        f"{year}-{office_code}-1" for year in YEARS for office_code in OFFICES
     }
-    if {contest["id"] for contest in finalized_contests} != expected_ids:
-        actual_ids = sorted(contest["id"] for contest in finalized_contests)
+    faltando = sorted(obrigatorios - encontrados)
+    if faltando:
         raise RuntimeError(
-            "Os oito pleitos esperados de 2018/2022 não foram encontrados. "
-            f"Encontrados: {actual_ids}."
+            f"Faltam pleitos de 1º turno, que sempre existem: {faltando}. "
+            f"Encontrados: {sorted(encontrados)}."
         )
+
+    # 2º turno sem o 1º do mesmo cargo/ano é incoerente: aí, sim, algo quebrou.
+    orfaos = sorted(
+        contest_id
+        for contest_id in encontrados
+        if contest_id.endswith("-2")
+        and f"{contest_id[:-1]}1" not in encontrados
+    )
+    if orfaos:
+        raise RuntimeError(
+            f"Pleito de 2º turno sem o 1º turno correspondente: {orfaos}."
+        )
+
+    segundos = sorted(c for c in encontrados if c.endswith("-2"))
+    print(
+        f"  Pleitos: {len(encontrados)} "
+        f"({len(obrigatorios)} de 1º turno + {len(segundos)} de 2º turno"
+        + (f": {', '.join(segundos)}" if segundos else " — nenhum")
+        + ")"
+    )
 
     payload = {
         "metadata": {

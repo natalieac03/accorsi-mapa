@@ -2,9 +2,7 @@ import {
   ArrowDown,
   ArrowUp,
   BarChart3,
-  Download,
   ExternalLink,
-  ImageDown,
   MapPin,
   RotateCcw,
   SlidersHorizontal,
@@ -31,8 +29,13 @@ import { downloadTextFile } from "../../utils/browser";
 import {
   buildAnalysisMapExport,
   exportMapAsPng,
+  renderMapExportCanvas,
   type MapExportShape,
 } from "../../utils/mapExport";
+import { canvasToReportImage } from "../../utils/chartImage";
+import { useReportExport, type ReportFormat } from "../../hooks/useReportExport";
+import { buildAnalysisReport } from "../../utils/reportLayers";
+import { ExportActions } from "./ExportActions";
 
 type AnalysisPanelProps = {
   model: AnalysisModel;
@@ -95,6 +98,33 @@ export function AnalysisPanel({
         ),
     );
   };
+
+  /* O mesmo desenho do PNG do mapa, reaproveitado como figura do relatório —
+     sem o mapa, o PDF perderia justamente o que se olha primeiro na reunião.
+     Só o PDF embute imagem; a planilha é para trabalhar os números. */
+  const imagensDoMapa = (formato: ReportFormat) => {
+    if (formato !== "pdf" || !mapShapes || mapShapes.length === 0) return [];
+    const exportData = buildAnalysisMapExport(model);
+    const canvas = renderMapExportCanvas(mapShapes, exportData);
+    const imagem = canvas
+      ? canvasToReportImage(canvas, {
+          title: "Mapa do recorte",
+          caption: `${exportData.title} · ${exportData.subtitle}`,
+        })
+      : null;
+    return imagem ? [imagem] : [];
+  };
+
+  const { exportando, exportar } = useReportExport(
+    (formato) =>
+      buildAnalysisReport({
+        model,
+        municipalityCount,
+        generatedAt: new Date(),
+        images: imagensDoMapa(formato),
+      }),
+    setExportMessage,
+  );
 
   return (
     <div className="sidebar-view" role="tabpanel" id="sidebar-analysis-panel">
@@ -324,28 +354,20 @@ export function AnalysisPanel({
         )}
       </section>
 
-      <button
-        className="analysis-export-button"
-        type="button"
-        onClick={handleExport}
-        disabled={model.filteredItems.length === 0}
-      >
-        <Download size={16} />
-        Baixar recorte em CSV
-      </button>
-      <button
-        className="analysis-export-button"
-        type="button"
-        onClick={handleImageExport}
-        disabled={!canExportImage}
-        title={
+      <ExportActions
+        exportando={exportando}
+        onExport={exportar}
+        onCsv={handleExport}
+        onImage={handleImageExport}
+        csvLabel="Arquivo .csv com todas as colunas técnicas do recorte, para cruzar em outra ferramenta"
+        csvDisabled={model.filteredItems.length === 0}
+        imageDisabled={!canExportImage}
+        imageTitle={
           canExportImage
             ? "Gera um PNG do mapa coroplético atual, com legenda e fonte"
             : "O mapa ainda não carregou: a imagem é desenhada a partir das geometrias da malha exibida"
         }
-      >
-        <ImageDown size={16} /> Exportar imagem do mapa
-      </button>
+      />
       <div className="sr-only" role="status" aria-live="polite">
         {exportMessage}
       </div>

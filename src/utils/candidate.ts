@@ -225,7 +225,9 @@ const OFFICE_FEMININO: Record<number, string> = {
  * quando ele existe (> 1). O turno entra no rótulo porque 2º turno é outra
  * disputa — dois nomes na urna, outro eleitorado efetivo.
  */
-export function getOfficeLabel(contest: CandidateContest): string {
+export function getOfficeLabel(
+  contest: Pick<CandidateContest, "officeCode" | "officeName" | "round">,
+): string {
   const nome = OFFICE_FEMININO[contest.officeCode] ?? contest.officeName;
   return contest.round > 1 ? `${nome} · ${contest.round}º turno` : nome;
 }

@@ -1,9 +1,12 @@
-export function downloadTextFile(
-  content: string,
-  filename: string,
-  mimeType = "text/plain;charset=utf-8",
-) {
-  const blob = new Blob([content], { type: mimeType });
+/**
+ * Dispara o download de um Blob já pronto.
+ *
+ * Irmão binário do `downloadTextFile`: .xlsx e .pdf saem das bibliotecas como
+ * bytes, e passá-los por string corromperia o arquivo (toda sequência inválida
+ * de UTF-8 viraria U+FFFD). O caminho do anchor + objectURL é o mesmo, para os
+ * dois se comportarem igual em todo navegador que a campanha usa.
+ */
+export function downloadBlobFile(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -11,7 +14,17 @@ export function downloadTextFile(
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+  // Revogar no próximo tick: revogar antes do clique ser processado cancela o
+  // download em navegadores baseados no Chromium.
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+export function downloadTextFile(
+  content: string,
+  filename: string,
+  mimeType = "text/plain;charset=utf-8",
+) {
+  downloadBlobFile(new Blob([content], { type: mimeType }), filename);
 }
 
 export async function copyTextToClipboard(value: string) {

@@ -1,9 +1,7 @@
 import {
   ArrowDown,
   ArrowUp,
-  Download,
   ExternalLink,
-  ImageDown,
   GitCompareArrows,
   MapPin,
   RotateCcw,
@@ -24,8 +22,13 @@ import { downloadTextFile } from "../../utils/browser";
 import {
   buildElectionMapExport,
   exportMapAsPng,
+  renderMapExportCanvas,
   type MapExportShape,
 } from "../../utils/mapExport";
+import { canvasToReportImage } from "../../utils/chartImage";
+import { useReportExport } from "../../hooks/useReportExport";
+import { buildElectionReport } from "../../utils/reportLayers";
+import { ExportActions } from "./ExportActions";
 import {
   createElectionCsv,
   ELECTION_METRICS,
@@ -94,6 +97,34 @@ export function ElectionHistoryPanel({
     () => Array.from(new Set(dataset.contests.map((item) => item.officeName))),
     [dataset.contests],
   );
+  /* Montagem do relatório do recorte. Fica ANTES do early return do histórico
+     pendente porque a ordem dos hooks não pode variar entre renderizações; com
+     o modelo ausente o construtor devolve null e nem existem botões na tela.
+     Só o PDF embute a imagem do mapa: a planilha é para trabalhar os números,
+     e rasterizar o mapa à toa custaria segundos no clique. */
+  const { exportando, exportar } = useReportExport(
+    (formato) => {
+      if (model === null) return null;
+      const exportData = buildElectionMapExport(model);
+      const canvas =
+        formato === "pdf" && mapShapes && mapShapes.length > 0
+          ? renderMapExportCanvas(mapShapes, exportData)
+          : null;
+      const imagem = canvas
+        ? canvasToReportImage(canvas, {
+            title: "Mapa do recorte",
+            caption: `${exportData.title} · ${exportData.subtitle}`,
+          })
+        : null;
+      return buildElectionReport({
+        model,
+        generatedAt: new Date(),
+        images: imagem ? [imagem] : [],
+      });
+    },
+    setExportMessage,
+  );
+
   // Histórico ainda não gerado: o painel declara a ausência e diz o que rodar.
   // Nada de pleito, candidato ou percentual inventado para preencher a tela.
   if (model === null) {
@@ -457,22 +488,20 @@ export function ElectionHistoryPanel({
         )}
       </section>
 
-      <button className="analysis-export-button" type="button" onClick={handleExport}>
-        <Download size={16} /> Baixar série municipal em CSV
-      </button>
-      <button
-        className="analysis-export-button"
-        type="button"
-        onClick={handleImageExport}
-        disabled={!canExportImage}
-        title={
+      <ExportActions
+        exportando={exportando}
+        onExport={exportar}
+        onCsv={handleExport}
+        onImage={handleImageExport}
+        csvLabel="Arquivo .csv com a série municipal completa, para cruzar em outra ferramenta"
+        csvDisabled={model.filteredItems.length === 0}
+        imageDisabled={!canExportImage}
+        imageTitle={
           canExportImage
             ? "Gera um PNG do mapa coroplético atual, com legenda e fonte"
             : "O mapa ainda não carregou: a imagem é desenhada a partir das geometrias da malha exibida"
         }
-      >
-        <ImageDown size={16} /> Exportar imagem do mapa
-      </button>
+      />
       <div className="sr-only" role="status" aria-live="polite">{exportMessage}</div>
 
       <p className="comparison-note analysis-note">
