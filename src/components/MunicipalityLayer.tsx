@@ -27,7 +27,10 @@ import type {
   MunicipalitySelection,
 } from "../types/electorate";
 import type { AgeStructureDataset } from "../types/ageStructure";
-import type { CandidateDataset } from "../types/candidate";
+import type {
+  CandidateDataset,
+  ElectorateSource,
+} from "../types/candidate";
 import type { LiteracyDataset } from "../types/literacy";
 import type { SocioeconomicDataset } from "../types/socioeconomic";
 import type { ElectionDataset } from "../types/elections";
@@ -40,6 +43,7 @@ import type {
   SelectedTerritorialLocation,
 } from "../types/search";
 import type {
+  MapLayerId,
   MunicipalitySelectionEvent,
   SelectionSource,
 } from "../types/workspace";
@@ -50,7 +54,9 @@ import { useRegistrationAnalysis } from "../hooks/useRegistrationAnalysis";
 import { usePollingPlaces } from "../hooks/usePollingPlaces";
 import { useSpectrumAnalysis } from "../hooks/useSpectrumAnalysis";
 import { useTerritorialSelection } from "../hooks/useTerritorialSelection";
+import { useCandidateLayer } from "../hooks/useCandidateLayer";
 import {
+  ALL_ANALYSIS_BANDS,
   buildAnalysisModel,
   formatAnalysisMetricValue,
   getAnalysisBand,
@@ -60,6 +66,17 @@ import {
   ELECTORATE_COLORS,
   MISSING_DATA_COLOR,
 } from "../utils/electorate";
+import {
+  buildElectorateIndex,
+  isCandidatePendente,
+} from "../utils/candidate";
+import {
+  buildCandidateLayerModel,
+  CANDIDATE_LAYER_COLORS,
+  describeCandidateLayer,
+  describeCandidateLayerItem,
+  getCandidateLayerShortLabel,
+} from "../utils/candidateLayer";
 import {
   buildPollingModel,
   formatPollingValue,
@@ -92,6 +109,7 @@ import {
   getSpectrumMetricColors,
   type PartyVotesDataset,
 } from "../utils/spectrum";
+import { CandidateLegend } from "./CandidateLegend";
 import { ElectorateLegend } from "./ElectorateLegend";
 import { ElectionLegend } from "./ElectionLegend";
 import { MunicipalityPanel } from "./MunicipalityPanel";
@@ -109,6 +127,19 @@ const electorateData = buildTerritorialDataset(
   literacyJson as LiteracyDataset,
 );
 const electionData = electionHistoryJson as unknown as ElectionDataset;
+// A trajetória dela e o índice de eleitorado que a camada "candidato" usa como
+// denominador. O índice é null enquanto o snapshot do eleitorado for
+// placeholder — e null aqui desliga a métrica de taxa inteira, em vez de
+// deixar 246 municípios sem valor.
+const candidateData = candidatoJson as unknown as CandidateDataset;
+const candidateElectorateIndex = buildElectorateIndex(
+  electorateJson as unknown as ElectorateSource,
+);
+// Trajetória ainda não gerada: a camada dela não é oferecida — o pedido cai na
+// camada padrão e a aba explica o que rodar, como já acontece com o histórico
+// do TSE. A checagem é a mesma que o painel usa, para as duas telas nunca
+// discordarem sobre o que existe.
+const candidatePendente = isCandidatePendente(candidateData);
 // Histórico do TSE ainda não gerado: a camada de eleições fica indisponível —
 // sem legenda, sem pintura no mapa e sem virar camada ativa. O resto do
 // aplicativo (eleitorado, espectro, locais, cadastros) segue funcionando.
@@ -389,7 +420,7 @@ export function MunicipalityLayer() {
       // cartão do município. Sem ela o agente não teria como responder nada
       // sobre a votação da Dra. Adriana e acabaria explicando a própria
       // limitação como se o dado não existisse.
-      trajetoriaCandidata: candidatoJson as unknown as CandidateDataset,
+      trajetoriaCandidata: candidateData,
       // O hook devolve os campos soltos; o agente espera o formato de snapshot.
       // O limiar de privacidade vem daqui, e o motor do agente ainda impõe o
       // piso de 5 por cima — nunca abaixo, mesmo que a base declare menos.
@@ -414,6 +445,13 @@ export function MunicipalityLayer() {
     [registrations.records, registrations.referenceDate, registrations.privacyThreshold],
   );
   const spectrumAnalysis = useSpectrumAnalysis(spectrumContests);
+  // Pleito e métrica da aba "Accorsi" moram aqui (e não dentro do painel) para
+  // o mapa e o painel lerem o MESMO par de controles — e para a escolha
+  // sobreviver a sair e voltar da aba, que desmonta o painel.
+  const candidateLayer = useCandidateLayer(
+    candidateData,
+    candidateElectorateIndex,
+  );
   const territorialSelection = useTerritorialSelection(
     validMunicipalityIds,
     sharedWorkspace?.selectionIds ?? null,
@@ -423,9 +461,7 @@ export function MunicipalityLayer() {
     new Map<string, google.maps.Data.Feature>(),
   );
   const selectionMapModeRef = useRef(false);
-  const activeLayerRef = useRef<
-    "analysis" | "election" | "registration" | "spectrum" | "polling"
-  >("analysis");
+  const activeLayerRef = useRef<MapLayerId>("analysis");
   const toggleSelectionIdRef = useRef(territorialSelection.toggleId);
   const pollingMunicipalityRef = useRef<(id: string | null) => void>(() => {});
   const selectionSequenceRef = useRef(0);
@@ -442,19 +478,19 @@ export function MunicipalityLayer() {
   const [registrationOpenRequest, setRegistrationOpenRequest] = useState(0);
   const [spectrumOpenRequest, setSpectrumOpenRequest] = useState(0);
   const [pollingOpenRequest, setPollingOpenRequest] = useState(0);
+  const [candidateOpenRequest, setCandidateOpenRequest] = useState(0);
   const [hoveredPollingId, setHoveredPollingId] = useState<string | null>(null);
-  const [activeLayer, setActiveLayer] = useState<
-    "analysis" | "election" | "registration" | "spectrum" | "polling"
-  >("analysis");
-  // Com o histórico do TSE pendente, o pedido pela camada "election" cai para a
-  // camada padrão (eleitorado): melhor mostrar o dado que existe do que pintar
-  // o mapa com uma série que ninguém gerou ainda.
-  const changeActiveLayer = useCallback(
-    (layer: "analysis" | "election" | "registration" | "spectrum" | "polling") => {
-      setActiveLayer(layer === "election" && electionPendente ? "analysis" : layer);
-    },
-    [],
-  );
+  const [activeLayer, setActiveLayer] = useState<MapLayerId>("analysis");
+  // Camada cujo dado ainda não foi gerado cai para a camada padrão
+  // (eleitorado): melhor mostrar o dado que existe do que pintar o mapa com uma
+  // série que ninguém gerou ainda. Vale para o histórico do TSE e para a
+  // trajetória da candidata.
+  const changeActiveLayer = useCallback((layer: MapLayerId) => {
+    const semDado =
+      (layer === "election" && electionPendente) ||
+      (layer === "candidato" && candidatePendente);
+    setActiveLayer(semDado ? "analysis" : layer);
+  }, []);
   // Carregamento sob demanda: os arquivos da camada submunicipal só descem
   // quando ela vira a camada ativa pela primeira vez.
   const polling = usePollingPlaces(spectrumContests, activeLayer === "polling");
@@ -521,6 +557,10 @@ export function MunicipalityLayer() {
         index: spectrumIndex,
         registry: spectrumRegistry,
         contest: polling.contest,
+        // A MESMA trajetória da aba dela e do cartão do município: é daqui que
+        // sai a medida de votos nominais por local, e ela não passa pelo
+        // carregamento sob demanda porque já vem no bundle.
+        candidate: candidateData,
         state: polling.state,
       }),
     [polling.contest, polling.places, polling.state, polling.votes],
@@ -535,6 +575,25 @@ export function MunicipalityLayer() {
   const pollingBubbleById = useMemo(
     () => new Map(pollingModel.bubbles.map((bubble) => [bubble.id, bubble])),
     [pollingModel.bubbles],
+  );
+  const candidateModel = useMemo(
+    () =>
+      buildCandidateLayerModel({
+        dataset: candidateData,
+        // O universo é a malha inteira: é ele que decide quem fica cinza por
+        // estar fora da disputa e quem fica cinza por falta de denominador.
+        municipios: municipalityValues,
+        electorateIndex: candidateElectorateIndex,
+        state: candidateLayer.state,
+      }),
+    [candidateLayer.state, municipalityValues],
+  );
+  const candidateItemById = useMemo(
+    () =>
+      new Map(
+        (candidateModel?.allItems ?? []).map((item) => [item.ibgeCode, item]),
+      ),
+    [candidateModel],
   );
   const electionItemById = useMemo(
     () =>
@@ -918,8 +977,13 @@ export function MunicipalityLayer() {
       // AGREGADO dos seus locais de votação (soma dos votos antes do índice);
       // o detalhe abaixo do município vive nas bolhas desenhadas por cima.
       const pollingItem = pollingItemById.get(featureId);
+      // Na camada dela o município já chega classificado pelo motor: valor,
+      // faixa e o MOTIVO da ausência (fora da disputa × sem denominador).
+      const candidateItem = candidateItemById.get(featureId);
       const value =
-        activeLayer === "election"
+        activeLayer === "candidato"
+          ? candidateItem?.value ?? null
+        : activeLayer === "election"
           ? electionItem?.value ?? null
           : activeLayer === "registration"
             ? registrationItem?.value ?? null
@@ -933,7 +997,9 @@ export function MunicipalityLayer() {
       // Sem valor no recorte não existe faixa: o município fica cinza, nunca
       // pintado como se o índice fosse zero.
       const band =
-        activeLayer === "election"
+        activeLayer === "candidato"
+          ? candidateItem?.band ?? null
+        : activeLayer === "election"
           ? electionItem?.band ?? null
           : activeLayer === "registration"
             ? registrationItem?.band ?? null
@@ -949,7 +1015,9 @@ export function MunicipalityLayer() {
             ? null
             : getAnalysisBand(value, analysisModel.thresholds);
       const activeBands =
-        activeLayer === "election"
+        activeLayer === "candidato"
+          ? candidateModel?.activeBands ?? ALL_ANALYSIS_BANDS
+        : activeLayer === "election"
           ? electionHistory.state.activeBands
           : activeLayer === "registration"
             ? registrationAnalysis.state.activeBands
@@ -963,6 +1031,8 @@ export function MunicipalityLayer() {
         dataColor:
           band === null
             ? MISSING_DATA_COLOR
+            : activeLayer === "candidato"
+              ? CANDIDATE_LAYER_COLORS[band]
             : activeLayer === "spectrum"
               ? getSpectrumMetricColors(spectrumModel.metricId)[band]
             : activeLayer === "polling"
@@ -977,6 +1047,8 @@ export function MunicipalityLayer() {
       analysis.state.metricId,
       analysisModel.thresholds,
       activeLayer,
+      candidateItemById,
+      candidateModel,
       electionHistory.state.activeBands,
       electionItemById,
       registrationAnalysis.state.activeBands,
@@ -1042,6 +1114,41 @@ export function MunicipalityLayer() {
     };
   }, [getMunicipalityStyleInputs, hoveredId, map, mapShapes, selectedId]);
 
+  // Pleito municipal na camada dela: a disputa aconteceu em UMA cidade e o
+  // resto do estado fica cinza por definição. Enquadrar a cidade evita abrir a
+  // camada num mapa inteiro apagado, em que a única informação visível é um
+  // polígono pequeno perdido no meio. Só reenquadra quando a cidade muda —
+  // nunca a cada render, para não brigar com quem já moveu o mapa.
+  const candidateFocusRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!map) return;
+    const cidade =
+      activeLayer === "candidato"
+        ? candidateModel?.escopoMunicipal ?? null
+        : null;
+    if (!cidade) {
+      // Saindo de um pleito municipal que NÓS enquadramos para outro pleito da
+      // mesma camada, o mapa volta ao estado inteiro: a leitura estadual não
+      // pode abrir com o zoom de uma cidade só.
+      if (candidateFocusRef.current !== null && activeLayer === "candidato") {
+        map.panTo(CENTRO_DO_ESTADO);
+        map.setZoom(6);
+      }
+      candidateFocusRef.current = null;
+      return;
+    }
+    if (candidateFocusRef.current === cidade.ibgeCode) return;
+    // Sem a malha carregada não há o que enquadrar; `mapShapes` reexecuta o
+    // efeito assim que os polígonos chegam.
+    const feature = featureByCodeRef.current.get(cidade.ibgeCode);
+    if (!feature) return;
+    const bounds = getFeatureBounds(feature);
+    if (bounds.isEmpty()) return;
+    candidateFocusRef.current = cidade.ibgeCode;
+    map.fitBounds(bounds, getMapPadding());
+    clampZoomKeepingFocus(map, bounds.getCenter(), 11);
+  }, [activeLayer, candidateModel, map, mapShapes]);
+
   const formatSpectrumHoverValue = (municipalityId: string) => {
     const item = spectrumItemById.get(municipalityId);
     if (!item || item.value === null) {
@@ -1052,21 +1159,33 @@ export function MunicipalityLayer() {
     return formatSpectrumValue(spectrumModel.metricId, item.value);
   };
 
+  // Opções de texto da medida ativa: nome de urna e escala do voto dela.
+  const pollingLabelOptions = {
+    rate: pollingModel.candidateRate,
+    nome: pollingModel.candidate?.nomeUrna,
+  };
+
   const formatPollingHoverValue = (municipalityId: string) => {
     const item = pollingItemById.get(municipalityId);
     if (!item || item.value === null) {
-      return pollingModel.metric === "votoPartido"
-        ? "Sem voto apurado por local neste pleito"
-        : "Sem índice por local neste pleito";
+      // Na medida da candidata, município sem valor não é "sem dado": é
+      // município onde ela não era candidata.
+      return pollingModel.metric === "votosCandidata"
+        ? `${pollingModel.candidate?.nomeUrna ?? "A candidata"} não disputou neste município`
+        : pollingModel.metric === "votoPartido"
+          ? "Sem voto apurado por local neste pleito"
+          : "Sem índice por local neste pleito";
     }
-    return `${formatPollingValue(pollingModel.metric, item.value)} · ${item.placeCount} locais`;
+    return `${formatPollingValue(pollingModel.metric, item.value, { ...pollingLabelOptions, inScope: item.candidateInScope })} · ${item.placeCount} locais`;
   };
 
   // Rótulo curto da métrica ativa, usado no title, no aria-label e no tooltip
-  // das bolhas: numa tela de percentual não sobra a palavra "índice".
+  // das bolhas: numa tela de percentual não sobra a palavra "índice", e numa
+  // tela de voto dela não sobra nem "índice" nem "% da sigla".
   const pollingMetricLabel = getPollingMetricShortLabel(
     pollingModel.metric,
     pollingModel.partyCode,
+    pollingLabelOptions,
   );
 
   const hoveredBubble =
@@ -1160,7 +1279,7 @@ export function MunicipalityLayer() {
           <AdvancedMarker
             key={bubble.id}
             position={{ lat: bubble.latitude, lng: bubble.longitude }}
-            title={`${bubble.name} — ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value)} · ${bubble.electorate} eleitores`}
+            title={`${bubble.name} — ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value, { ...pollingLabelOptions, inScope: bubble.candidateInScope })} · ${bubble.electorate} eleitores`}
             zIndex={bubble.focused ? 9 : 6}
           >
             <button
@@ -1171,7 +1290,7 @@ export function MunicipalityLayer() {
                 height: `${bubble.radius * 2}px`,
                 backgroundColor: bubble.color,
               }}
-              aria-label={`${bubble.name}, ${bubble.municipalityName}: ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value)}, ${bubble.electorate} eleitores`}
+              aria-label={`${bubble.name}, ${bubble.municipalityName}: ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value, { ...pollingLabelOptions, inScope: bubble.candidateInScope })}, ${bubble.electorate} eleitores`}
               onMouseEnter={() => setHoveredPollingId(bubble.id)}
               onMouseLeave={() =>
                 setHoveredPollingId((current) =>
@@ -1203,8 +1322,11 @@ export function MunicipalityLayer() {
           <strong>{hoveredBubble.name}</strong>
           <span>
             {pollingMetricLabel}{" "}
-            {formatPollingValue(pollingModel.metric, hoveredBubble.value)} ·{" "}
-            {hoveredBubble.electorate.toLocaleString("pt-BR")} eleitores
+            {formatPollingValue(pollingModel.metric, hoveredBubble.value, {
+              ...pollingLabelOptions,
+              inScope: hoveredBubble.candidateInScope,
+            })}{" "}
+            · {hoveredBubble.electorate.toLocaleString("pt-BR")} eleitores
             {pollingModel.metric === "indice"
               ? ` · cobertura ${hoveredBubble.coveragePct.toFixed(1)}%`
               : ""}
@@ -1221,18 +1343,22 @@ export function MunicipalityLayer() {
         className="active-layer active-layer--interactive"
         type="button"
         aria-label={
-          activeLayer === "election" && electionModel
+          activeLayer === "candidato" && candidateModel
+            ? `Abrir a aba de ${candidateModel.contest.candidatura.nomeUrna} · ${candidateModel.metric.label}`
+          : activeLayer === "election" && electionModel
             ? `Abrir histórico da camada ${electionModel.candidate.ballotName}`
             : activeLayer === "registration"
               ? `Abrir cadastros da camada ${registrationModel.metricLabel}`
             : activeLayer === "spectrum"
               ? `Abrir espectro da camada ${spectrumModel.metricLabel}`
             : activeLayer === "polling"
-              ? "Abrir camada de locais de votação"
+              ? `Abrir camada de locais de votação · ${pollingMetricLabel}`
             : `Abrir análise da camada ${analysisModel.metric.label}`
         }
         onClick={() => {
-          if (activeLayer === "election") {
+          if (activeLayer === "candidato") {
+            setCandidateOpenRequest((current) => current + 1);
+          } else if (activeLayer === "election") {
             setElectionOpenRequest((current) => current + 1);
           } else if (activeLayer === "registration") {
             setRegistrationOpenRequest((current) => current + 1);
@@ -1251,7 +1377,9 @@ export function MunicipalityLayer() {
         <div>
           <span>Camada ativa</span>
           <strong>
-            {activeLayer === "election" && electionModel
+            {activeLayer === "candidato" && candidateModel
+              ? getCandidateLayerShortLabel(candidateModel)
+            : activeLayer === "election" && electionModel
               ? `${electionModel.candidate.ballotName} · ${electionModel.metricShortLabel}`
               : activeLayer === "registration"
                 ? registrationModel.metricShortLabel
@@ -1261,7 +1389,13 @@ export function MunicipalityLayer() {
                 ? `Locais · ${pollingMetricLabel}`
               : analysisModel.metric.shortLabel}
           </strong>
-          {activeLayer === "election" && electionModel ? (
+          {activeLayer === "candidato" && candidateModel ? (
+            <small>
+              {/* O denominador vai escrito aqui de propósito: "por 1.000" sem
+                  dizer de quê convida a supor "por 1.000 habitantes". */}
+              {describeCandidateLayer(candidateModel)}
+            </small>
+          ) : activeLayer === "election" && electionModel ? (
             <small>
               TSE {electionModel.contest.electionYear} · {electionModel.contest.officeName} · {electionModel.contest.round}º turno
             </small>
@@ -1278,7 +1412,11 @@ export function MunicipalityLayer() {
             </small>
           ) : activeLayer === "polling" ? (
             <small>
-              {polling.placesStatus === "ready" && polling.votesStatus === "ready"
+              {/* A medida da candidata só precisa dos locais: o arquivo de
+                  votos por sigla é de outra medida e não a bloqueia. */}
+              {polling.placesStatus === "ready" &&
+              (polling.votesStatus === "ready" ||
+                pollingModel.metric === "votosCandidata")
                 ? `${pollingModel.bubbles.length} bolhas · ${pollingModel.contestLabel}`
                 : polling.placesStatus === "loading" ||
                     polling.votesStatus === "loading"
@@ -1298,7 +1436,12 @@ export function MunicipalityLayer() {
         <div className="municipality-tooltip" aria-live="polite">
           <strong>{hovered.name}</strong>
           <span>
-            {activeLayer === "election" && electionModel
+            {activeLayer === "candidato" && candidateModel
+              ? describeCandidateLayerItem(
+                  candidateModel,
+                  candidateItemById.get(hovered.id),
+                )
+              : activeLayer === "election" && electionModel
               ? formatElectionMetricValue(
                   electionModel.metricId,
                   electionItemById.get(hovered.id)?.value ?? 0,
@@ -1347,7 +1490,13 @@ export function MunicipalityLayer() {
 
       {/* Sem modelo (histórico pendente) a legenda não aparece: faixa nenhuma
           é melhor do que faixas calculadas sobre dado inexistente. */}
-      {activeLayer === "election" && electionModel ? (
+      {activeLayer === "candidato" && candidateModel ? (
+        <CandidateLegend
+          model={candidateModel}
+          onToggleBand={candidateLayer.toggleBand}
+          onShowAllBands={candidateLayer.showAllBands}
+        />
+      ) : activeLayer === "election" && electionModel ? (
         <ElectionLegend
           metricId={electionModel.metricId}
           metricLabel={
@@ -1382,6 +1531,12 @@ export function MunicipalityLayer() {
           bandCounts={pollingModel.bandCounts}
           metric={pollingModel.metric}
           partyCode={pollingModel.partyCode}
+          candidateName={pollingModel.candidate?.nomeUrna ?? ""}
+          candidateRate={pollingModel.candidateRate}
+          candidateUnmatchedPlaceCount={
+            pollingModel.candidate?.unmatchedPlaceCount ?? 0
+          }
+          candidateUnmatchedVotes={pollingModel.candidate?.unmatchedVotes ?? 0}
           missingValueCount={pollingModel.missingValueCount}
           placesWithoutCoordinateCount={pollingModel.placesWithoutCoordinateCount}
           activeBands={polling.state.activeBands}
@@ -1452,6 +1607,9 @@ export function MunicipalityLayer() {
         pollingVotesStatus={polling.votesStatus}
         pollingPlacesMetadata={polling.placesMetadata}
         pollingOpenRequest={pollingOpenRequest}
+        candidateState={candidateLayer.state}
+        candidateModel={candidateModel}
+        candidateOpenRequest={candidateOpenRequest}
         mapShapes={mapShapes}
         selectionIds={territorialSelection.ids}
         territorialLocation={territorialLocation}
@@ -1495,11 +1653,15 @@ export function MunicipalityLayer() {
         onPollingContestChange={polling.setContestId}
         onPollingViewModeChange={polling.setViewMode}
         onPollingPartyChange={polling.setPartyCode}
+        onPollingCandidateContestChange={polling.setCandidateContestId}
+        onPollingCandidateRateChange={polling.setCandidateRate}
         onPollingMunicipalityChange={polling.setMunicipalityId}
         onPollingBandToggle={polling.toggleBand}
         onPollingShowAllBands={polling.showAllBands}
         onPollingSortChange={polling.setSortDirection}
         onPollingReset={polling.reset}
+        onCandidateContestChange={candidateLayer.setContestId}
+        onCandidateMetricChange={candidateLayer.setMetricId}
         onMapLayerChange={changeActiveLayer}
         onSelectionSetMapMode={territorialSelection.setMapMode}
         onSelectionToggleId={territorialSelection.toggleId}

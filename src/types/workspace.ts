@@ -11,6 +11,23 @@ export type SelectionSource =
   | "selection"
   | "workspace";
 
+/**
+ * Camadas que o mapa pode pintar.
+ *
+ * "candidato" é a camada da aba "Accorsi": o desempenho nominal DELA por
+ * município, no pleito e na métrica escolhidos naquele painel. Ela entra nesta
+ * união (em vez de virar um caso à parte) para que a troca de camada continue
+ * passando por um lugar só — inclusive o rebaixamento para a camada padrão
+ * quando o dado da camada pedida ainda não foi gerado.
+ */
+export type MapLayerId =
+  | "analysis"
+  | "election"
+  | "registration"
+  | "spectrum"
+  | "polling"
+  | "candidato";
+
 export type MunicipalitySelectionEvent = {
   id: string;
   source: SelectionSource;

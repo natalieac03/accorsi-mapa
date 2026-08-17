@@ -8,10 +8,11 @@
  * qualquer ranking, em vez de aparecer com 0% falso.
  */
 
-import type { AnalysisMetricId } from "./analysis";
+import type { AnalysisBand, AnalysisMetricId } from "./analysis";
 import type { MunicipalityAgeStructure } from "./ageStructure";
 import type { GenderCounts } from "./electorate";
 import type { MunicipalityLiteracy } from "./literacy";
+import type { MunicipalitySocioeconomicValues } from "./socioeconomic";
 
 export type CandidateMetadata = {
   schemaVersion: number;
@@ -397,6 +398,39 @@ export type StatsIndicator = {
 };
 
 /**
+ * Um município no snapshot do eleitorado, como o motor de indicadores o lê.
+ *
+ * `name`, `electorate` e `gender` são obrigatórios porque sem eles não existe
+ * indicador nenhum. Os demais são OPCIONAIS de propósito: o insumo é
+ * estrutural (os testes montam payload inline) e nem todo consumidor tem o
+ * perfil completo do eleitorado à mão. Campo ausente significa "esta
+ * instalação não trouxe o dado" — e o indicador que depende dele fica FORA da
+ * análise, declarado como sem dado. Nunca entra valendo zero: um município com
+ * `biometricsPct` ausente não é um município com 0% de biometria.
+ */
+export type StatsElectorateMunicipio = {
+  name: string;
+  electorate: number;
+  gender: GenderCounts;
+  /** Zonas eleitorais do município; ausente ou 0 deixa "eleitores por zona" sem valor. */
+  zoneCount?: number;
+  biometricsPct?: number;
+  registeredDisability?: number;
+  socialName?: number;
+};
+
+/**
+ * Recorte do socioeconomic-<uf>.json que o motor precisa: o mapa de valores
+ * por município. É OPCIONAL no insumo — sem ele, renda, PIB, densidade,
+ * saneamento, escolarização e população simplesmente não entram na lista de
+ * indicadores disponíveis, em vez de entrarem zerados.
+ */
+export type StatsSocioeconomicSource = {
+  metadata: { status?: string };
+  municipalities: Record<string, { values: MunicipalitySocioeconomicValues }>;
+};
+
+/**
  * Insumo mínimo para montar os indicadores — estrutural de propósito, como o
  * ElectorateSource acima: os testes montam payloads inline e o motor não
  * conhece o resto dos snapshots.
@@ -404,10 +438,7 @@ export type StatsIndicator = {
 export type StatsIndicatorSource = {
   electorate: {
     metadata: { status?: string };
-    municipalities: Record<
-      string,
-      { name: string; electorate: number; gender: GenderCounts }
-    >;
+    municipalities: Record<string, StatsElectorateMunicipio>;
   };
   age: {
     metadata: { status?: string };
@@ -417,6 +448,13 @@ export type StatsIndicatorSource = {
     metadata: { status?: string };
     municipalities: Record<string, MunicipalityLiteracy>;
   };
+  /**
+   * Snapshot do IBGE. Opcional: quem só precisa dos indicadores do eleitorado
+   * (a janela de estatísticas até aqui) continua passando três snapshots, e o
+   * relatório passa os quatro para renda, população e urbanização chegarem ao
+   * PDF.
+   */
+  socioeconomic?: StatsSocioeconomicSource;
 };
 
 export type ScatterPoint = {
@@ -442,4 +480,116 @@ export type ScatterModel = {
   pearson: number | null;
   /** true quando n < 10 — correlação não é exibida. */
   amostraInsuficiente: boolean;
+};
+
+/* -------------------------------------------------------------------------
+ * Camada "candidato" do mapa — o coroplético do desempenho DELA.
+ *
+ * A aba "Accorsi" já lê a trajetória no painel; esta camada leva a mesma
+ * leitura para o mapa, seguindo o pleito e a métrica escolhidos lá (um par de
+ * controles só, nunca dois concorrendo).
+ *
+ * A regra que atravessa os tipos abaixo, e que aqui tem dois casos bem
+ * distintos que NUNCA podem virar o mesmo cinza sem explicação:
+ *
+ * - pleito MUNICIPAL (prefeita/vereadora): a disputa existiu em UMA cidade.
+ *   Os outros municípios não são "zero voto" — ela não estava na urna deles.
+ *   Ficam FORA da disputa, fora do ranking e fora da escala;
+ * - pleito ESTADUAL/FEDERAL: ela estava na urna do estado inteiro, então
+ *   município ausente do pleito é ZERO voto apurado (um dado de verdade).
+ *   O que pode faltar ali é o DENOMINADOR da métrica — e sem denominador a
+ *   taxa é null, cinza e fora da escala, jamais 0.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Universo territorial da camada: os municípios da malha do mapa. Estrutural
+ * de propósito (como ElectorateSource acima) para os testes montarem a lista
+ * inline e o motor não depender do perfil completo do eleitorado.
+ */
+export type CandidateLayerMunicipio = {
+  ibgeCode: string;
+  name: string;
+};
+
+export type CandidateLayerState = {
+  /** Pleito em detalhe — o MESMO seletor do painel da aba dela. */
+  contestId: string;
+  /** Métrica do ranking e do mapa — idem, um par de controles só. */
+  metricId: CandidateRankingMetricId;
+  activeBands: AnalysisBand[];
+};
+
+/**
+ * Por que um município está pintado, cinza ou fora da escala.
+ *
+ * `foraDaDisputa` e `semDenominador` são os dois cinzas, e são coisas
+ * diferentes: no primeiro ela não era candidata ali; no segundo o dado dela
+ * existe (inclusive zero voto apurado), mas a métrica escolhida não tem
+ * denominador naquele município.
+ */
+export type CandidateLayerStatus =
+  | "medido"
+  | "semDenominador"
+  | "foraDaDisputa";
+
+export type CandidateLayerItem = {
+  ibgeCode: string;
+  nome: string;
+  /**
+   * Votos nominais dela no município. 0 é dado de verdade (pleito estadual em
+   * que o município não apurou voto dela); null significa "ela não disputou
+   * aqui" — pleito municipal de outra cidade.
+   */
+  votos: number | null;
+  /** Valor da métrica ativa; null mantém o município fora da escala. */
+  value: number | null;
+  /** null = fora da escala (cinza de dado ausente), nunca a faixa mais baixa. */
+  band: AnalysisBand | null;
+  /** Eleitorado apto usado como denominador; null quando não há snapshot dele. */
+  eleitorado: number | null;
+  status: CandidateLayerStatus;
+  /** Posição no pleito pela métrica ativa; null fora da escala. */
+  rank: number | null;
+};
+
+export type CandidateLayerModel = {
+  contest: CandidateContest;
+  contestLabel: string;
+  /** "Deputada Federal · 2º turno" — o cargo no feminino, como no painel. */
+  officeLabel: string;
+  metric: CandidateRankingMetric;
+  /**
+   * Métrica efetivamente usada. Sem o snapshot do eleitorado a taxa por 1.000
+   * eleitores não existe: em vez de pintar o estado inteiro de cinza, a camada
+   * cai em votos absolutos e a legenda declara a troca.
+   */
+  metricId: CandidateRankingMetricId;
+  /** true quando o snapshot do eleitorado ainda é placeholder. */
+  eleitoradoPendente: boolean;
+  /** Cidade única de um pleito municipal; null nos pleitos estaduais/federais. */
+  escopoMunicipal: MunicipalScope | null;
+  /**
+   * false quando há menos de dois municípios com valor — é o caso do pleito
+   * municipal. Sem distribuição não existe quintil: a legenda troca as cinco
+   * faixas por uma leitura só, em vez de fingir uma escala.
+   */
+  escalaPorQuantil: boolean;
+  thresholds: number[];
+  bandCounts: number[];
+  /**
+   * Faixas em foco no mapa. Sem escala por quantil todas ficam ativas: filtrar
+   * faixa não faz sentido quando existe um valor só, e uma faixa herdada de
+   * outro pleito apagaria a única cidade pintada.
+   */
+  activeBands: AnalysisBand[];
+  allItems: CandidateLayerItem[];
+  medidosCount: number;
+  semDenominadorCount: number;
+  foraDaDisputaCount: number;
+  /**
+   * Frase do denominador da métrica ativa, escrita na legenda e na descrição
+   * da camada. Existe porque "votos por 1.000 eleitores" é sobre o ELEITORADO
+   * APTO — não sobre a população do município, que inclui quem não vota.
+   */
+  denominadorNota: string | null;
 };

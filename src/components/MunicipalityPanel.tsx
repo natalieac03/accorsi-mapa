@@ -21,11 +21,17 @@ import type {
   TerritorialDataset,
 } from "../types/electorate";
 import type {
+  MapLayerId,
   MunicipalitySelectionEvent,
   SelectionSource,
   SidebarTab,
 } from "../types/workspace";
 import type { SelectedTerritorialLocation } from "../types/search";
+import type {
+  CandidateLayerModel,
+  CandidateLayerState,
+  CandidateRankingMetricId,
+} from "../types/candidate";
 import type {
   AnalysisBand,
   AnalysisMetricId,
@@ -111,6 +117,11 @@ type MunicipalityPanelProps = {
   pollingVotesStatus: PollingDataStatus;
   pollingPlacesMetadata: PollingPlacesMetadata | null;
   pollingOpenRequest: number;
+  /** pleito e métrica da aba dela — o mesmo par que pinta a camada do mapa */
+  candidateState: CandidateLayerState;
+  /** null quando a trajetória ainda é placeholder: a camada não é oferecida */
+  candidateModel: CandidateLayerModel | null;
+  candidateOpenRequest: number;
   /** geometrias do map.data para o export em PNG; null enquanto o mapa não carregou */
   mapShapes: MapExportShape[] | null;
   selectionIds: string[];
@@ -159,14 +170,16 @@ type MunicipalityPanelProps = {
   onPollingContestChange: (contestId: string) => void;
   onPollingViewModeChange: (viewMode: PollingViewMode) => void;
   onPollingPartyChange: (partyCode: string) => void;
+  onPollingCandidateContestChange: (contestId: string | null) => void;
+  onPollingCandidateRateChange: (rate: boolean) => void;
   onPollingMunicipalityChange: (municipalityId: string | null) => void;
   onPollingBandToggle: (band: AnalysisBand) => void;
   onPollingShowAllBands: () => void;
   onPollingSortChange: (direction: AnalysisSortDirection) => void;
   onPollingReset: () => void;
-  onMapLayerChange: (
-    layer: "analysis" | "election" | "registration" | "spectrum" | "polling",
-  ) => void;
+  onCandidateContestChange: (contestId: string) => void;
+  onCandidateMetricChange: (metricId: CandidateRankingMetricId) => void;
+  onMapLayerChange: (layer: MapLayerId) => void;
   onSelectionSetMapMode: (active: boolean) => void;
   onSelectionToggleId: (id: string) => void;
   onSelectionAddIds: (ids: string[]) => void;
@@ -217,6 +230,20 @@ const tabs: SidebarTabDefinition[] = [
 // próprios painéis (workspace, analysis, selection…) trocam de aba de
 // propósito e não devem ser interceptadas. "registration" e "polling" entram
 // porque o clique no mapa usa essas fontes quando essas camadas estão ativas.
+/**
+ * Abas que trazem a PRÓPRIA camada para o mapa ao serem abertas. Serve para
+ * saber quando sair da aba dela deve devolver o mapa à camada padrão: indo
+ * para uma destas, quem manda é a camada da aba de destino.
+ */
+const TABS_COM_CAMADA: ReadonlySet<SidebarTab> = new Set([
+  "analysis",
+  "elections",
+  "registrations",
+  "spectrum",
+  "polling",
+  "candidate",
+]);
+
 const MAP_OR_SEARCH_SOURCES: ReadonlySet<SelectionSource> = new Set([
   "map",
   "municipality",
@@ -255,6 +282,9 @@ export function MunicipalityPanel({
   pollingVotesStatus,
   pollingPlacesMetadata,
   pollingOpenRequest,
+  candidateState,
+  candidateModel,
+  candidateOpenRequest,
   mapShapes,
   selectionIds,
   territorialLocation,
@@ -298,11 +328,15 @@ export function MunicipalityPanel({
   onPollingContestChange,
   onPollingViewModeChange,
   onPollingPartyChange,
+  onPollingCandidateContestChange,
+  onPollingCandidateRateChange,
   onPollingMunicipalityChange,
   onPollingBandToggle,
   onPollingShowAllBands,
   onPollingSortChange,
   onPollingReset,
+  onCandidateContestChange,
+  onCandidateMetricChange,
   onMapLayerChange,
   onSelectionSetMapMode,
   onSelectionToggleId,
@@ -318,6 +352,9 @@ export function MunicipalityPanel({
   // pessoa lê o porquê e o que rodar), mas não pede a camada de eleições ao
   // mapa — camada sem dado não é camada.
   const electionsPendente = electionModel === null;
+  // Trajetória ainda não gerada: a aba dela continua acessível (é onde a
+  // pessoa lê o que rodar), mas não pede a camada dela ao mapa.
+  const candidatePendente = candidateModel === null;
   // Nonce > 0 exibe o aviso de limite da comparação; cada tentativa reinicia
   // o cronômetro de ocultação (por isso um contador, não um booleano).
   const [compareLimitNotice, setCompareLimitNotice] = useState(0);
@@ -461,6 +498,12 @@ export function MunicipalityPanel({
   }, [pollingOpenRequest]);
 
   useEffect(() => {
+    if (candidateOpenRequest <= 0) return;
+    setActiveTab("candidate");
+    setMobileOpen(true);
+  }, [candidateOpenRequest]);
+
+  useEffect(() => {
     if (selectionOpenRequest <= 0) return;
     setActiveTab("selection");
     setMobileOpen(true);
@@ -477,6 +520,22 @@ export function MunicipalityPanel({
     if (tab === "registrations") onMapLayerChange("registration");
     if (tab === "spectrum") onMapLayerChange("spectrum");
     if (tab === "polling") onMapLayerChange("polling");
+    // Abrir a aba dela pinta o mapa pelo desempenho dela, no pleito e na
+    // métrica escolhidos aqui. Com a trajetória pendente o MunicipalityLayer
+    // rebaixa o pedido para a camada padrão — camada sem dado não é camada.
+    // A aba de eleições com o histórico pendente não traz camada nenhuma:
+    // para efeito de saída da aba dela, conta como aba sem camada.
+    const destinoTemCamada =
+      TABS_COM_CAMADA.has(tab) && !(tab === "elections" && electionsPendente);
+    if (tab === "candidate") {
+      onMapLayerChange("candidato");
+    } else if (activeTab === "candidate" && !destinoTemCamada) {
+      // Sair da aba dela POR ESCOLHA devolve o mapa à camada padrão: a camada
+      // dela vive presa aos controles do painel dela. Trocas de aba causadas
+      // por clique no mapa não passam por aqui de propósito — abrir um
+      // município não pode apagar a camada que a pessoa acabou de pedir.
+      onMapLayerChange("analysis");
+    }
     setActiveTab(tab);
     setMobileOpen(true);
   };
@@ -586,6 +645,8 @@ export function MunicipalityPanel({
                   title={
                     tab.id === "elections" && electionsPendente
                       ? "Histórico do TSE ainda não gerado — rode bash gerar_dados.sh"
+                    : tab.id === "candidate" && candidatePendente
+                      ? "Trajetória da candidata ainda não gerada — rode bash gerar_dados.sh"
                       : undefined
                   }
                   onClick={() => openTab(tab.id)}
@@ -689,7 +750,14 @@ export function MunicipalityPanel({
           />
         )}
 
-        {activeTab === "candidate" && <CandidatePanel />}
+        {activeTab === "candidate" && (
+          <CandidatePanel
+            state={candidateState}
+            layerModel={candidateModel}
+            onContestChange={onCandidateContestChange}
+            onMetricChange={onCandidateMetricChange}
+          />
+        )}
 
         {/* Anúncios e Redes não pedem camada ao mapa nem recebem props: são
             módulos ainda sem fonte de dado, e o painel só explica isso. */}
@@ -758,6 +826,8 @@ export function MunicipalityPanel({
             onContestChange={onPollingContestChange}
             onViewModeChange={onPollingViewModeChange}
             onPartyChange={onPollingPartyChange}
+            onCandidateContestChange={onPollingCandidateContestChange}
+            onCandidateRateChange={onPollingCandidateRateChange}
             onMunicipalityChange={onPollingMunicipalityChange}
             onToggleBand={onPollingBandToggle}
             onShowAllBands={onPollingShowAllBands}

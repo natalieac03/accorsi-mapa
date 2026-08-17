@@ -12,6 +12,8 @@ import candidatoJson from "../../data/candidato/adriana-accorsi.json";
 import electorateJson from "../../data/electorate-go.json";
 import type {
   CandidateDataset,
+  CandidateLayerModel,
+  CandidateLayerState,
   CandidateRankingMetricId,
   ElectorateSource,
 } from "../../types/candidate";
@@ -38,10 +40,23 @@ import { formatInteger } from "../../utils/electorate";
 /**
  * Aba "Accorsi": a trajetória nominal da candidata em foco, pleito a pleito.
  *
- * O painel importa os dados direto (em vez de recebê-los por props) para não
+ * O painel importa os DADOS direto (em vez de recebê-los por props) para não
  * atravessar o App e o MunicipalityLayer com um dataset que só esta aba usa —
  * o mesmo motivo do uiBus: menos acoplamento com o carregamento do mapa.
+ *
+ * O ESTADO (pleito em detalhe e métrica), ao contrário, vem por props: é o
+ * mesmo par que pinta a camada "candidato" do mapa. Um par de controles só,
+ * dois lugares lendo — e a escolha sobrevive a sair e voltar da aba, que
+ * desmonta este componente.
  */
+
+type CandidatePanelProps = {
+  state: CandidateLayerState;
+  /** Camada do mapa alimentada por este painel; null com trajetória pendente. */
+  layerModel: CandidateLayerModel | null;
+  onContestChange: (contestId: string) => void;
+  onMetricChange: (metricId: CandidateRankingMetricId) => void;
+};
 
 const dataset = candidatoJson as unknown as CandidateDataset;
 const electorateSource = electorateJson as unknown as ElectorateSource;
@@ -75,11 +90,15 @@ function columnPath(x: number, y: number, width: number, height: number) {
   ].join(" ");
 }
 
-export function CandidatePanel() {
+export function CandidatePanel({
+  state,
+  layerModel,
+  onContestChange,
+  onMetricChange,
+}: CandidatePanelProps) {
   const pendente = isCandidatePendente(dataset);
-  const [contestId, setContestId] = useState(dataset.contests[0]?.id ?? "");
-  const [metricId, setMetricId] =
-    useState<CandidateRankingMetricId>("votos");
+  const contestId = state.contestId;
+  const metricId = state.metricId;
   const [exportMessage, setExportMessage] = useState("");
 
   const trajectory = useMemo(() => buildTrajectory(dataset), []);
@@ -244,7 +263,7 @@ export function CandidatePanel() {
                     ? "candidate-traj-bar candidate-traj-bar--selected"
                     : "candidate-traj-bar"
                 }
-                onClick={() => setContestId(point.id)}
+                onClick={() => onContestChange(point.id)}
               >
                 <title>
                   {/* resultadoLabel vem vazio quando não é para carimbar. */}
@@ -300,7 +319,7 @@ export function CandidatePanel() {
         </span>
         <select
           value={contest.id}
-          onChange={(event) => setContestId(event.target.value)}
+          onChange={(event) => onContestChange(event.target.value)}
         >
           {trajectory.map((point) => (
             <option value={point.id} key={point.id}>
@@ -315,6 +334,31 @@ export function CandidatePanel() {
           {contest.candidatura.numero}
         </small>
       </label>
+
+      {/* O que o MAPA está mostrando agora. A frase existe porque a camada
+          segue este painel: sem ela, um mapa quase todo cinza (o caso do
+          pleito municipal) pareceria defeito, e "por 1.000" sem denominador
+          escrito convidaria a supor "por 1.000 habitantes". */}
+      {layerModel && (
+        <p className="candidate-metric-note">
+          {escopo ? (
+            <>
+              O mapa está pintado por este pleito: disputa municipal em{" "}
+              <strong>{escopo.nome}</strong>. Os demais municípios ficam em
+              cinza porque ela não estava na urna deles — não porque tiveram
+              zero voto, e por isso ficam fora do ranking e da escala.
+            </>
+          ) : (
+            <>
+              O mapa está pintado por esta leitura:{" "}
+              <strong>{layerModel.metric.label.toLowerCase()}</strong> no pleito
+              selecionado.{" "}
+              {layerModel.denominadorNota ??
+                "Município sem voto apurado dela neste pleito conta como zero voto apurado."}
+            </>
+          )}
+        </p>
+      )}
 
       <ContestCards contest={contest} className="candidate-cards" />
 
@@ -350,7 +394,7 @@ export function CandidatePanel() {
                     ? "Eleitorado ainda não gerado — rode bash gerar_dados.sh"
                     : item.description
                 }
-                onClick={() => setMetricId(item.id)}
+                onClick={() => onMetricChange(item.id)}
               >
                 {item.shortLabel}
               </button>
