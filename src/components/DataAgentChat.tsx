@@ -8,9 +8,12 @@ import { formatarRespostaAgente, type TrechoAgente } from "../utils/agentText";
  * Botão flutuante + painel de conversa do agente de dados.
  *
  * Regra que a interface precisa deixar visível: o agente responde SÓ com o que
- * está carregado na plataforma, e cada resposta mostra quais consultas foram
- * usadas. Isso é procedência, não enfeite — quem lê precisa saber se o número
- * veio do TSE, do IBGE ou dos cadastros.
+ * está carregado na plataforma. A procedência do número (fonte, pleito e ano)
+ * vem dentro do próprio texto da resposta — o system prompt obriga o modelo a
+ * citá-la. O rodapé técnico com o nome das consultas saiu a pedido de quem usa:
+ * "resultado_eleicao, espectro_submunicipal" é vocabulário do sistema, não de
+ * quem lê. As ferramentas consultadas continuam registradas em
+ * `mensagem.ferramentas`, para depuração; só não são mais desenhadas.
  *
  * Quando o servidor não tem chave configurada, nada disso aparece: o app inteiro
  * segue funcionando sem o agente.
@@ -18,11 +21,13 @@ import { formatarRespostaAgente, type TrechoAgente } from "../utils/agentText";
 
 /*
  * Sugestões prontas: só perguntas de GOIÁS e só o que as ferramentas do
- * contrato (shared/agent-tools.json) sabem responder — retrato de município,
- * espectro submunicipal por bairro, comparação de até 3 municípios e ranking
- * do índice ideológico estadual.
+ * contrato (shared/agent-tools.json) sabem responder — votação da própria
+ * candidata por bairro, retrato de município, espectro submunicipal por
+ * bairro, comparação de até 3 municípios e ranking do índice ideológico
+ * estadual.
  */
 const SUGESTOES = [
+  "Quais os três bairros que mais votam na Dra. Adriana em Goiânia?",
   "Em Goiânia, quais bairros votaram mais à esquerda no último pleito?",
   "Qual o retrato de Aparecida de Goiânia?",
   "Compare Goiânia, Anápolis e Rio Verde",
@@ -208,11 +213,6 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
                 <div className="agent-message__text">
                   <RespostaFormatada texto={mensagem.texto} />
                 </div>
-                {mensagem.ferramentas.length > 0 && (
-                  <p className="agent-message__tools">
-                    Consultas usadas: {mensagem.ferramentas.join(", ")}
-                  </p>
-                )}
               </article>
             ))}
 

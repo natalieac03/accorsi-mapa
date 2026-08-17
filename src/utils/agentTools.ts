@@ -14,6 +14,12 @@ import type {
   OrdemFerramenta,
   RespostaFerramenta,
 } from "../types/agent";
+import type {
+  CandidateContest,
+  CandidateDataset,
+  CandidateRankingMetricId,
+  ElectorateSource,
+} from "../types/candidate";
 import type { ElectionDataset } from "../types/elections";
 import type {
   ElectorateDataset,
@@ -40,6 +46,18 @@ import {
   getAnalysisMetricValue,
   buildAnalysisModel,
 } from "./analysis.ts";
+import {
+  buildElectorateIndex,
+  buildMunicipioRanking,
+  buildTrajectory,
+  formatResultado,
+  getBairros,
+  getCandidateRankingMetric,
+  getContestLabel,
+  isCandidatePendente,
+  listContestsComBairros,
+} from "./candidate.ts";
+import { getMunicipioDestaques, isMunicipalContest } from "./candidateStats.ts";
 import { buildElectionModel, isElectionDatasetPendente } from "./elections.ts";
 import {
   buildPollingModel,
@@ -232,6 +250,13 @@ export type EntradaContextoAgente = {
   registroPartidos: PartySpectrumRegistry;
   /** Votos por partido das eleições municipais; ausente enquanto o ETL não roda. */
   votosPorPartido?: PartyVotesDataset | null;
+  /**
+   * Trajetória da candidatura em foco (src/data/candidato/<slug>.json). É o
+   * mesmo arquivo da aba "Accorsi": sem ele o agente não sabe responder nada
+   * sobre a votação dela — e era exatamente essa falta que fazia o modelo
+   * explicar a própria limitação com uma ausência de dado inventada.
+   */
+  trajetoriaCandidata?: CandidateDataset | null;
   cadastros?: CampaignRegistrationDataset | null;
   carregarLocais?: (uf?: string) => Promise<PollingPlacesDataset | null>;
   carregarVotosPorLocal?: (
@@ -266,6 +291,15 @@ export function criarContextoAgente(
       entrada.eleicoes,
       entrada.votosPorPartido ?? null,
       entrada.registroPartidos,
+    ),
+    trajetoriaCandidata: entrada.trajetoriaCandidata ?? null,
+    // Mesmo índice que a aba "Accorsi" usa no ranking municipal: null enquanto
+    // o eleitorado for placeholder, para a métrica por 1.000 eleitores sumir
+    // inteira em vez de sair com denominador inventado. A conversão em duas
+    // etapas é a mesma que CandidatePanel e StatsWindow fazem: o campo
+    // `metadata.status` só existe no placeholder e não está no tipo gerado.
+    indiceEleitorado: buildElectorateIndex(
+      entrada.eleitorado as unknown as ElectorateSource,
     ),
     cadastros: entrada.cadastros?.records ?? [],
     cadastrosMetadados: entrada.cadastros
@@ -1360,7 +1394,508 @@ async function executarCompararMunicipios(
 }
 
 // ---------------------------------------------------------------------------
-// 7. cadastros_agregados (com k-anonimato)
+// 7. votacao_da_candidata (trajetória da candidatura em foco)
+// ---------------------------------------------------------------------------
+
+/**
+ * Os dois motivos de indisponibilidade da trajetória — e por que eles são
+ * textos diferentes.
+ *
+ * Quando não existe ferramenta (ou dado) para responder, a única saída honesta
+ * é dizer QUAL é a falta. Foi a confusão entre "não tenho como consultar" e
+ * "o dado não existe" que produziu o pior desfecho já visto nesta base: o
+ * modelo afirmou que a votação por bairro não estava gerada enquanto ela
+ * estava na tela. Cada motivo abaixo nomeia o arquivo e o comando, para a
+ * resposta ao usuário poder ser específica em vez de inventada.
+ */
+const MOTIVO_TRAJETORIA_PENDENTE =
+  "A trajetória da candidata ainda não foi gerada nesta instalação: " +
+  "src/data/candidato/<slug>.json continua sendo o placeholder do repositório " +
+  "(metadata.status \"pendente\", nenhum pleito). Rode `bash gerar_dados.sh` na " +
+  "raiz do projeto para processar a votação nominal dela a partir do TSE. O " +
+  "dado existe no TSE — o que falta é o processamento local.";
+
+const MOTIVO_TRAJETORIA_AUSENTE =
+  "A trajetória da candidata não foi entregue a esta sessão do agente: o " +
+  "contexto veio sem o snapshot src/data/candidato/<slug>.json. Isso é falha de " +
+  "carregamento do painel, não ausência do dado no TSE.";
+
+/** Ordem de leitura da trajetória: do pleito mais recente para o mais antigo. */
+function pleitosDaCandidataOrdenados(contests: CandidateContest[]) {
+  return [...contests].sort(
+    (a, b) =>
+      b.electionYear - a.electionYear ||
+      b.round - a.round ||
+      a.officeCode - b.officeCode,
+  );
+}
+
+/**
+ * Casamento de um termo da busca com o rótulo do pleito.
+ *
+ * O TSE grava o cargo no masculino ("Deputado Federal", "Prefeito") e quem
+ * pergunta escreve no feminino ("deputada federal", "prefeita", "senadora").
+ * Sem esta tolerância a pergunta natural em pt-BR não encontraria o pleito.
+ * Só vale para palavras: em número ("2024") cortar a última letra casaria
+ * 2024 com 2020.
+ */
+function combinaTermoDePleito(rotulo: string, termo: string) {
+  if (rotulo.includes(termo)) return true;
+  if (termo.length < 4 || /^\d+$/.test(termo)) return false;
+  const raiz = termo.slice(0, -1);
+  return rotulo.includes(`${raiz}o`) || rotulo.includes(raiz);
+}
+
+/**
+ * Resolve o pleito dentro da trajetória por identificador ("2024-11-1") ou por
+ * texto livre ("2024 prefeita"). Sem termo, devolve o mais recente.
+ */
+export function resolverPleitoDaCandidata(
+  contests: CandidateContest[],
+  termo?: unknown,
+): CandidateContest | null {
+  const ordenados = pleitosDaCandidataOrdenados(contests);
+  if (ordenados.length === 0) return null;
+  if (typeof termo !== "string" || !termo.trim()) return ordenados[0];
+  const bruto = termo.trim();
+  const porId = ordenados.find((contest) => contest.id === bruto);
+  if (porId) return porId;
+  const termos = normalizeSearchText(bruto).split(" ").filter(Boolean);
+  if (termos.length === 0) return ordenados[0];
+  return (
+    ordenados.find((contest) => {
+      const rotulo = normalizeSearchText(
+        `${contest.electionYear} ${contest.officeName} ${contest.round} turno ${contest.id}`,
+      );
+      return termos.every((parte) => combinaTermoDePleito(rotulo, parte));
+    }) ?? null
+  );
+}
+
+/** Nome de urna da candidatura, para as mensagens saírem com gente e não com slug. */
+function nomeDaCandidata(dataset: CandidateDataset) {
+  return (
+    dataset.contests[0]?.candidatura.nomeUrna ||
+    dataset.metadata.nomeConsultado ||
+    dataset.metadata.slug
+  );
+}
+
+function fonteDaCandidata(
+  dataset: CandidateDataset,
+  contest: CandidateContest | null,
+  ano?: number,
+): FonteFerramenta {
+  // Toda resposta declara recorte temporal, inclusive a de ausência: sem
+  // pleito escolhido, o recorte é a trajetória até o pleito mais recente.
+  const maisRecente = pleitosDaCandidataOrdenados(dataset.contests)[0];
+  return {
+    descricao: `${dataset.metadata.source ?? "TSE — votação nominal por seção"} — votação de ${nomeDaCandidata(dataset)}`,
+    ano: contest?.electionYear ?? ano ?? maisRecente?.electionYear,
+    pleito: contest ? getContestLabel(contest) : undefined,
+    url: dataset.metadata.sourceUrl,
+  };
+}
+
+/** Envelope de ausência: 0 linhas, motivo dito por extenso, nunca zero fingido. */
+function semVotacao(
+  fonte: FonteFerramenta,
+  avisos: string[],
+  motivo: string,
+  resumo: Record<string, unknown>,
+): RespostaFerramenta {
+  return {
+    ok: true,
+    tipo: "votacao_da_candidata",
+    total: 0,
+    dados: [],
+    fonte,
+    avisos: [...avisos, motivo],
+    resumo: { ...resumo, temVotoApurado: false },
+  };
+}
+
+async function executarVotacaoDaCandidata(
+  argumentos: ArgumentosFerramenta,
+  contexto: ContextoAgente,
+): Promise<RespostaFerramenta> {
+  const dataset = contexto.trajetoriaCandidata;
+  if (!dataset) return { ok: false, motivo: MOTIVO_TRAJETORIA_AUSENTE };
+  if (isCandidatePendente(dataset)) {
+    return { ok: false, motivo: MOTIVO_TRAJETORIA_PENDENTE };
+  }
+
+  const avisos: string[] = [];
+  const recorte =
+    argumentos.recorte === "bairros"
+      ? "bairros"
+      : argumentos.recorte === "trajetoria"
+        ? "trajetoria"
+        : "municipios";
+  const ordem = resolverOrdem(argumentos.ordem);
+  const limite = resolverLimite(argumentos.limite);
+  const candidata = nomeDaCandidata(dataset);
+  const porId = new Map(dataset.contests.map((contest) => [contest.id, contest]));
+
+  // ---- trajetória: uma linha por eleição, em ordem cronológica ------------
+  if (recorte === "trajetoria") {
+    // buildTrajectory é o MESMO motor do gráfico da aba "Accorsi": nenhuma
+    // soma acontece aqui, nem poderia — voto de eleições diferentes não se
+    // soma, cada pleito tem eleitorado, cargo e regras próprios.
+    const pontos = buildTrajectory(dataset);
+    avisos.push(
+      "Votos de eleições diferentes não se somam nem se comparam direto: cada pleito tem cargo, regras e eleitorado próprios. O que se lê entre pleitos é variação.",
+    );
+    const linhas = truncar(pontos, limite, avisos, "pleitos");
+    return {
+      ok: true,
+      tipo: "votacao_da_candidata",
+      total: pontos.length,
+      dados: linhas.map((ponto) => {
+        const contest = porId.get(ponto.id);
+        return {
+          pleitoId: ponto.id,
+          pleito: contest ? getContestLabel(contest) : ponto.id,
+          ano: ponto.electionYear,
+          cargo: ponto.officeName,
+          turno: ponto.round,
+          partido: ponto.partido,
+          votos: ponto.votos,
+          // Resultado completo e cru do TSE, traduzido: quem consulta o dado
+          // precisa saber se ela foi eleita. Os rótulos de vitrine (que
+          // omitem derrota) são regra de TELA da aba, não do dado.
+          resultado: formatResultado(ponto.resultado),
+          municipiosComVoto: contest?.municipiosComVoto ?? null,
+          posicaoNoPleito: contest?.posicaoNoEstado ?? null,
+          candidaturasNoPleito: contest?.candidaturasNoPleito ?? null,
+          universo: contest && isMunicipalContest(contest) ? "municipal" : "estadual/federal",
+          temRecorteDeBairros: contest?.temRecorteSubmunicipal ?? false,
+        };
+      }),
+      fonte: fonteDaCandidata(
+        dataset,
+        null,
+        pontos.length > 0 ? pontos[pontos.length - 1].electionYear : undefined,
+      ),
+      avisos,
+      resumo: {
+        candidata,
+        recorte,
+        pleitos: pontos.length,
+        leitura: "ordem cronológica, do pleito mais antigo para o mais recente",
+      },
+    };
+  }
+
+  // ---- município: opcional em "municipios", obrigatório em "bairros" ------
+  let municipio: MunicipalityProfile | null = null;
+  if (typeof argumentos.municipio === "string" && argumentos.municipio.trim()) {
+    const resolvido = resolverMunicipio(contexto, argumentos.municipio);
+    if (!resolvido) {
+      return {
+        ok: false,
+        motivo: `Município não encontrado em Goiás: "${argumentos.municipio}".`,
+      };
+    }
+    if (resolvido.aproximado) {
+      avisos.push(
+        `Interpretei "${argumentos.municipio}" como ${resolvido.municipio.name}.`,
+      );
+    }
+    municipio = resolvido.municipio;
+  }
+
+  // ---- bairros de um município ------------------------------------------
+  if (recorte === "bairros") {
+    if (!municipio) {
+      return {
+        ok: false,
+        motivo:
+          "O recorte por bairros precisa do argumento \"municipio\" — o recorte submunicipal sempre olha uma cidade por vez (ex.: Goiânia).",
+      };
+    }
+    const comBairros = listContestsComBairros(dataset, municipio.ibgeCode);
+    const rotulosComBairros = comBairros.map(getContestLabel).join("; ");
+    if (comBairros.length === 0) {
+      return semVotacao(
+        fonteDaCandidata(dataset, null),
+        avisos,
+        `Nenhum pleito da trajetória de ${candidata} tem recorte por bairros em ${municipio.name}. O recorte submunicipal só existe onde a votação por seção casa com o cadastro de locais do TSE — em Goiás, isso acontece em Goiânia.`,
+        { candidata, recorte, municipio: municipio.name, codigoIbge: municipio.ibgeCode },
+      );
+    }
+
+    let contest: CandidateContest | null;
+    if (typeof argumentos.pleito === "string" && argumentos.pleito.trim()) {
+      contest = resolverPleitoDaCandidata(dataset.contests, argumentos.pleito);
+      if (!contest) {
+        return {
+          ok: false,
+          motivo: `Pleito não encontrado na trajetória de ${candidata}: "${argumentos.pleito}". Disponíveis: ${pleitosDaCandidataOrdenados(dataset.contests).map(getContestLabel).join("; ")}.`,
+        };
+      }
+      if (!comBairros.some((item) => item.id === contest!.id)) {
+        return semVotacao(
+          fonteDaCandidata(dataset, contest),
+          avisos,
+          `${getContestLabel(contest)} não tem recorte por bairros em ${municipio.name}. Pleitos com bairros ali: ${rotulosComBairros}.`,
+          {
+            candidata,
+            recorte,
+            municipio: municipio.name,
+            codigoIbge: municipio.ibgeCode,
+            pleito: getContestLabel(contest),
+          },
+        );
+      }
+    } else {
+      // Sem pleito pedido, o mais recente COM bairros — não o mais recente da
+      // trajetória, que pode ser uma eleição sem recorte submunicipal.
+      contest = comBairros[comBairros.length - 1];
+    }
+
+    const ordenados = getBairros(contest, municipio.ibgeCode) ?? [];
+    // A posição é sempre a do ranking decrescente; "menores" só inverte a
+    // leitura da lista, para o 1º continuar sendo o bairro mais votado.
+    const comPosicao = ordenados.map((linha, indice) => ({
+      posicaoNoMunicipio: indice + 1,
+      bairro: linha.bairro,
+      votos: linha.votos,
+    }));
+    const linhas = ordem === "menores" ? [...comPosicao].reverse() : comPosicao;
+
+    avisos.push(
+      "O bairro é o do LOCAL DE VOTAÇÃO onde o voto foi apurado, não o endereço de quem votou; e é a soma dos locais daquele bairro, não um polígono.",
+    );
+    if (contest.votosSemLocalDeVotacao > 0) {
+      avisos.push(
+        `${contest.votosSemLocalDeVotacao} ${plural(contest.votosSemLocalDeVotacao, "voto dela não tem", "votos dela não têm")} local de votação identificado neste pleito e ${plural(contest.votosSemLocalDeVotacao, "não entra", "não entram")} em bairro nenhum.`,
+      );
+    }
+    const recortadas = truncar(linhas, limite, avisos, "bairros");
+
+    return {
+      ok: true,
+      tipo: "votacao_da_candidata",
+      total: linhas.length,
+      dados: recortadas,
+      fonte: fonteDaCandidata(dataset, contest),
+      avisos,
+      resumo: {
+        candidata,
+        recorte,
+        municipio: municipio.name,
+        codigoIbge: municipio.ibgeCode,
+        pleito: getContestLabel(contest),
+        ano: contest.electionYear,
+        cargo: contest.officeName,
+        bairrosComVoto: linhas.length,
+        votosNoMunicipio: contest.municipios[municipio.ibgeCode]?.votos ?? null,
+        pleitosComBairros: rotulosComBairros,
+        temVotoApurado: linhas.length > 0,
+        ordem,
+      },
+    };
+  }
+
+  // ---- município citado sem pleito: os destaques do cartão do mapa --------
+  if (municipio && !(typeof argumentos.pleito === "string" && argumentos.pleito.trim())) {
+    // Mesmo motor do cartão "Dra. Adriana neste município": a eleição mais
+    // recente de CADA universo. Prefeitura e cadeira são disputas diferentes —
+    // saem lado a lado e nunca somadas.
+    const destaques = getMunicipioDestaques(dataset, municipio.ibgeCode);
+    if (destaques.length === 0) {
+      return semVotacao(
+        fonteDaCandidata(dataset, null),
+        avisos,
+        `Não há votação de ${candidata} apurada em ${municipio.name} em nenhum pleito da trajetória. "Sem voto apurado" não é "zero voto": o município simplesmente não aparece na apuração dela.`,
+        { candidata, recorte, municipio: municipio.name, codigoIbge: municipio.ibgeCode },
+      );
+    }
+    if (destaques.length > 1) {
+      avisos.push(
+        `Os ${destaques.length} números abaixo são de disputas diferentes (uma municipal, uma estadual/federal): não se somam nem se comparam entre si.`,
+      );
+    }
+    return {
+      ok: true,
+      tipo: "votacao_da_candidata",
+      total: destaques.length,
+      dados: destaques.map((destaque) => ({
+        codigoIbge: municipio.ibgeCode,
+        municipio: municipio.name,
+        pleitoId: destaque.contestId,
+        pleito:
+          porId.has(destaque.contestId)
+            ? getContestLabel(porId.get(destaque.contestId) as CandidateContest)
+            : destaque.contestId,
+        ano: destaque.electionYear,
+        cargo: destaque.officeName,
+        turno: destaque.round,
+        universo: destaque.municipal ? "municipal" : "estadual/federal",
+        votos: destaque.votos,
+        percentualValidos: destaque.percentualValidos,
+        posicaoNoMunicipio: destaque.posicaoNoMunicipio,
+        candidaturasComVoto: destaque.candidaturasComVoto,
+      })),
+      fonte: fonteDaCandidata(dataset, porId.get(destaques[0].contestId) ?? null),
+      avisos,
+      resumo: {
+        candidata,
+        recorte,
+        municipio: municipio.name,
+        codigoIbge: municipio.ibgeCode,
+        leitura: "eleição mais recente de cada universo de disputa",
+        temVotoApurado: true,
+      },
+    };
+  }
+
+  // ---- ranking municipal de um pleito ------------------------------------
+  const contest = resolverPleitoDaCandidata(dataset.contests, argumentos.pleito);
+  if (!contest) {
+    return {
+      ok: false,
+      motivo: `Pleito não encontrado na trajetória de ${candidata}: "${String(argumentos.pleito)}". Disponíveis: ${pleitosDaCandidataOrdenados(dataset.contests).map(getContestLabel).join("; ")}.`,
+    };
+  }
+  const metricaId = (
+    typeof argumentos.metrica === "string" ? argumentos.metrica : "votos"
+  ) as CandidateRankingMetricId;
+  const metrica = getCandidateRankingMetric(metricaId);
+  if (metrica.requiresElectorate && !contexto.indiceEleitorado) {
+    return {
+      ok: false,
+      motivo: `A métrica "${metrica.label}" precisa do eleitorado apto por município, e o snapshot do eleitorado ainda é placeholder nesta instalação. Rode \`bash gerar_dados.sh\` ou peça a métrica "votos".`,
+    };
+  }
+  const fonte = fonteDaCandidata(dataset, contest);
+  const resumoBase = {
+    candidata,
+    recorte,
+    pleito: getContestLabel(contest),
+    ano: contest.electionYear,
+    cargo: contest.officeName,
+    turno: contest.round,
+    metrica: metricaId,
+    rotuloMetrica: metrica.label,
+    votosNoPleito: contest.votosNoEstado,
+    municipiosComVoto: contest.municipiosComVoto,
+    ordem,
+  };
+
+  if (isMunicipalContest(contest)) {
+    avisos.push(
+      `${getContestLabel(contest)} é uma eleição municipal: a disputa acontece dentro de uma cidade, e o número não se compara com o de outras cidades.`,
+    );
+  }
+
+  // Mesmo ranking da aba "Accorsi", incluindo a regra de que município sem
+  // valor da métrica (denominador ausente) fica FORA — nunca com 0.
+  const completo = buildMunicipioRanking(
+    contest,
+    metricaId,
+    contexto.indiceEleitorado,
+    Number.MAX_SAFE_INTEGER,
+  );
+  const municipiosNoPleito = Object.keys(contest.municipios).length;
+  if (completo.length < municipiosNoPleito) {
+    const fora = municipiosNoPleito - completo.length;
+    avisos.push(
+      `${fora} ${plural(fora, "município ficou", "municípios ficaram")} fora do ranking por não ter valor de "${metrica.label}" (valor null, nunca zero).`,
+    );
+  }
+
+  if (municipio) {
+    const bruto = contest.municipios[municipio.ibgeCode];
+    if (!bruto) {
+      return semVotacao(
+        fonte,
+        avisos,
+        `${candidata} não tem votação apurada em ${municipio.name} em ${getContestLabel(contest)}. "Sem voto apurado" não é "zero voto".`,
+        { ...resumoBase, municipio: municipio.name, codigoIbge: municipio.ibgeCode },
+      );
+    }
+    const linha = completo.find((item) => item.ibgeCode === municipio.ibgeCode);
+    if (!linha) {
+      return semVotacao(
+        fonte,
+        avisos,
+        `${municipio.name} tem ${bruto.votos} votos apurados de ${candidata} em ${getContestLabel(contest)}, mas a métrica "${metrica.label}" é null ali (falta o denominador) e por isso a linha fica fora do ranking.`,
+        {
+          ...resumoBase,
+          municipio: municipio.name,
+          codigoIbge: municipio.ibgeCode,
+          votos: bruto.votos,
+        },
+      );
+    }
+    return {
+      ok: true,
+      tipo: "votacao_da_candidata",
+      total: 1,
+      dados: [
+        {
+          posicaoNoRanking: completo.indexOf(linha) + 1,
+          codigoIbge: linha.ibgeCode,
+          municipio: linha.nome,
+          votos: linha.votos,
+          valor: arredondar(linha.value),
+          percentualValidos: arredondar(contest.municipios[linha.ibgeCode].percentualValidos),
+          percentualDoPartido: arredondar(
+            contest.municipios[linha.ibgeCode].percentualDoPartido,
+          ),
+          posicaoNoMunicipio: linha.posicaoNoMunicipio,
+          candidaturasComVoto: contest.municipios[linha.ibgeCode].candidaturasComVoto,
+          eleitorado: linha.eleitorado,
+        },
+      ],
+      fonte,
+      avisos,
+      resumo: {
+        ...resumoBase,
+        municipio: linha.nome,
+        codigoIbge: linha.ibgeCode,
+        municipiosNoRanking: completo.length,
+        temVotoApurado: true,
+      },
+    };
+  }
+
+  // "menores" inverte a leitura da mesma lista ordenada pelo motor — a posição
+  // devolvida continua sendo a do ranking decrescente.
+  const ordenadas = ordem === "menores" ? [...completo].reverse() : completo;
+  const recortadas = truncar(ordenadas, limite, avisos, "municípios");
+
+  return {
+    ok: true,
+    tipo: "votacao_da_candidata",
+    total: ordenadas.length,
+    dados: recortadas.map((linha) => ({
+      posicaoNoRanking: completo.indexOf(linha) + 1,
+      codigoIbge: linha.ibgeCode,
+      municipio: linha.nome,
+      votos: linha.votos,
+      valor: arredondar(linha.value),
+      percentualValidos: arredondar(contest.municipios[linha.ibgeCode].percentualValidos),
+      percentualDoPartido: arredondar(contest.municipios[linha.ibgeCode].percentualDoPartido),
+      posicaoNoMunicipio: linha.posicaoNoMunicipio,
+      eleitorado: linha.eleitorado,
+    })),
+    fonte,
+    avisos,
+    resumo: {
+      ...resumoBase,
+      municipiosNoRanking: completo.length,
+      concentracaoTop5Pct: contest.concentracaoPercentual.top5,
+      concentracaoTop10Pct: contest.concentracaoPercentual.top10,
+      temVotoApurado: ordenadas.length > 0,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// 8. cadastros_agregados (com k-anonimato)
 // ---------------------------------------------------------------------------
 
 function limiarPrivacidade(contexto: ContextoAgente) {
@@ -1573,6 +2108,7 @@ const EXECUTORES: Record<string, ExecutorFerramenta> = {
   espectro_submunicipal: executarEspectroSubmunicipal,
   resultado_eleicao: executarResultadoEleicao,
   comparar_municipios: executarCompararMunicipios,
+  votacao_da_candidata: executarVotacaoDaCandidata,
   cadastros_agregados: executarCadastrosAgregados,
 };
 

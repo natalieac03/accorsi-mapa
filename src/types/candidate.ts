@@ -165,6 +165,33 @@ export type BairroComparisonRow = {
   variacaoPct: number | null;
 };
 
+/** O par de pleitos efetivamente comparado bairro a bairro. */
+export type BairroComparison = {
+  anterior: CandidateContest;
+  recente: CandidateContest;
+  rows: BairroComparisonRow[];
+};
+
+/**
+ * O que a seção "Bairros de Goiânia" pode mostrar para o pleito selecionado.
+ *
+ * A régua é o CARGO (e o turno) do pleito escolhido no seletor: só se comparam
+ * eleições da mesma disputa. Quando aquele cargo tem um pleito só com recorte
+ * de bairro — o caso de uma candidatura a deputada federal com cadastro de
+ * locais publicado em um único ano — não existe comparação, e a interface diz
+ * isso em vez de silenciosamente comparar com outro cargo.
+ */
+export type BairroComparisonScope = {
+  officeCode: number;
+  round: number;
+  /** "Prefeita", "Deputada Federal · 2º turno"… — nomeia o que se compara. */
+  officeLabel: string;
+  /** Pleitos do mesmo cargo/turno com recorte de bairro, do mais antigo ao mais recente. */
+  pleitos: CandidateContest[];
+  /** null quando há menos de dois pleitos daquele cargo/turno com recorte. */
+  comparacao: BairroComparison | null;
+};
+
 /* -------------------------------------------------------------------------
  * Janela "Estatísticas" — tipos do motor de src/utils/candidateStats.ts.
  *

@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import ageStructureJson from "../data/age-structure-go.json";
+import candidatoJson from "../data/candidato/adriana-accorsi.json";
 import electorateJson from "../data/electorate-go.json";
 import electionHistoryJson from "../data/election-history-go.json";
 import literacyJson from "../data/literacy-go.json";
@@ -26,6 +27,7 @@ import type {
   MunicipalitySelection,
 } from "../types/electorate";
 import type { AgeStructureDataset } from "../types/ageStructure";
+import type { CandidateDataset } from "../types/candidate";
 import type { LiteracyDataset } from "../types/literacy";
 import type { SocioeconomicDataset } from "../types/socioeconomic";
 import type { ElectionDataset } from "../types/elections";
@@ -383,6 +385,11 @@ export function MunicipalityLayer() {
       eleicoes: electionData,
       registroPartidos: spectrumRegistry,
       votosPorPartido: partyVotesJson as unknown as PartyVotesDataset,
+      // A trajetória da candidata — o MESMO arquivo da aba "Accorsi" e do
+      // cartão do município. Sem ela o agente não teria como responder nada
+      // sobre a votação da Dra. Adriana e acabaria explicando a própria
+      // limitação como se o dado não existisse.
+      trajetoriaCandidata: candidatoJson as unknown as CandidateDataset,
       // O hook devolve os campos soltos; o agente espera o formato de snapshot.
       // O limiar de privacidade vem daqui, e o motor do agente ainda impõe o
       // piso de 5 por cima — nunca abaixo, mesmo que a base declare menos.

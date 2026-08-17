@@ -202,6 +202,52 @@
       }
     },
     {
+      "name": "votacao_da_candidata",
+      "description": "Use SEMPRE que a pergunta for sobre a votação da PRÓPRIA Dra. Adriana Accorsi: 'quais os três bairros que mais votam nela em Goiânia', 'quantos votos ela teve em Aparecida de Goiânia', 'onde ela foi mais forte', 'quantos votos ela fez em cada eleição'. Lê a trajetória de votação nominal dela processada do TSE — a mesma que a aba Accorsi do painel mostra. Três recortes: 'municipios' devolve a votação dela município a município num pleito (padrão); 'bairros' devolve os bairros mais votados dentro de UM município (informe o município — em Goiás o recorte submunicipal existe para Goiânia, onde ela disputou a prefeitura); 'trajetoria' devolve a votação de cada eleição, com ano, cargo, turno, partido e resultado. Votos de eleições diferentes NUNCA se somam. Município sem votação apurada dela não vira zero: a resposta diz, com todas as letras, que não há voto apurado ali. Se a trajetória ainda não tiver sido processada, a ferramenta devolve ok:false explicando a pendência — nesse caso diga que o dado não foi gerado nesta instalação, jamais que ele não existe.",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "recorte": {
+            "type": "string",
+            "description": "'municipios' (padrão) lista a votação dela por município no pleito; 'bairros' lista os bairros mais votados dentro do município informado (use para 'quais bairros de Goiânia votam mais nela'); 'trajetoria' lista a votação dela em cada eleição, do pleito mais antigo ao mais recente.",
+            "enum": ["municipios", "bairros", "trajetoria"]
+          },
+          "municipio": {
+            "type": "string",
+            "description": "Município analisado: nome (aceita sem acento e parcial), código IBGE de 7 dígitos ou código TSE. Obrigatório no recorte 'bairros' (ex.: Goiânia). No recorte 'municipios' é opcional: informado sem pleito, devolve o que ela fez ali na eleição mais recente de cada universo de disputa (municipal e estadual/federal), que não se somam."
+          },
+          "pleito": {
+            "type": "string",
+            "description": "Eleição analisada: identificador ('2024-11-1', no formato ano-cargo-turno) ou texto livre ('2024 prefeita', '2022 deputada federal'). Padrão: o pleito mais recente da trajetória — no recorte 'bairros', o mais recente que tenha recorte submunicipal naquele município."
+          },
+          "metrica": {
+            "type": "string",
+            "description": "Como ordenar e medir o recorte 'municipios': votos (votos nominais absolutos, padrão), percentualValidos (fatia dos votos válidos do cargo no município), percentualPartido (quanto do voto do partido no município foi nominalmente dela), votosPorMilEleitores (densidade sobre o eleitorado apto, compara cidades de tamanhos diferentes). O recorte 'bairros' é sempre por votos absolutos.",
+            "enum": [
+              "votos",
+              "percentualValidos",
+              "percentualPartido",
+              "votosPorMilEleitores"
+            ]
+          },
+          "ordem": {
+            "type": "string",
+            "description": "'maiores' = da maior votação para a menor (padrão, responde 'onde ela é mais forte'); 'menores' = da menor para a maior ('onde ela é mais fraca'). Não se aplica ao recorte 'trajetoria', que sai sempre em ordem cronológica.",
+            "enum": ["maiores", "menores"]
+          },
+          "limite": {
+            "type": "integer",
+            "description": "Quantas linhas devolver, de 1 a 50. Padrão: 10. Para 'os três bairros que mais votam nela', peça 3.",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
       "name": "cadastros_agregados",
       "description": "Use para 'quantos apoiadores cadastramos em tal cidade/bairro', 'onde temos mais cadastros'. Devolve APENAS contagens agregadas de cadastros de apoiadores, por município ou por bairro, com a taxa por 10 mil eleitores. Regra de privacidade inegociável: todo grupo com menos de 5 cadastros é SUPRIMIDO do resultado e reportado apenas como contagem de grupos suprimidos por privacidade; a ferramenta nunca devolve registro individual, nome, endereço, CEP completo ou qualquer dado pessoal. Se a base for a demonstração sintética, o aviso diz isso — repita na resposta.",
       "parameters": {

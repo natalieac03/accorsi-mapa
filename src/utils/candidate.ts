@@ -1,5 +1,6 @@
 import type {
   BairroComparisonRow,
+  BairroComparisonScope,
   BairroRow,
   CandidateContest,
   CandidateDataset,
@@ -201,6 +202,35 @@ export function getOfficeShort(officeCode: number, officeName: string): string {
 }
 
 /**
+ * Cargo por extenso no feminino, para a prosa da interface.
+ *
+ * O TSE grava o cargo no masculino genérico ("Deputado Federal") enquanto a
+ * vitrine já fala dela no feminino ("Eleita", "Prefeita" sob a barra); numa
+ * frase corrida o masculino soaria como se falasse de outra pessoa. Cargo fora
+ * do mapa cai no nome cru do TSE: repetir o dado é melhor que inventar flexão.
+ */
+const OFFICE_FEMININO: Record<number, string> = {
+  1: "Presidente",
+  3: "Governadora",
+  5: "Senadora",
+  6: "Deputada Federal",
+  7: "Deputada Estadual",
+  8: "Deputada Distrital",
+  11: "Prefeita",
+  13: "Vereadora",
+};
+
+/**
+ * Nome do que está sendo comparado: o cargo disputado, com o turno anexado só
+ * quando ele existe (> 1). O turno entra no rótulo porque 2º turno é outra
+ * disputa — dois nomes na urna, outro eleitorado efetivo.
+ */
+export function getOfficeLabel(contest: CandidateContest): string {
+  const nome = OFFICE_FEMININO[contest.officeCode] ?? contest.officeName;
+  return contest.round > 1 ? `${nome} · ${contest.round}º turno` : nome;
+}
+
+/**
  * Série do gráfico central: uma barra por pleito, em ordem cronológica.
  * A ordem visual é sempre ascendente por ano (2014 -> 2024), mesmo que o JSON
  * venha do mais recente para o mais antigo.
@@ -350,6 +380,59 @@ export function compareBairros(
       a.bairro.localeCompare(b.bairro, "pt-BR"),
   );
   return rows;
+}
+
+/**
+ * Pleitos COMPARÁVEIS ao selecionado no recorte de bairro: mesmo cargo e mesmo
+ * turno, em ordem cronológica.
+ *
+ * Comparar cargos diferentes é proibido nesta base (o motivo está em
+ * `buildMunicipalGrowth`, em candidateStats.ts): disputar a prefeitura e
+ * disputar uma cadeira legislativa são corridas diferentes — outros
+ * adversários, outras regras, outro eleitorado efetivo — e a variação entre
+ * elas não mede crescimento de nada. O turno entra pela mesma razão: no 2º
+ * turno restam dois nomes na urna, e o voto de um bairro muda de natureza,
+ * não de tamanho.
+ */
+export function listContestsComparaveisComBairros(
+  dataset: CandidateDataset,
+  contest: CandidateContest,
+  ibge: string = GOIANIA_IBGE,
+): CandidateContest[] {
+  return listContestsComBairros(dataset, ibge).filter(
+    (item) =>
+      item.officeCode === contest.officeCode && item.round === contest.round,
+  );
+}
+
+/**
+ * O que a seção de bairros pode mostrar para o pleito selecionado: os pleitos
+ * comparáveis com recorte e, quando são pelo menos dois, a comparação entre o
+ * mais antigo e o mais recente DAQUELE cargo.
+ *
+ * Com menos de dois, `comparacao` é null — a interface avisa que não há com o
+ * que comparar em vez de cair no cargo vizinho. O pleito selecionado não
+ * precisa ter recorte próprio: um ano sem cadastro de locais do TSE continua
+ * sendo daquele cargo e continua tendo direito à leitura dos anos que têm.
+ */
+export function buildBairroComparisonScope(
+  dataset: CandidateDataset,
+  contest: CandidateContest,
+  ibge: string = GOIANIA_IBGE,
+): BairroComparisonScope {
+  const pleitos = listContestsComparaveisComBairros(dataset, contest, ibge);
+  const anterior = pleitos[0];
+  const recente = pleitos[pleitos.length - 1];
+  return {
+    officeCode: contest.officeCode,
+    round: contest.round,
+    officeLabel: getOfficeLabel(contest),
+    pleitos,
+    comparacao:
+      pleitos.length >= 2
+        ? { anterior, recente, rows: compareBairros(anterior, recente, ibge) }
+        : null,
+  };
 }
 
 /**

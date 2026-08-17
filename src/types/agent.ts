@@ -1,3 +1,4 @@
+import type { CandidateDataset, ElectorateIndex } from "./candidate";
 import type { ElectionDataset } from "./elections";
 import type { MunicipalityProfile } from "./electorate";
 import type { PollingPlacesDataset, PollingVotesDataset } from "./pollingPlaces";
@@ -99,6 +100,19 @@ export type ContextoAgente = {
   indicePartidos: PartySpectrumIndex;
   /** Pleitos do espectro, do mais recente para o mais antigo. */
   pleitos: SpectrumSourceContest[];
+  /**
+   * Trajetória da candidatura em foco (o mesmo snapshot da aba "Accorsi").
+   * `null` quando o painel não entregou o arquivo — que é diferente de
+   * "trajetória pendente"; a ferramenta distingue os dois casos no motivo,
+   * porque afirmar ausência de dado que existe é o pior desfecho possível.
+   */
+  trajetoriaCandidata: CandidateDataset | null;
+  /**
+   * ibge -> eleitorado apto, já pelo motor `buildElectorateIndex`. É `null`
+   * enquanto o snapshot do eleitorado for placeholder: sem ele a métrica
+   * "votos por 1.000 eleitores" não existe (e não vira zero).
+   */
+  indiceEleitorado: ElectorateIndex;
   cadastros: CampaignRegistration[];
   cadastrosMetadados: {
     modo: string;
@@ -136,7 +150,12 @@ export type MensagemAgente = {
 export type MensagemChat = {
   autor: "usuario" | "agente";
   texto: string;
-  /** Ferramentas consultadas para produzir a resposta, mostradas como procedência. */
+  /**
+   * Ferramentas consultadas para produzir a resposta. Continuam registradas
+   * para depuração, mas NÃO são mais desenhadas na conversa: o rodapé
+   * "Consultas usadas: resultado_eleicao, ..." saiu a pedido de quem usa. A
+   * procedência que importa (fonte, pleito e ano) vem no texto da resposta.
+   */
   ferramentas: string[];
 };
 

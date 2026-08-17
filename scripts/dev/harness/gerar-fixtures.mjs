@@ -159,10 +159,23 @@ function pleitoEstadual(ano, votoBase) {
     municipiosComVoto: nomes.length,
     concentracaoPercentual: { top5: 62.4, top10: 74.9, top20: 88.2 },
     votosSemLocalDeVotacao: 0,
-    temRecorteSubmunicipal: false,
+    // Desde 2022 o TSE publica o cadastro de locais, então só o pleito de 2022
+    // tem recorte por bairro. É de propósito: é o cargo com UM pleito de
+    // recorte, o caso em que a seção de bairros não tem com o que comparar.
+    temRecorteSubmunicipal: ano === 2022,
     municipios,
     locais: null,
-    bairros: null,
+    bairros:
+      ano === 2022
+        ? {
+            "5208707": {
+              "setor central": 5200,
+              "setor bueno": 4300,
+              "setor sul": 2900,
+              campinas: 2400,
+            },
+          }
+        : null,
   };
 }
 

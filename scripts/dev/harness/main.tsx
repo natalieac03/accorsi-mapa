@@ -6,6 +6,7 @@
  *   /?view=stats     janela Estatísticas (fixtures no lugar dos snapshots)
  *   /?view=chat      painel do agente aberto (status do agente é mockado)
  *   /?view=login     tela de login (contexto de auth mockado)
+ *   /?view=accorsi   aba lateral "Accorsi" (trajetória + bairros de Goiânia)
  */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -23,6 +24,7 @@ import { DataAgentChat } from "@src/components/DataAgentChat";
 import { LoginScreen } from "@src/components/auth/LoginScreen";
 import { StatsWindow } from "@src/components/stats/StatsWindow";
 import { CandidateMunicipioCard } from "@src/components/panel/CandidateMunicipioCard";
+import { CandidatePanel } from "@src/components/panel/CandidatePanel";
 import "@src/index.css";
 
 const vista = new URLSearchParams(window.location.search).get("view") ?? "stats";
@@ -111,8 +113,21 @@ function VistaMunicipio() {
   );
 }
 
+/* Aba "Accorsi" inteira, na largura real da barra lateral: é onde mora a
+   seção de bairros de Goiânia, que segue o cargo do pleito selecionado. */
+function VistaAccorsi() {
+  return (
+    <div className="app">
+      <aside className="sidebar" style={{ overflow: "auto" }}>
+        <CandidatePanel />
+      </aside>
+    </div>
+  );
+}
+
 function Raiz() {
   if (vista === "login") return <VistaLogin />;
+  if (vista === "accorsi") return <VistaAccorsi />;
   if (vista === "chat") return <VistaChat />;
   if (vista === "municipio") return <VistaMunicipio />;
   return <StatsWindow onClose={() => {}} />;

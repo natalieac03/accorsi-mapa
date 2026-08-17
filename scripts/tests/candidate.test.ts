@@ -8,6 +8,7 @@ import type {
 } from "../../src/types/candidate.ts";
 import {
   buildAxisTicks,
+  buildBairroComparisonScope,
   buildElectorateIndex,
   buildMunicipioRanking,
   buildTrajectory,
@@ -17,9 +18,11 @@ import {
   formatResultado,
   formatResultadoShort,
   getBairros,
+  getOfficeLabel,
   GOIANIA_IBGE,
   isCandidatePendente,
   listContestsComBairros,
+  listContestsComparaveisComBairros,
   votosPorMilEleitores,
 } from "../../src/utils/candidate.ts";
 
@@ -321,6 +324,152 @@ test("variação por bairro cobre crescimento, queda, estreia e sumiço", () => 
   // Ordena pela força no pleito recente; quem sumiu vai para o fim.
   assert.equal(rows[0].bairro, "CENTRO");
   assert.equal(rows[rows.length - 1].bairro, "BAIRRO QUE SUMIU");
+});
+
+/* -------------------------------------------------------------------------
+ * Comparação de bairros por CARGO
+ *
+ * Segundo payload sintético, com vários cargos tendo recorte de bairro no
+ * mesmo dataset — é isso que separa "comparou o cargo certo" de "comparou os
+ * extremos da trajetória". No payload de cima os extremos por acaso eram do
+ * mesmo cargo (Vereador 2020 e 2024) e o erro passaria despercebido.
+ * ------------------------------------------------------------------------- */
+
+const depFederal2022 = contest("2022-6-1", 2022, {
+  votosNoEstado: 120000,
+  municipios: { [GYN]: municipio("Goiânia", 60000) },
+  temRecorteSubmunicipal: true,
+  bairros: { [GYN]: { CENTRO: 5000, "SETOR OESTE": 2000 } },
+});
+
+const prefeita2016T1 = contest("2016-11-1", 2016, {
+  officeCode: 11,
+  officeName: "Prefeito",
+  votosNoEstado: 46000,
+  municipios: { [GYN]: municipio("Goiânia", 46000) },
+  temRecorteSubmunicipal: true,
+  bairros: { [GYN]: { CENTRO: 4100, CAMPINAS: 1900 } },
+});
+
+// Mesmo ano e mesmo cargo do anterior, outro TURNO: dois nomes na urna, outra
+// disputa. Existe para provar que a comparação não junta turnos.
+const prefeita2016T2 = contest("2016-11-2", 2016, {
+  officeCode: 11,
+  officeName: "Prefeito",
+  round: 2,
+  votosNoEstado: 190000,
+  municipios: { [GYN]: municipio("Goiânia", 190000) },
+  temRecorteSubmunicipal: true,
+  bairros: { [GYN]: { CENTRO: 12000, CAMPINAS: 8000 } },
+});
+
+// Cargo SEM nenhum pleito com recorte de bairro em Goiânia.
+const depEstadual2018 = contest("2018-7-1", 2018, {
+  officeCode: 7,
+  officeName: "Deputado Estadual",
+  votosNoEstado: 88000,
+  municipios: { [GYN]: municipio("Goiânia", 40000) },
+});
+
+const datasetMulticargo: CandidateDataset = {
+  metadata: {
+    schemaVersion: 1,
+    state: "GO",
+    slug: "candidata-sintetica",
+    pleitos: 6,
+    anos: [2016, 2018, 2020, 2022, 2024],
+    cargos: ["Deputado Estadual", "Deputado Federal", "Prefeito", "Vereador"],
+  },
+  contests: [
+    contest2024,
+    depFederal2022,
+    contest2020,
+    depEstadual2018,
+    prefeita2016T2,
+    prefeita2016T1,
+  ],
+};
+
+test("cargo por extenso sai no feminino, com o turno só quando existe", () => {
+  assert.equal(getOfficeLabel(depFederal2022), "Deputada Federal");
+  assert.equal(getOfficeLabel(prefeita2016T1), "Prefeita");
+  assert.equal(getOfficeLabel(prefeita2016T2), "Prefeita · 2º turno");
+  assert.equal(getOfficeLabel(contest2020), "Vereadora");
+});
+
+test("comparação de bairros usa os extremos DO CARGO do pleito selecionado", () => {
+  const escopo = buildBairroComparisonScope(datasetMulticargo, contest2020);
+  assert.deepEqual(
+    escopo.pleitos.map((item) => item.id),
+    ["2020-13-1", "2024-13-1"],
+  );
+  assert.equal(escopo.officeLabel, "Vereadora");
+  assert.ok(escopo.comparacao);
+  assert.equal(escopo.comparacao.anterior.id, "2020-13-1");
+  assert.equal(escopo.comparacao.recente.id, "2024-13-1");
+  // O extremo cronológico do dataset inteiro é 2016 (Prefeita) — e ele NÃO
+  // pode entrar na comparação de um pleito de Vereadora.
+  assert.ok(
+    !escopo.pleitos.some((item) => item.officeCode !== 13),
+    "nenhum pleito de outro cargo pode entrar no recorte",
+  );
+});
+
+test("cargo com um pleito só de bairros não tem comparação (e não cai no cargo vizinho)", () => {
+  const escopo = buildBairroComparisonScope(datasetMulticargo, depFederal2022);
+  assert.equal(escopo.officeLabel, "Deputada Federal");
+  assert.deepEqual(
+    escopo.pleitos.map((item) => item.id),
+    ["2022-6-1"],
+  );
+  // É este null que a interface traduz por "não há com o que comparar".
+  assert.equal(escopo.comparacao, null);
+  // O top de bairros do pleito selecionado continua existindo.
+  assert.equal(getBairros(depFederal2022)?.[0].bairro, "CENTRO");
+});
+
+test("cargo sem nenhum recorte de bairro não devolve pleito nem comparação", () => {
+  const escopo = buildBairroComparisonScope(datasetMulticargo, depEstadual2018);
+  assert.deepEqual(escopo.pleitos, []);
+  assert.equal(escopo.comparacao, null);
+});
+
+test("trocar o pleito selecionado troca a comparação de bairros", () => {
+  const vereadora = buildBairroComparisonScope(datasetMulticargo, contest2024);
+  const federal = buildBairroComparisonScope(datasetMulticargo, depFederal2022);
+  const prefeita = buildBairroComparisonScope(datasetMulticargo, prefeita2016T1);
+
+  assert.equal(vereadora.comparacao?.anterior.id, "2020-13-1");
+  assert.equal(vereadora.comparacao?.recente.id, "2024-13-1");
+  assert.equal(federal.comparacao, null);
+  // Prefeita 1º turno tem um pleito só NAQUELE turno: 2016-11-2 é outra
+  // disputa e não vira o "recente" da comparação.
+  assert.deepEqual(
+    prefeita.pleitos.map((item) => item.id),
+    ["2016-11-1"],
+  );
+  assert.equal(prefeita.comparacao, null);
+  assert.deepEqual(
+    listContestsComparaveisComBairros(datasetMulticargo, prefeita2016T2).map(
+      (item) => item.id,
+    ),
+    ["2016-11-2"],
+  );
+});
+
+test("na comparação por cargo, bairro ausente de um lado continua null", () => {
+  const escopo = buildBairroComparisonScope(datasetMulticargo, contest2024);
+  const linhas = escopo.comparacao?.rows ?? [];
+  const porNome = new Map(linhas.map((row) => [row.bairro, row]));
+
+  // Estreia em 2024: sem base anterior, sem taxa — jamais 0 ou -100%.
+  assert.equal(porNome.get("BAIRRO NOVO")?.votosAnterior, null);
+  assert.equal(porNome.get("BAIRRO NOVO")?.variacaoPct, null);
+  // Sumiu em 2024: sem valor recente, sem taxa — e não vira zero.
+  assert.equal(porNome.get("BAIRRO QUE SUMIU")?.votosRecente, null);
+  assert.equal(porNome.get("BAIRRO QUE SUMIU")?.variacaoPct, null);
+  // Bairro de outro cargo não contamina o recorte deste.
+  assert.equal(porNome.has("SETOR OESTE"), false);
 });
 
 test("CSV do ranking sai com BOM, ponto e vírgula e colunas esperadas", () => {

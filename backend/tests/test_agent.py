@@ -530,3 +530,38 @@ def test_a_chave_vai_no_header_do_upstream_e_nunca_na_resposta(
     assert CHAVE_FALSA not in response.text
     assert CHAVE_FALSA not in json.dumps(dict(response.headers))
     assert "Authorization" not in response.text
+
+
+def test_o_prompt_proibe_declarar_dado_inexistente_sem_tool():
+    """A regra que nasceu de um erro real: o modelo afirmou que a votação por
+    bairro "ainda não foi gerada" enquanto ela estava na tela do painel. Sem
+    ferramenta para a pergunta, a resposta certa é dizer que não há ferramenta
+    — nunca inventar uma explicação para a própria limitação.
+    """
+    prompt = agent.SYSTEM_PROMPT
+    assert "NUNCA afirme que um dado não existe" in prompt
+    assert "não tem ferramenta para" in prompt
+    assert "votacao_da_candidata" in prompt
+    # As regras antigas continuam de pé — nenhuma foi trocada pela nova.
+    assert "Todo número vem de tool" in prompt
+    assert "null não é zero" in prompt
+    assert "Cite pleito, ano e fonte" in prompt
+    assert "supressão de grupos" in prompt and "menores que 5" in prompt
+    assert "não prova que quem tem X votou em Y" in prompt
+    assert "TEXTO LIMPO" in prompt
+
+
+def test_as_duas_copias_do_contrato_de_tools_sao_identicas():
+    """shared/agent-tools.json e backend/data/agent-tools.json são espelhos.
+
+    O backend lê o primeiro que existir: no Railway só a cópia empacotada
+    viaja na imagem. Se as duas divergirem, o agente passa a oferecer
+    ferramentas diferentes conforme o ambiente — e a divergência só apareceria
+    em produção.
+    """
+    compartilhado = agent.SHARED_TOOLS_PATH.read_bytes()
+    empacotado = agent.BUNDLED_TOOLS_PATH.read_bytes()
+    assert compartilhado == empacotado
+    nomes = [tool["name"] for tool in json.loads(compartilhado)["tools"]]
+    assert "votacao_da_candidata" in nomes
+    assert len(nomes) == len(set(nomes))

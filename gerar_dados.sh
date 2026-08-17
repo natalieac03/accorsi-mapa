@@ -302,13 +302,23 @@ if [[ -z "$FORCAR" ]] && [[ -s src/data/election-history-go.json ]] && \
   echo "  [ok] histórico eleitoral já gerado."
 else
   echo "  Processando (pode levar vários minutos)..."
-  $PYTHON scripts/process_tse_history.py \
+  # NÃO derruba o script. Este passo já falhou uma vez e, por causa do set -e,
+  # levou junto os PASSOS 2 e 3 — que não dependem dele em nada. O resultado
+  # foi a usuária ficar sem espectro municipal e sem Censo por causa de um
+  # problema no histórico. Aqui o erro é registrado e o pipeline segue.
+  if ! $PYTHON scripts/process_tse_history.py \
     --section-2018 dados_tse/secoes/votacao_secao_2018_GO.zip \
     --section-2022 dados_tse/secoes/votacao_secao_2022_GO.zip \
     --president-2018 dados_tse/secoes/votacao_secao_2018_BR.zip \
     --president-2022 dados_tse/secoes/votacao_secao_2022_BR.zip \
     --candidates-2018 dados_tse/candidaturas/consulta_cand_2018.zip \
-    --candidates-2022 dados_tse/candidaturas/consulta_cand_2022.zip
+    --candidates-2022 dados_tse/candidaturas/consulta_cand_2022.zip; then
+    echo
+    echo "  !! O histórico de Presidente/Governador NÃO foi gerado (erro acima)."
+    echo "     Só a aba Eleições depende dele. Sigo com os passos 2 e 3, que"
+    echo "     não têm relação nenhuma com este arquivo."
+    echo
+  fi
 fi
 
 echo
@@ -406,8 +416,13 @@ if n_alfa != 246:
 # ele é decisão consciente, não acidente — então aqui é erro.
 hist = json.loads(Path("src/data/election-history-go.json").read_text(encoding="utf-8"))
 n_hist = len(hist.get("contests") or [])
-if n_hist == 0 or hist.get("metadata", {}).get("status") == "pendente":
-    erros.append("election-history-go.json continua pendente (aba Eleições vazia)")
+# AVISO, não erro: o app trata este arquivo pendente sem quebrar (a aba
+# Eleições explica e o resto funciona). Como erro, ele impedia a verificação
+# de reportar tudo o mais que ESTÁ pronto — e o pipeline morria por causa da
+# aba que menos urge.
+historico_pendente = (
+    n_hist == 0 or hist.get("metadata", {}).get("status") == "pendente"
+)
 
 # Trajetória da candidatura em foco: mesma lógica.
 foco = sorted(Path("src/data/candidato").glob("*.json"))
@@ -424,6 +439,11 @@ if erros:
     for e in erros:
         print(f"  - {e}")
     sys.exit(1)
+
+if historico_pendente:
+    print("  AVISO: election-history-go.json continua pendente — a aba Eleições")
+    print("         fica com o aviso de 'ainda não gerado'. Todo o resto abaixo")
+    print("         está pronto e pode subir.")
 
 print(f"  Locais de votação: {n_locais}")
 print(f"  Arquivos de votos por pleito: {len(votos)} ({', '.join(v.name for v in votos)})")

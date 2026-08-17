@@ -25,6 +25,20 @@ from zipfile import ZipFile
 STATE = "GO"
 YEARS = (2018, 2022)
 OFFICES = {1: "Presidente", 3: "Governador"}
+
+# Só eleição ORDINÁRIA. Os pacotes de votação por seção do TSE trazem, no mesmo
+# arquivo, eleições suplementares e outros pleitos extraordinários — cujas
+# candidaturas NÃO estão no cadastro do pleito geral daquele ano. Sem este
+# filtro, a primeira linha dessas outras eleições derrubava o processamento
+# inteiro com "candidatura não está no cadastro". process_tse_sections.py e
+# process_candidato_foco.py já filtravam; este arquivo era o único que não.
+ORDINARY_ELECTION_TYPE = 2
+
+# Fração máxima de votos em candidaturas fora do cadastro que ainda deixa o
+# processamento seguir. Acima disso alguma premissa quebrou de verdade e falhar
+# é o certo; abaixo, o que existe é ruído de borda do TSE, e derrubar o
+# pipeline inteiro por causa dele impede TODOS os passos seguintes de rodar.
+MAX_UNKNOWN_VOTE_RATIO = 0.005
 EXPECTED_MUNICIPALITIES = 246
 SOURCE_ENCODING = "latin-1"
 SOURCE_URL = "https://dadosabertos.tse.jus.br/dataset/resultados-2022"
@@ -152,7 +166,13 @@ def load_municipality_mapping(path: Path) -> tuple[dict[str, str], dict[str, str
 
 
 def candidate_members(archive: ZipFile, year: int) -> list[str]:
-    suffixes = (f"consulta_cand_{year}_rs.csv", f"consulta_cand_{year}_br.csv")
+    # Presidente se registra no pacote BR (nacional); Governador, no pacote do
+    # próprio estado. Um "_rs" fixo aqui pegava as candidaturas do Rio Grande
+    # do Sul — o cadastro carregava sem erro (o zip tem os 27 estados, dois
+    # sufixos batiam), só que era o cadastro do estado errado: nenhum
+    # SQ_CANDIDATO de Goiás batia nele, daí "candidatura não está no cadastro"
+    # em toda linha de Governador.
+    suffixes = (f"consulta_cand_{year}_{STATE.lower()}.csv", f"consulta_cand_{year}_br.csv")
     members = [
         name
         for name in archive.namelist()
@@ -169,6 +189,7 @@ def load_candidates(path: Path, year: int) -> dict[str, dict[str, Any]]:
     candidates: dict[str, dict[str, Any]] = {}
     with ZipFile(path) as archive:
         for member in candidate_members(archive, year):
+            antes_deste_membro = len(candidates)
             with archive.open(member) as raw:
                 reader = open_csv(raw)
                 validate_columns(reader.fieldnames, CANDIDATE_COLUMNS, member)
@@ -202,7 +223,33 @@ def load_candidates(path: Path, year: int) -> dict[str, dict[str, Any]]:
                                 f"Cadastro conflitante para candidatura {candidate_id}."
                             )
                     candidates[candidate_id] = candidate
+            # Impresso sempre: se algum dia o cadastro do estado errado voltar
+            # a ser lido, o número aqui denuncia antes de qualquer outra coisa.
+            print(
+                f"  cadastro {year}: {Path(member).name} -> "
+                f"{len(candidates) - antes_deste_membro:,} candidaturas"
+            )
     return candidates
+
+
+def procurar_candidatura_no_zip(path: Path, candidate_id: str) -> list[str]:
+    """Em quais CSVs do pacote de candidaturas esse SQ_CANDIDATO aparece.
+
+    Existe para responder à única pergunta que importa quando uma candidatura
+    não é encontrada: ela está em OUTRO arquivo do mesmo ZIP (leitura do
+    recorte errado) ou não está em lugar nenhum (o pacote de votação e o de
+    candidatura são de pleitos diferentes)? Sem isso o erro é um beco sem saída.
+    """
+    achados: list[str] = []
+    alvo = candidate_id.encode("latin-1", errors="ignore")
+    with ZipFile(path) as archive:
+        for nome in archive.namelist():
+            if not nome.lower().endswith(".csv"):
+                continue
+            with archive.open(nome) as raw:
+                if alvo in raw.read():
+                    achados.append(Path(nome).name)
+    return achados
 
 
 def new_contest(year: int, round_number: int, office_code: int) -> dict[str, Any]:
@@ -226,10 +273,15 @@ def aggregate_sections(
     tse_to_ibge: dict[str, str],
     allowed_offices: set[int],
     skip_unmapped_municipalities: bool = False,
+    candidates_path: Path | None = None,
 ) -> tuple[dict[str, dict[str, Any]], int, int]:
     contests: dict[str, dict[str, Any]] = {}
     source_rows = 0
     selected_rows = 0
+    outras_eleicoes = 0
+    votos_desconhecidos = 0
+    votos_validos = 0
+    desconhecidas: dict[str, dict[str, Any]] = {}
     with ZipFile(path) as archive:
         members = [
             name
@@ -259,14 +311,39 @@ def aggregate_sections(
                 if row_year != year:
                     raise RuntimeError(f"Ano divergente em {member}, linha {row_number}.")
 
+                # Eleição suplementar/extraordinária no mesmo pacote: as
+                # candidaturas dela não estão no cadastro do pleito geral.
+                # A coluna não existe nos pacotes mais antigos, daí o get.
+                if "CD_TIPO_ELEICAO" in row:
+                    tipo = parse_int(
+                        row.get("CD_TIPO_ELEICAO"), "CD_TIPO_ELEICAO", row_number
+                    )
+                    if tipo != ORDINARY_ELECTION_TYPE:
+                        outras_eleicoes += 1
+                        continue
+
                 candidate_id = clean_label(row["SQ_CANDIDATO"])
                 if not candidate_id or candidate_id.startswith("-"):
                     continue
                 candidate = candidates.get(candidate_id)
                 if not candidate:
-                    raise RuntimeError(
-                        f"Candidatura {candidate_id} da linha {row_number} não está no cadastro."
+                    # NÃO derruba o processamento: acumula, e quem decide é o
+                    # balanço no fim (ver MAX_UNKNOWN_VOTE_RATIO). Uma linha de
+                    # borda do TSE não pode impedir os passos seguintes do
+                    # pipeline de rodar.
+                    votos_desconhecidos += parse_int(
+                        row["QT_VOTOS"], "QT_VOTOS", row_number
                     )
+                    if candidate_id not in desconhecidas:
+                        desconhecidas[candidate_id] = {
+                            "linha": row_number,
+                            "cargo": office_code,
+                            "turno": clean_label(row.get("NR_TURNO")),
+                            "numero": clean_label(row.get("NR_VOTAVEL")),
+                            "nome": clean_label(row.get("NM_VOTAVEL")),
+                            "municipio": clean_label(row.get("NM_MUNICIPIO")),
+                        }
+                    continue
                 if int(candidate["officeCode"]) != office_code:
                     raise RuntimeError(f"Cargo divergente na candidatura {candidate_id}.")
 
@@ -298,7 +375,55 @@ def aggregate_sections(
                 )
                 municipality["validVotes"] += votes
                 municipality["votes"][candidate_id] += votes
+                votos_validos += votes
                 selected_rows += 1
+
+    if outras_eleicoes:
+        print(
+            f"  {year}: {outras_eleicoes:,} linhas de eleição não ordinária "
+            "(suplementar/extraordinária) descartadas."
+        )
+
+    if desconhecidas:
+        total = votos_validos + votos_desconhecidos
+        fracao = votos_desconhecidos / total if total else 1.0
+        print(
+            f"  ALERTA {year}: {len(desconhecidas):,} candidatura(s) fora do "
+            f"cadastro, somando {votos_desconhecidos:,} votos "
+            f"({fracao:.3%} do apurado)."
+        )
+        # Para as primeiras, dizemos ONDE elas realmente estão dentro do pacote
+        # de candidaturas. É isso que separa "li o recorte errado do ZIP" de
+        # "esta candidatura não existe no pacote deste ano".
+        for candidate_id, info in list(desconhecidas.items())[:5]:
+            onde = (
+                procurar_candidatura_no_zip(candidates_path, candidate_id)
+                if candidates_path is not None
+                else []
+            )
+            print(
+                f"    SQ {candidate_id} (linha {info['linha']}, cargo "
+                f"{info['cargo']}, turno {info['turno']}, nº {info['numero']}, "
+                f"{info['nome']} em {info['municipio']})"
+            )
+            print(
+                "      no pacote de candidaturas: "
+                + (", ".join(onde) if onde else "NÃO aparece em nenhum CSV")
+            )
+        if len(desconhecidas) > 5:
+            print(f"    ... e mais {len(desconhecidas) - 5} candidatura(s).")
+
+        if fracao > MAX_UNKNOWN_VOTE_RATIO:
+            raise RuntimeError(
+                f"{fracao:.2%} dos votos de {year} estão em candidaturas fora "
+                f"do cadastro (teto {MAX_UNKNOWN_VOTE_RATIO:.2%}). Isso não é "
+                "ruído de borda: o pacote de votação e o de candidaturas não "
+                "batem. Veja as linhas acima para saber onde cada SQ está."
+            )
+        print(
+            "    Abaixo do teto: essas linhas ficam de fora e o processamento segue."
+        )
+
     return contests, source_rows, selected_rows
 
 
@@ -433,6 +558,7 @@ def main() -> None:
             candidate_catalog[year],
             tse_to_ibge,
             {3},
+            candidates_path=year_paths["candidates"],
         )
         president_contests, president_source_rows, president_selected_rows = aggregate_sections(
             year_paths["president"],
@@ -441,6 +567,7 @@ def main() -> None:
             tse_to_ibge,
             {1},
             skip_unmapped_municipalities=True,
+            candidates_path=year_paths["candidates"],
         )
         contests = governor_contests | president_contests
         source_rows += governor_source_rows + president_source_rows

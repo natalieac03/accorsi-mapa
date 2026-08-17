@@ -4272,13 +4272,9 @@ select:focus-visible {
   color: #c1121f;
 }
 
-/* Procedência: de onde saiu o número. Discreto, mas nunca ausente. */
-.agent-message__tools {
-  margin: 7px 0 0;
-  font-size: 11.5px;
-  letter-spacing: 0.02em;
-  color: #6e6560;
-}
+/* O rodapé ".agent-message__tools" ("Consultas usadas: ...") foi removido a
+   pedido de quem usa: o nome interno das ferramentas não diz nada a quem lê, e
+   a procedência de verdade (fonte, pleito e ano) vem no texto da resposta. */
 
 .agent-thinking {
   display: flex;

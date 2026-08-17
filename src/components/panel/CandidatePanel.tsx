@@ -18,20 +18,19 @@ import type {
 import { downloadTextFile } from "../../utils/browser";
 import {
   buildAxisTicks,
+  buildBairroComparisonScope,
   buildElectorateIndex,
   buildMunicipioRanking,
   buildTrajectory,
   CANDIDATE_RANKING_METRICS,
-  compareBairros,
   createCandidateRankingCsv,
   formatCompactPt,
   formatRankingValue,
   getBairros,
   getCandidateCsvFilename,
   getCandidateRankingMetric,
-  getContestLabel,
+  getOfficeLabel,
   isCandidatePendente,
-  listContestsComBairros,
 } from "../../utils/candidate";
 import { getMunicipalScope } from "../../utils/candidateStats";
 import { formatInteger } from "../../utils/electorate";
@@ -99,7 +98,12 @@ export function CandidatePanel() {
         : [],
     [contest, metricId, electorateIndex],
   );
-  const bairroContests = useMemo(() => listContestsComBairros(dataset), []);
+  /* A seção de bairros segue o pleito selecionado: a comparação só junta
+     eleições do MESMO cargo (regra no motor, em buildBairroComparisonScope). */
+  const bairroScope = useMemo(
+    () => (contest ? buildBairroComparisonScope(dataset, contest) : null),
+    [contest],
+  );
 
   if (pendente || contest === null) {
     return (
@@ -144,15 +148,14 @@ export function CandidatePanel() {
      repetindo o cartão de cima; quem informa ali embaixo é o de bairros. */
   const escopo = getMunicipalScope(contest);
   const bairrosAtuais = getBairros(contest)?.slice(0, BAIRROS_SIZE) ?? null;
-  const comparacaoPossivel = bairroContests.length >= 2;
-  const contestAnterior = comparacaoPossivel ? bairroContests[0] : null;
-  const contestRecente = comparacaoPossivel
-    ? bairroContests[bairroContests.length - 1]
-    : null;
-  const comparacaoBairros =
-    contestAnterior && contestRecente
-      ? compareBairros(contestAnterior, contestRecente).slice(0, BAIRROS_SIZE)
-      : null;
+  const comparacao = bairroScope?.comparacao ?? null;
+  const cargoComparado = bairroScope?.officeLabel ?? getOfficeLabel(contest);
+  /* Um pleito só daquele cargo com recorte: não há comparação possível, e a
+     seção precisa dizer isso — sumir sem explicação deixaria a impressão de
+     que a leitura por bairro não existe para o cargo selecionado. */
+  const pleitoUnicoComBairros =
+    bairroScope?.pleitos.length === 1 ? bairroScope.pleitos[0] : null;
+  const comparacaoBairros = comparacao?.rows.slice(0, BAIRROS_SIZE) ?? null;
   const maxComparacao = comparacaoBairros
     ? Math.max(
         1,
@@ -406,7 +409,7 @@ export function CandidatePanel() {
       </section>
       )}
 
-      {(bairrosAtuais || comparacaoBairros) && (
+      {(bairrosAtuais || comparacaoBairros || pleitoUnicoComBairros) && (
         <section
           className="insight-section candidate-bairros"
           aria-label="Bairros de Goiânia"
@@ -418,9 +421,11 @@ export function CandidatePanel() {
 
           {bairrosAtuais && (
             <div className="candidate-bairro-list">
+              {/* Mesmo rótulo de cargo da comparação abaixo: dentro de uma
+                  seção só, o pleito não pode ter dois nomes. */}
               <p className="candidate-bairro-caption">
                 Top {bairrosAtuais.length} bairros no pleito selecionado (
-                {getContestLabel(contest)}).
+                {contest.electionYear} · {cargoComparado}).
               </p>
               {bairrosAtuais.map((row) => (
                 <div className="candidate-bairro-row" key={row.bairro}>
@@ -441,17 +446,33 @@ export function CandidatePanel() {
           {!bairrosAtuais && (
             <p className="candidate-bairro-caption">
               O pleito selecionado não tem recorte por bairro (o TSE não
-              publicou o cadastro de locais daquele ano). A comparação abaixo usa
-              os pleitos que têm.
+              publicou o cadastro de locais daquele ano).
+              {comparacao
+                ? ` A comparação abaixo usa os outros pleitos de ${cargoComparado}.`
+                : ""}
             </p>
           )}
 
-          {comparacaoBairros && contestAnterior && contestRecente && (
+          {/* Cargo com um pleito só de recorte: a frase substitui a comparação
+              — dizer "não há com o que comparar" é honesto; comparar com outro
+              cargo seria mostrar uma variação que não mede nada. */}
+          {pleitoUnicoComBairros && (
+            <p className="candidate-bairro-caption">
+              Só há um pleito de {cargoComparado} com recorte por bairro (
+              {pleitoUnicoComBairros.electionYear}) — não há com o que comparar.
+              A comparação só junta pleitos do mesmo cargo: disputar a
+              prefeitura e disputar uma cadeira legislativa são corridas
+              diferentes.
+            </p>
+          )}
+
+          {comparacaoBairros && comparacao && (
             <div className="candidate-bairro-compare">
               <p className="candidate-bairro-caption">
-                Onde a votação cresceu na capital:{" "}
-                {contestAnterior.electionYear} → {contestRecente.electionYear},
-                variação sobre o pleito mais antigo.
+                Onde a votação cresceu na capital entre pleitos de{" "}
+                {cargoComparado}: {comparacao.anterior.electionYear} →{" "}
+                {comparacao.recente.electionYear}, variação sobre{" "}
+                {comparacao.anterior.electionYear}.
               </p>
               {/* Duas séries do MESMO tom (antes claro, depois cheio): é um
                   antes/depois por bairro, não duas identidades — validado como
@@ -459,12 +480,11 @@ export function CandidatePanel() {
               <div className="candidate-bairro-legend" aria-hidden="true">
                 <span>
                   <i className="candidate-swatch candidate-swatch--anterior" />
-                  {contestAnterior.electionYear} ·{" "}
-                  {contestAnterior.officeName}
+                  {comparacao.anterior.electionYear} · {cargoComparado}
                 </span>
                 <span>
                   <i className="candidate-swatch candidate-swatch--recente" />
-                  {contestRecente.electionYear} · {contestRecente.officeName}
+                  {comparacao.recente.electionYear} · {cargoComparado}
                 </span>
               </div>
               {comparacaoBairros.map((row) => (
