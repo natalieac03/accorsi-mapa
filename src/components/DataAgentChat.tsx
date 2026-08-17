@@ -146,11 +146,10 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
           role="dialog"
           aria-label="Agente de dados"
         >
-          <header className="agent-panel__header">
-            <div>
-              <p className="agent-panel__eyebrow">Pergunte aos dados</p>
-              <h2 className="agent-panel__title">Agente ACCORSI</h2>
-            </div>
+          {/* Sem título: quem abriu o painel sabe o que abriu, e o cabeçalho
+              custava três linhas de altura numa janela que é toda conversa.
+              Restam só as ações; o nome acessível fica no aria-label acima. */}
+          <header className="agent-panel__header agent-panel__header--enxuto">
             <div className="agent-panel__actions">
               {mensagens.length > 0 && (
                 <button
@@ -255,12 +254,6 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
               <span className="sr-only">Enviar</span>
             </button>
           </footer>
-          {status.modelo && (
-            <p className="agent-model-note">
-              Modelo: {status.modelo}. O modelo escolhe a consulta; o cálculo é
-              feito aqui, sobre os dados da plataforma.
-            </p>
-          )}
         </section>
       )}
     </>

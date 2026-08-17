@@ -30,6 +30,12 @@ export type SidebarTab =
   | "elections"
   | "candidate"
   | "registrations"
+  // Espaços reservados para módulos que ainda não recebem dado nenhum: mídia
+  // paga (exportação do gerenciador de anúncios) e redes sociais (engajamento
+  // por lugar). Ficam no tipo desde já para que a barra de abas, o uiBus e o
+  // roteamento tratem os dois como abas de verdade, e não como caso especial.
+  | "ads"
+  | "social"
   | "spectrum"
   | "polling"
   | "selection"

@@ -25,6 +25,7 @@ import {
   getPollingMetricShortLabel,
   getPollingRangeLabel,
   getPollingValueRatio,
+  POLLING_METRICS,
   POLLING_SHARE_COLORS,
   POLLING_SHARE_THRESHOLDS,
   sanitizePollingState,
@@ -32,8 +33,10 @@ import {
 import { buildPartySpectrumIndex, SPECTRUM_COLORS } from "../../src/utils/spectrum.ts";
 
 /**
- * MÉTRICA DA CAMADA SUBMUNICIPAL: índice ideológico (Prefeito/Vereador) ou
- * percentual de voto de uma sigla (Presidente/Governador).
+ * MÉTRICA DA CAMADA SUBMUNICIPAL: índice ideológico 0–10 (padrão) ou
+ * percentual de voto de uma sigla — as duas disponíveis em QUALQUER cargo, por
+ * escolha de quem olha. Quem carrega a escolha é a sigla em foco: sem sigla, o
+ * índice; com sigla, o percentual dela.
  *
  * Payload 100% sintético e inline: estes testes NUNCA são pulados por falta de
  * snapshot, porque não dependem de nenhum arquivo gerado pelo ETL. O único
@@ -174,14 +177,22 @@ function buildModel(
   });
 }
 
-test("cargo de Prefeito e de Vereador mantém a métrica de índice ideológico", () => {
-  assert.equal(getPollingMetric(prefeito), "indice");
-  assert.equal(getPollingMetric(vereador), "indice");
+test("todo cargo abre no índice ideológico, inclusive Presidente e Governador", () => {
+  // A medida não olha o cargo: olha se existe sigla em foco.
+  assert.equal(getPollingMetric(null), "indice");
+  assert.equal(getPollingMetric(undefined), "indice");
+  assert.equal(getPollingMetric(""), "indice");
+  // O alternador oferece as duas medidas, com o índice na frente.
+  assert.deepEqual(
+    POLLING_METRICS.map((option) => option.id),
+    ["indice", "votoPartido"],
+  );
 
-  for (const contest of [prefeito, vereador]) {
+  for (const contest of [presidente, governador, prefeito, vereador]) {
+    // Estado padrão = nenhuma sigla escolhida = índice, em qualquer pleito.
     const model = buildModel(contest);
     assert.equal(model.metric, "indice");
-    // Sem métrica de partido não há sigla escolhida nem percentual por unidade.
+    // Sem sigla em foco não há percentual por unidade.
     assert.equal(model.partyCode, "");
     const unit = model.units.find((item) => item.id === escola.id)!;
     assert.equal(unit.partySharePct, null);
@@ -193,21 +204,35 @@ test("cargo de Prefeito e de Vereador mantém a métrica de índice ideológico"
     assert.equal(getPollingMetricColors(model.metric), SPECTRUM_COLORS);
     assert.equal(getPollingMetricShortLabel(model.metric, model.partyCode), "índice 0–10");
     assert.equal(getPollingBandLabel(model.metric, model.thresholds, 0), "Mais à esquerda");
+    // E a explicação da tela é a do espectro, em todos eles.
+    assert.ok(describePollingLayer(model).includes("índice ideológico 0–10"));
+    assert.ok(describePollingScope(model).includes("índice agregado"));
+    // Mesmo medindo o índice, as siglas do pleito continuam listadas: é delas
+    // que o alternador tira a outra medida, em qualquer cargo.
+    assert.deepEqual(
+      model.partyOptions.map((option) => option.code),
+      ["PL", "PT", "XPTO"],
+    );
   }
 });
 
-test("cargo de Presidente e de Governador troca para distribuição de voto", () => {
-  assert.equal(getPollingMetric(presidente), "votoPartido");
-  assert.equal(getPollingMetric(governador), "votoPartido");
-  // Cargo desconhecido cai no lado seguro: percentual, nunca um índice que
-  // ninguém verificou que faz sentido naquela disputa.
-  assert.equal(getPollingMetric({ officeCode: 5 }), "votoPartido");
-  assert.equal(getPollingMetric(null), "indice");
+test("escolher uma sigla troca a medida, também em qualquer cargo", () => {
+  assert.equal(getPollingMetric("PT"), "votoPartido");
 
-  const model = buildModel(presidente);
+  // As duas medidas convivem no MESMO pleito municipal, que antes só tinha o
+  // índice: o alternador não depende do cargo.
+  const vereadorComSigla = buildModel(vereador, { partyCode: "PT" });
+  assert.equal(vereadorComSigla.metric, "votoPartido");
+  assert.equal(vereadorComSigla.partyCode, "PT");
+  assert.equal(
+    vereadorComSigla.units.find((item) => item.id === escola.id)!.value,
+    70,
+  );
+  assert.equal(buildModel(vereador).metric, "indice");
+
+  const model = buildModel(presidente, { partyCode: "PL" });
   assert.equal(model.metric, "votoPartido");
   assert.equal(model.officeName, "Presidente");
-  // Escolha inicial = sigla mais votada do pleito (PL, 1.700 contra 800 do PT).
   assert.equal(model.partyCode, "PL");
   assert.deepEqual(
     model.partyOptions.map((option) => [option.code, option.votes]),
@@ -237,11 +262,18 @@ test("cargo de Presidente e de Governador troca para distribuição de voto", ()
   assert.equal(unit.value, 30);
   assert.ok(Math.abs((unit.index as number) - 4.516) < 1e-9);
 
-  // A explicação da tela muda com o cargo e diz por que não há índice.
+  // A explicação da tela muda com a MEDIDA, não com o cargo: fala da sigla,
+  // diz que ali se lê distribuição de voto e lembra que o índice continua
+  // disponível — nada de afirmar que este cargo não tem índice.
   const texto = describePollingLayer(model);
-  assert.ok(!texto.includes("índice ideológico 0–10"));
   assert.ok(texto.includes("PL"));
-  assert.ok(texto.includes("Presidente"));
+  assert.ok(texto.includes("distribuição de voto"));
+  assert.ok(texto.includes("continua a um clique"));
+  assert.ok(!texto.includes("Presidente"));
+  assert.ok(!texto.includes("poucos nomes"));
+  assert.ok(
+    describePollingLayer(buildModel(presidente)).includes("índice ideológico 0–10"),
+  );
   assert.ok(describePollingLayer(buildModel(vereador)).includes("índice ideológico 0–10"));
 });
 
@@ -373,18 +405,28 @@ test("sigla escolhida sobrevive à troca de pleito, e some quando não tem voto"
   const inexistente = buildModel(presidente, { partyCode: "PSOL" });
   assert.equal(inexistente.partyCode, "PL");
   assert.ok(inexistente.filteredUnits.length > 0);
-  // Em cargo de índice a escolha guardada é simplesmente ignorada.
-  assert.equal(buildModel(vereador, { partyCode: "PT" }).partyCode, "");
+  // Em pleito municipal a escolha vale igual: ela não é mais ignorada por
+  // causa do cargo.
+  assert.equal(buildModel(vereador, { partyCode: "PT" }).partyCode, "PT");
+  // Voltar para o índice é apagar a sigla — e nenhuma sigla é reposta por
+  // baixo dos panos.
+  const semSigla = buildModel(presidente, { partyCode: null });
+  assert.equal(semSigla.metric, "indice");
+  assert.equal(semSigla.partyCode, "");
+  assert.ok(semSigla.filteredUnits.length > 0);
 
-  // Sem arquivo de votos não há sigla nenhuma: nada é inventado.
+  // Sem arquivo de votos não há sigla nenhuma: nada é inventado. A escolha de
+  // medida é respeitada mesmo assim — a camada diz "sem voto apurado", não
+  // troca de medida sozinha.
   const semVotos = buildPollingModel({
     places,
     votes: null,
     index,
     registry,
     contest: presidente,
-    state: buildState({ contestId: presidente.id }),
+    state: buildState({ contestId: presidente.id, partyCode: "PT" }),
   });
+  assert.equal(semVotos.metric, "votoPartido");
   assert.deepEqual(semVotos.partyOptions, []);
   assert.equal(semVotos.partyCode, "");
   assert.ok(semVotos.units.every((item) => item.value === null));
@@ -394,7 +436,12 @@ test("sigla escolhida sobrevive à troca de pleito, e some quando não tem voto"
 });
 
 test("estado guarda a sigla escolhida e descarta lixo", () => {
+  // Sem sigla guardada, a camada abre no índice: é o padrão da plataforma.
   assert.equal(getDefaultPollingState([presidente]).partyCode, null);
+  assert.equal(
+    getPollingMetric(getDefaultPollingState([presidente]).partyCode),
+    "indice",
+  );
   assert.equal(
     sanitizePollingState({ partyCode: "pt" }, [presidente]).partyCode,
     "PT",
@@ -431,10 +478,21 @@ test("CSV e PNG saem coerentes com a métrica ativa", () => {
     getPollingCsvFilename(model),
     "locais-voto-pt-rs-2022-1-1.csv",
   );
-  // Cargo de índice mantém exatamente o arquivo de antes.
+  // Sem sigla, o arquivo é o de sempre — em pleito municipal…
   assert.equal(
     getPollingCsvFilename(buildModel(vereador)),
     "locais-votacao-rs-2024-13-1.csv",
+  );
+  // …e também em Presidente, que voltou a ter índice: o CSV traz de novo as
+  // colunas de espectro que o cargo tinha perdido.
+  const csvPresidenteIndice = createPollingCsv(buildModel(presidente));
+  const cabecalhoIndice = csvPresidenteIndice.trim().split("\n")[0];
+  assert.ok(cabecalhoIndice.includes("indice_ideologico"));
+  assert.ok(cabecalhoIndice.includes("esquerda_pct"));
+  assert.ok(!cabecalhoIndice.includes("percentual_da_sigla"));
+  assert.equal(
+    getPollingCsvFilename(buildModel(presidente)),
+    "locais-votacao-rs-2022-1-1.csv",
   );
 
   const png = buildPollingMapExport(model);
@@ -451,10 +509,14 @@ test("CSV e PNG saem coerentes com a métrica ativa", () => {
   const goiania = png.styleById.get("5208707")!;
   assert.ok(goiania.valueLabel.endsWith("%"));
 
-  const pngIndice = buildPollingMapExport(buildModel(vereador));
-  assert.equal(pngIndice.title, "Locais de votação · índice ideológico");
-  assert.deepEqual(
-    pngIndice.legend.slice(0, 5).map((item) => item.color),
-    [...SPECTRUM_COLORS],
-  );
+  // O PNG do índice sai igual em qualquer cargo, com a paleta do espectro.
+  for (const contest of [vereador, presidente]) {
+    const pngIndice = buildPollingMapExport(buildModel(contest));
+    assert.equal(pngIndice.title, "Locais de votação · índice ideológico");
+    assert.ok(pngIndice.subtitle.includes("onda"));
+    assert.deepEqual(
+      pngIndice.legend.slice(0, 5).map((item) => item.color),
+      [...SPECTRUM_COLORS],
+    );
+  }
 });

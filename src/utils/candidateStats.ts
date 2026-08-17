@@ -1,6 +1,7 @@
 import type {
   CandidateContest,
   CandidateDataset,
+  CandidateMunicipioDestaque,
   CareerBest,
   CareerOverview,
   ContestGroups,
@@ -192,6 +193,59 @@ export function getMunicipalScope(
     posicaoNoMunicipio: municipio.posicaoNoMunicipio,
     candidaturasComVoto: municipio.candidaturasComVoto,
   };
+}
+
+/**
+ * O que ela fez num município, na eleição mais recente de CADA universo.
+ *
+ * Devolve no máximo dois destaques — um municipal (prefeita/vereadora) e um
+ * estadual/federal —, do mais recente para o mais antigo. Em quase todo
+ * município de Goiás sai um só, porque prefeitura ela só disputou em Goiânia;
+ * lá saem os dois.
+ *
+ * Os dois universos são apurados separados de propósito: 168 mil votos para
+ * prefeita de Goiânia e 96 mil para deputada federal são disputas de regras,
+ * eleitorados e adversários diferentes. Somá-los daria um número que não
+ * existe, e escolher "o maior" esconderia metade da história.
+ *
+ * Município sem voto apurado dela devolve lista vazia — e a interface tem de
+ * dizer isso, nunca desenhar zero.
+ */
+export function getMunicipioDestaques(
+  dataset: CandidateDataset,
+  ibgeCode: string,
+): CandidateMunicipioDestaque[] {
+  const maisRecentePorUniverso = new Map<string, CandidateMunicipioDestaque>();
+
+  // Do mais recente para o mais antigo: o primeiro de cada universo vence.
+  const ordenados = [...dataset.contests].sort(
+    (a, b) => b.electionYear - a.electionYear || b.round - a.round,
+  );
+
+  for (const contest of ordenados) {
+    const municipio = contest.municipios[ibgeCode];
+    if (!municipio || municipio.votos <= 0) continue;
+    const municipal = isMunicipalContest(contest);
+    const universo = municipal ? "municipal" : "estadual";
+    if (maisRecentePorUniverso.has(universo)) continue;
+    maisRecentePorUniverso.set(universo, {
+      contestId: contest.id,
+      electionYear: contest.electionYear,
+      officeCode: contest.officeCode,
+      officeName: contest.officeName,
+      officeShort: getOfficeShort(contest.officeCode, contest.officeName),
+      round: contest.round,
+      municipal,
+      votos: municipio.votos,
+      percentualValidos: municipio.percentualValidos,
+      posicaoNoMunicipio: municipio.posicaoNoMunicipio,
+      candidaturasComVoto: municipio.candidaturasComVoto,
+    });
+  }
+
+  return [...maisRecentePorUniverso.values()].sort(
+    (a, b) => b.electionYear - a.electionYear || b.round - a.round,
+  );
 }
 
 /* -------------------------------------------------------------------------

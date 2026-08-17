@@ -295,9 +295,9 @@ export function buildSpectrumMapExport(model: SpectrumModel): MapExportData {
  * continuam só na tela.
  */
 export function buildPollingMapExport(model: PollingModel): MapExportData {
-  // O PNG carrega a MESMA métrica da tela: em Presidente e Governador o mapa
-  // exportado é de percentual de uma sigla, com a rampa sequencial e sem
-  // nenhuma palavra sobre índice ideológico.
+  // O PNG carrega a MESMA medida da tela, seja qual for o pleito: com uma
+  // sigla em foco o mapa exportado é de percentual, com a rampa sequencial e
+  // sem nenhuma palavra sobre índice ideológico; sem sigla, é o índice.
   const isPartyShare = model.metric === "votoPartido";
   const colors = getPollingMetricColors(model.metric);
   const focusedIds = new Set(

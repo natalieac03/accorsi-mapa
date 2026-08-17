@@ -41,9 +41,10 @@ const index = buildPartySpectrumIndex(registry);
 const PT_SCORE = 2.68;
 const PL_SCORE = 8.8;
 
-// Vereador: cargo em que o índice ideológico continua sendo a métrica da
-// camada (muitas siglas na urna). A onda de 2024 é a de 2022 no registro, então
-// as notas usadas à mão acima continuam valendo.
+// Vereador só para dar um pleito ao modelo: a métrica não vem do cargo. Como
+// nenhum teste deste arquivo escolhe sigla, a camada fica no índice ideológico,
+// que é o padrão. A onda de 2024 é a de 2022 no registro, então as notas usadas
+// à mão acima continuam valendo.
 const contest: SpectrumSourceContest = {
   id: "parties:2024-13-1",
   electionYear: 2024,

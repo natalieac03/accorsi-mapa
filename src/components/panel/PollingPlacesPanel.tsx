@@ -17,6 +17,7 @@ import { useState } from "react";
 import type { AnalysisBand, AnalysisSortDirection } from "../../types/analysis";
 import type {
   PollingDataStatus,
+  PollingMetric,
   PollingModel,
   PollingPlacesMetadata,
   PollingState,
@@ -50,6 +51,7 @@ import {
   getPollingRangeLabel,
   getPollingUnitLabel,
   getPollingValueRatio,
+  POLLING_METRICS,
   POLLING_VIEW_MODES,
 } from "../../utils/pollingPlaces";
 import {
@@ -108,6 +110,10 @@ export function PollingPlacesPanel({
 }: PollingPlacesPanelProps) {
   const [showAllRanking, setShowAllRanking] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
+  // Última sigla olhada, para o alternador devolver a MESMA medida quando se
+  // volta do índice. Se ela não tiver voto no pleito atual, o modelo cai
+  // sozinho na mais votada — aqui não se inventa sigla nenhuma.
+  const [lastPartyCode, setLastPartyCode] = useState("");
 
   const loading = placesStatus === "loading" || votesStatus === "loading";
   const placesMissing = placesStatus === "missing" || placesStatus === "error";
@@ -122,14 +128,31 @@ export function PollingPlacesPanel({
   const unitLabel = getPollingUnitLabel(model.viewMode);
   const viewMode = POLLING_VIEW_MODES.find((item) => item.id === model.viewMode);
   const scopeName = model.municipalityName ?? "Goiás";
-  // A métrica sai do cargo do pleito: Presidente e Governador nunca têm
-  // índice ideológico, Prefeito e Vereador nunca têm seletor de sigla.
+  // A medida é escolha de quem olha e vale para todo pleito: o índice
+  // ideológico é o padrão, o percentual de uma sigla é a outra opção do
+  // alternador. Escolher uma sigla É escolher a segunda medida.
   const isPartyShare = model.metric === "votoPartido";
   const metricShortLabel = getPollingMetricShortLabel(
     model.metric,
     model.partyCode,
   );
   const bandColors = getPollingMetricColors(model.metric);
+  // Sem nenhuma sigla com voto apurado não há percentual possível: o botão
+  // fica desabilitado em vez de levar a uma tela vazia.
+  const canUsePartyShare = model.partyOptions.length > 0;
+
+  const handleMetricChange = (metric: PollingMetric) => {
+    if (metric === model.metric) return;
+    if (metric === "indice") {
+      if (model.partyCode) setLastPartyCode(model.partyCode);
+      onPartyChange("");
+    } else {
+      const code = lastPartyCode || model.partyOptions[0]?.code || "";
+      if (!code) return;
+      onPartyChange(code);
+    }
+    setShowAllRanking(false);
+  };
 
   const handleExport = () => {
     if (model.filteredUnits.length === 0) return;
@@ -232,10 +255,39 @@ export function PollingPlacesPanel({
         </select>
         <small>
           {isPartyShare
-            ? `${model.officeName || "Cargo majoritário"}: poucos nomes na urna, então a camada mostra distribuição de voto, não índice ideológico.`
+            ? `${model.officeName || "Pleito"} · votos apurados local a local, sigla a sigla.`
             : `Onda ${model.waveYear} do survey · mesmas notas de partido da camada de espectro.`}
         </small>
       </label>
+
+      <div
+        className="registration-filter-grid"
+        role="group"
+        aria-label="Medida da camada"
+      >
+        {POLLING_METRICS.map((option) => (
+          <button
+            type="button"
+            key={option.id}
+            className={model.metric === option.id ? "registration-filter--active" : ""}
+            aria-pressed={model.metric === option.id}
+            disabled={
+              placesMissing || (option.id === "votoPartido" && !canUsePartyShare)
+            }
+            onClick={() => handleMetricChange(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <small className="registration-metric-help">
+        {POLLING_METRICS.find((option) => option.id === model.metric)?.description}{" "}
+        As duas medidas valem para qualquer pleito desta lista; o índice é o
+        padrão da camada.
+        {!canUsePartyShare
+          ? " Sem voto apurado neste pleito, o percentual por sigla fica indisponível."
+          : ""}
+      </small>
 
       {isPartyShare && (
         <label className="analysis-metric-control">
@@ -247,6 +299,7 @@ export function PollingPlacesPanel({
             value={model.partyCode}
             disabled={placesMissing || model.partyOptions.length === 0}
             onChange={(event) => {
+              setLastPartyCode(event.target.value);
               onPartyChange(event.target.value);
               setShowAllRanking(false);
             }}

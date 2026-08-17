@@ -125,12 +125,15 @@ export function usePollingPlaces(
     setState((current) => ({ ...current, viewMode }));
   }, []);
 
-  // A sigla escolhida é guardada como escolha do usuário e sobrevive à troca
+  // A sigla escolhida é a MEDIDA da camada: sigla vazia significa "volte para
+  // o índice ideológico", e por isso é normalizada para null — assim o estado
+  // guardado tem uma forma só para a mesma coisa. A escolha sobrevive à troca
   // de pleito; quem decide se ela ainda vale é o modelo, que só aceita sigla
   // com voto apurado no pleito atual.
   const setPartyCode = useCallback((partyCode: string | null) => {
+    const next = partyCode ? partyCode : null;
     setState((current) =>
-      current.partyCode === partyCode ? current : { ...current, partyCode },
+      current.partyCode === next ? current : { ...current, partyCode: next },
     );
   }, []);
 

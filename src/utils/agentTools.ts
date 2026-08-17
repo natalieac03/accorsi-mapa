@@ -1000,7 +1000,8 @@ async function executarEspectroSubmunicipal(
       viewMode: unidade === "bairro" ? "neighborhoods" : "places",
       municipalityId: municipio.ibgeCode,
       // A ferramenta reporta o índice ideológico, nunca o percentual de uma
-      // sigla: sem sigla escolhida o modelo não muda nada do que ela lê.
+      // sigla: sem sigla escolhida o modelo mede o índice em QUALQUER cargo,
+      // inclusive Presidente e Governador.
       partyCode: null,
       activeBands: [...ALL_ANALYSIS_BANDS],
       sortDirection: direcaoDaOrdem(ordem),

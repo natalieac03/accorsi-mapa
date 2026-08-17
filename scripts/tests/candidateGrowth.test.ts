@@ -9,6 +9,7 @@ import {
   buildGrowthModel,
   createGrowthCsv,
   getMunicipalScope,
+  getMunicipioDestaques,
 } from "../../src/utils/candidateStats.ts";
 
 /**
@@ -346,4 +347,83 @@ test("trajetória entrega rótulo de vitrine, mas guarda o resultado cru", async
     assert.equal(ponto.resultadoLabel, ""); // tela limpa
     assert.equal(ponto.resultadoShort, "");
   }
+});
+
+/* ------------------------------------------- destaques por município ------ */
+
+/** Trajetória completa: 3 de prefeita (só Goiânia) + 2 legislativas (estado). */
+function datasetCompleto(): CandidateDataset {
+  return {
+    metadata: {
+      schemaVersion: 1,
+      state: "GO",
+      slug: "adriana-accorsi",
+      pleitos: 5,
+      anos: [2016, 2018, 2020, 2022, 2024],
+      cargos: ["Prefeito", "Deputado Estadual", "Deputado Federal"],
+    },
+    contests: [
+      ...datasetMunicipal().contests,
+      ...datasetFederal().contests,
+    ],
+  };
+}
+
+test("Goiânia mostra os dois universos: a última de prefeita e a última legislativa", () => {
+  const destaques = getMunicipioDestaques(datasetCompleto(), GOIANIA);
+  assert.equal(destaques.length, 2);
+
+  // Mais recente primeiro: prefeita 2024 antes de deputada federal 2022.
+  assert.equal(destaques[0].electionYear, 2024);
+  assert.equal(destaques[0].officeName, "Prefeito");
+  assert.equal(destaques[0].municipal, true);
+  assert.equal(destaques[0].votos, 168145);
+
+  assert.equal(destaques[1].electionYear, 2022);
+  assert.equal(destaques[1].officeName, "Deputado Federal");
+  assert.equal(destaques[1].municipal, false);
+  assert.equal(destaques[1].votos, 70000);
+
+  // O que NÃO pode acontecer: virar um total só. São disputas diferentes.
+  const soma = destaques.reduce((total, item) => total + item.votos, 0);
+  assert.notEqual(soma, destaques[0].votos);
+});
+
+test("município comum traz só a última legislativa, sem inventar pleito municipal", () => {
+  const destaques = getMunicipioDestaques(datasetCompleto(), ANAPOLIS);
+  assert.equal(destaques.length, 1);
+  assert.equal(destaques[0].municipal, false);
+  assert.equal(destaques[0].electionYear, 2022);
+  assert.equal(destaques[0].votos, 26714);
+});
+
+test("município sem voto apurado dela não vira cartão de zero", () => {
+  // 5200050 não aparece em pleito nenhum do dataset.
+  assert.deepEqual(getMunicipioDestaques(datasetCompleto(), "5200050"), []);
+});
+
+test("universo mais antigo não substitui o mais recente do mesmo universo", () => {
+  const destaques = getMunicipioDestaques(datasetCompleto(), GOIANIA);
+  const anos = destaques.map((item) => item.electionYear);
+  // 2016 e 2020 (prefeita) e 2018 (estadual) existem no dataset e NÃO podem
+  // aparecer: cada universo entrega só a eleição mais recente.
+  assert.equal(anos.includes(2016), false);
+  assert.equal(anos.includes(2020), false);
+  assert.equal(anos.includes(2018), false);
+});
+
+test("trajetória pendente não produz destaque nenhum", () => {
+  const vazio: CandidateDataset = {
+    metadata: {
+      schemaVersion: 1,
+      state: "GO",
+      slug: "adriana-accorsi",
+      status: "pendente",
+      pleitos: 0,
+      anos: [],
+      cargos: [],
+    },
+    contests: [],
+  };
+  assert.deepEqual(getMunicipioDestaques(vazio, GOIANIA), []);
 });

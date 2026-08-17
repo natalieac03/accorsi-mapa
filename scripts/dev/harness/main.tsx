@@ -22,6 +22,7 @@ import socioeconomicJson from "@src/data/socioeconomic-go.json";
 import { DataAgentChat } from "@src/components/DataAgentChat";
 import { LoginScreen } from "@src/components/auth/LoginScreen";
 import { StatsWindow } from "@src/components/stats/StatsWindow";
+import { CandidateMunicipioCard } from "@src/components/panel/CandidateMunicipioCard";
 import "@src/index.css";
 
 const vista = new URLSearchParams(window.location.search).get("view") ?? "stats";
@@ -92,9 +93,28 @@ function VistaLogin() {
   );
 }
 
+/* Cartão da candidata no município clicado, nos dois casos que importam:
+   Goiânia (dois universos de disputa) e um município comum (um só). */
+function VistaMunicipio() {
+  return (
+    <div className="app">
+      <aside className="sidebar" style={{ padding: 18, overflow: "auto" }}>
+        <span className="panel-eyebrow">Município selecionado</span>
+        <h2 style={{ margin: "2px 0 14px" }}>Goiânia</h2>
+        <CandidateMunicipioCard ibgeCode="5208707" />
+        <hr style={{ margin: "26px 0", border: 0, borderTop: "1px solid #eee" }} />
+        <span className="panel-eyebrow">Município selecionado</span>
+        <h2 style={{ margin: "2px 0 14px" }}>Anápolis</h2>
+        <CandidateMunicipioCard ibgeCode="5201108" />
+      </aside>
+    </div>
+  );
+}
+
 function Raiz() {
   if (vista === "login") return <VistaLogin />;
   if (vista === "chat") return <VistaChat />;
+  if (vista === "municipio") return <VistaMunicipio />;
   return <StatsWindow onClose={() => {}} />;
 }
 

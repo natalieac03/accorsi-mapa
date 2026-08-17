@@ -242,6 +242,31 @@ export type MunicipalScope = {
   candidaturasComVoto: number;
 };
 
+/**
+ * O desempenho dela num município, na eleição mais recente de cada universo.
+ *
+ * É o que aparece no cartão do município clicado no mapa. Um município comum
+ * traz um só: a última disputa estadual/federal em que ele apurou voto dela.
+ * Goiânia traz dois, porque lá ela disputou os dois universos — a prefeitura e
+ * uma cadeira — e esses números não se somam nem se comparam entre si.
+ */
+export type CandidateMunicipioDestaque = {
+  contestId: string;
+  electionYear: number;
+  officeCode: number;
+  officeName: string;
+  officeShort: string;
+  round: number;
+  /** true para Prefeito/Vereador — muda a régua de leitura do cartão. */
+  municipal: boolean;
+  votos: number;
+  /** % dos válidos apurados no município; null sem denominador. */
+  percentualValidos: number | null;
+  /** Colocação dela naquele município; null quando não apurada. */
+  posicaoNoMunicipio: number | null;
+  candidaturasComVoto: number;
+};
+
 /* -------------------------------------------------------------------------
  * Visão "Geral": crescimento ao longo das eleições
  *

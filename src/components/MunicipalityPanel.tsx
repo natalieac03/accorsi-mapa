@@ -1,4 +1,5 @@
 import {
+  BadgeDollarSign,
   BarChart3,
   GitCompareArrows,
   LayoutDashboard,
@@ -6,6 +7,7 @@ import {
   ScanLine,
   Scale,
   School,
+  Share2,
   TrendingUp,
   UsersRound,
   Vote,
@@ -73,6 +75,8 @@ import { SelectionPanel } from "./panel/SelectionPanel";
 import { ElectionHistoryPanel } from "./panel/ElectionHistoryPanel";
 import { CampaignRegistrationsPanel } from "./panel/CampaignRegistrationsPanel";
 import { CandidatePanel } from "./panel/CandidatePanel";
+import { PaidMediaPanel } from "./panel/PaidMediaPanel";
+import { SocialMediaPanel } from "./panel/SocialMediaPanel";
 import { SpectrumPanel } from "./panel/SpectrumPanel";
 import { PollingPlacesPanel } from "./panel/PollingPlacesPanel";
 import type { MapExportShape } from "../utils/mapExport";
@@ -195,6 +199,10 @@ const tabs: SidebarTabDefinition[] = [
   { id: "elections", label: "Eleições", icon: Vote },
   { id: "candidate", label: "Accorsi", icon: TrendingUp },
   { id: "registrations", label: "Cadastros", icon: UsersRound },
+  // Anúncios e Redes ficam junto de Cadastros porque são as três abas de
+  // operação da campanha; as duas ainda não têm dado e dizem isso na cara.
+  { id: "ads", label: "Anúncios", icon: BadgeDollarSign },
+  { id: "social", label: "Redes", icon: Share2 },
   { id: "spectrum", label: "Espectro", icon: Scale },
   { id: "polling", label: "Locais", icon: School },
   { id: "selection", label: "Seleção", icon: ScanLine },
@@ -682,6 +690,12 @@ export function MunicipalityPanel({
         )}
 
         {activeTab === "candidate" && <CandidatePanel />}
+
+        {/* Anúncios e Redes não pedem camada ao mapa nem recebem props: são
+            módulos ainda sem fonte de dado, e o painel só explica isso. */}
+        {activeTab === "ads" && <PaidMediaPanel />}
+
+        {activeTab === "social" && <SocialMediaPanel />}
 
         {activeTab === "registrations" && (
           <CampaignRegistrationsPanel

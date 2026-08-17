@@ -916,11 +916,16 @@ select:focus-visible {
   background: rgba(255, 255, 255, 0.93);
 }
 
+/* Onze abas em duas fileiras: seis em cima, cinco embaixo. As sete colunas do
+   desenho de quando eram nove abas davam 41px por botão, e "Cadastros" (46px),
+   "Comparar" (44px) e "Anúncios" (43px) já transbordavam o próprio botão.
+   Seis colunas dão 48px, cabem todos os rótulos inteiros e continuam sendo
+   duas fileiras — a barra não cresce em altura. */
 .sidebar-tabs {
   min-width: 0;
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 2px;
 }
 
@@ -1353,6 +1358,41 @@ select:focus-visible {
   margin-top: 2px;
   color: #201b1a;
   font-size: 12px;
+  font-weight: 600;
+}
+
+/* Lista dos módulos que ainda não têm dado (abas Anúncios e Redes). É só
+   texto de propósito: qualquer número, barra ou reticência de gráfico aqui
+   seria lido como medição, e não há nada medido nesses dois painéis. */
+.pending-module-list {
+  margin: 11px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+
+.pending-module-list li {
+  position: relative;
+  padding-left: 14px;
+  color: #554e4c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.pending-module-list li::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #c1121f;
+}
+
+.pending-module-list strong {
+  color: #201b1a;
   font-weight: 600;
 }
 
@@ -5762,4 +5802,104 @@ select:focus-visible {
   stroke: rgba(32, 26, 25, 0.28);
   stroke-width: 1;
   stroke-dasharray: 2 3;
+}
+
+/* Cabeçalho do agente sem título: sobraram só os botões, então ele encolhe e
+   encosta as ações à direita, em vez de reservar altura para um texto que não
+   existe mais. */
+.agent-panel__header--enxuto {
+  justify-content: flex-end;
+  padding: 8px 10px 6px;
+}
+
+/* =========================================================================
+   Cartão da candidata no município clicado
+   ========================================================================= */
+
+.candidate-municipio-section {
+  margin-top: 18px;
+}
+
+.candidate-municipio-card {
+  margin-top: 9px;
+  padding: 13px 14px;
+  border: 1px solid rgba(193, 18, 31, 0.22);
+  border-radius: 12px;
+  background: rgba(193, 18, 31, 0.045);
+}
+
+.candidate-municipio-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.candidate-municipio-card__head span {
+  color: #97101a;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.candidate-municipio-card__head b {
+  color: #6e6560;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.candidate-municipio-card__votos {
+  margin-top: 6px;
+  display: block;
+  color: #201b1a;
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.candidate-municipio-card > small {
+  color: #6e6560;
+  font-size: 10.5px;
+}
+
+.candidate-municipio-card__linha {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(193, 18, 31, 0.16);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.candidate-municipio-card__linha span {
+  display: block;
+  color: #6e6560;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.candidate-municipio-card__linha b {
+  display: block;
+  margin-top: 3px;
+  color: #201b1a;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.candidate-municipio-card__linha small {
+  display: block;
+  margin-top: 2px;
+  color: #8a817c;
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+/* Aparece só quando há dois cartões: o aviso de que não se somam. */
+.candidate-municipio-nota {
+  margin: 8px 0 0;
+  color: #6e6560;
+  font-size: 10.5px;
+  line-height: 1.5;
 }

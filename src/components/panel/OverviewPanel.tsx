@@ -38,6 +38,7 @@ import {
 } from "../../utils/analysis";
 import { formatSourceRetrievalDate } from "../../utils/socioeconomic";
 import { getTopElectoratePercent } from "../../utils/workspace";
+import { CandidateMunicipioCard } from "./CandidateMunicipioCard";
 
 type OverviewPanelProps = {
   metadata: ElectorateMetadata;
@@ -253,6 +254,10 @@ export function OverviewPanel({
           <strong>{metrics.zoneCount}</strong>
         </div>
       </div>
+
+      {/* Logo depois do eleitorado: quem clica num município quer saber
+          quantos eleitores tem ali e como a candidata foi ali. */}
+      <CandidateMunicipioCard ibgeCode={selected.id} />
 
       <section className="socioeconomic-section" aria-label="Perfil socioeconômico do IBGE">
         <div className="socioeconomic-heading">

@@ -51,12 +51,12 @@ import {
  * nulos do projeto: unidade sem nenhum voto com nota fica com índice `null`,
  * fora do ranking e das faixas — nunca contada como zero.
  *
- * DUAS MÉTRICAS, UMA DERIVADA DO CARGO: em Prefeito e Vereador a unidade é
- * medida pelo índice ideológico; em Presidente e Governador, pelo percentual
- * de voto de uma sigla escolhida. O modelo continua calculando o índice nos
- * dois casos (o agente de dados e o agregado municipal dependem dele), mas o
- * que vira cor, faixa, ranking e CSV é `unit.value` — o valor da métrica
- * ativa. Ver `getPollingMetric`.
+ * DUAS MÉTRICAS, ESCOLHA DE QUEM OLHA: a unidade pode ser medida pelo índice
+ * ideológico (padrão, em qualquer cargo) ou pelo percentual de voto de uma
+ * sigla escolhida (também em qualquer cargo). O modelo continua calculando o
+ * índice nos dois casos (o agente de dados e o agregado municipal dependem
+ * dele), mas o que vira cor, faixa, ranking e CSV é `unit.value` — o valor da
+ * métrica ativa. Ver `getPollingMetric`.
  *
  * GANCHO DE MALHA DE BAIRROS: não existe polígono de bairro no projeto. Se um
  * dia existir `src/data/neighborhoods-{ibge}.geojson`, a camada deve pintar o
@@ -86,32 +86,45 @@ export const POLLING_VIEW_MODES: Array<{
 ];
 
 /**
- * MÉTRICA DA CAMADA, DERIVADA DO CARGO — nunca um botão solto.
+ * MÉTRICA DA CAMADA, ESCOLHA DE QUEM OLHA — em todo pleito, sem exceção.
  *
- * A régua ideológica só diz alguma coisa quando muitas siglas disputam a mesma
- * urna: Prefeito (11) e Vereador (13), onde a média ponderada das notas dos
- * partidos resume um leque real de escolhas. Em Presidente (1) e Governador
- * (3) a cédula tem dois ou três nomes; uma "média de espectro" ali só
- * reescreveria "ganhou fulano" numa escala de 0 a 10 e daria falsa
- * sofisticação a um dado que é, na verdade, distribuição de voto.
+ * O índice ideológico 0–10 é o PADRÃO e existe em qualquer cargo: é a régua
+ * histórica da plataforma, a mesma da camada de espectro, e é o que aparece ao
+ * abrir a camada. O percentual de voto de uma sigla é a segunda medida, também
+ * disponível em qualquer cargo, para quem quer ler distribuição de voto em vez
+ * de posição no espectro. Nenhum cargo perde uma das duas: cabe a quem olha
+ * decidir qual pergunta está fazendo.
  *
- * A lista abaixo é de exceções ao padrão: qualquer cargo que não esteja nela
- * cai em `votoPartido`. O padrão é o lado seguro — mostrar o percentual de uma
- * sigla é sempre verdadeiro, enquanto afirmar um índice ideológico exige que a
- * disputa realmente comporte um.
+ * A escolha se expressa pela SIGLA EM FOCO, e não por um campo separado: sem
+ * sigla escolhida a camada mede o índice; com uma sigla escolhida, mede o
+ * percentual dela. Um estado só, que não tem como divergir de si mesmo — e o
+ * alternador da tela é exatamente isto: escolher uma sigla ou nenhuma.
  */
-export const POLLING_INDEX_OFFICE_CODES = [11, 13];
-
 export function getPollingMetric(
-  contest: Pick<SpectrumSourceContest, "officeCode"> | null,
+  partyCode: string | null | undefined,
 ): PollingMetric {
-  // Sem pleito não há o que medir; o modelo sai vazio de qualquer jeito e a
-  // camada mostra o estado de dados pendentes.
-  if (!contest) return "indice";
-  return POLLING_INDEX_OFFICE_CODES.includes(contest.officeCode)
-    ? "indice"
-    : "votoPartido";
+  return partyCode ? "votoPartido" : "indice";
 }
+
+/** As duas medidas do alternador, na ordem em que aparecem na tela. */
+export const POLLING_METRICS: Array<{
+  id: PollingMetric;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "indice",
+    label: "Índice ideológico",
+    description:
+      "Média ponderada 0–10 das notas dos partidos votados em cada unidade, na mesma régua da camada de espectro.",
+  },
+  {
+    id: "votoPartido",
+    label: "% de voto por sigla",
+    description:
+      "Quanto do voto apurado em cada unidade foi para uma sigla escolhida, numa escala fixa de 0 a 100%.",
+  },
+];
 
 /**
  * Rampa SEQUENCIAL de um tom só para o percentual de UMA sigla: claro = pouco
@@ -212,7 +225,8 @@ export function getDefaultPollingState(
     contestId: contests[0]?.id ?? "",
     viewMode: "places",
     municipalityId: null,
-    // null = sem escolha explícita; o modelo assume a sigla mais votada.
+    // null = nenhuma sigla em foco, ou seja, a camada abre no índice
+    // ideológico — o comportamento histórico da plataforma.
     partyCode: null,
     activeBands: [...ALL_ANALYSIS_BANDS],
     sortDirection: "desc",
@@ -532,7 +546,10 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
   const waveYear = contest
     ? resolveWaveYear(registry, contest.electionYear)
     : registry.metadata.waves[0].year;
-  const metric = getPollingMetric(contest);
+  // A métrica sai da ESCOLHA guardada no estado, não do cargo do pleito: sem
+  // sigla em foco a camada mede o índice ideológico, em Presidente, Governador
+  // ou qualquer outro cargo.
+  const metric = getPollingMetric(state.partyCode);
   const thresholds = getPollingThresholds(metric, registry);
   const votesByPlace = votes ?? {};
 
@@ -558,9 +575,9 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
     .sort(
       (a, b) => b.votes - a.votes || a.code.localeCompare(b.code, "pt-BR"),
     );
-  // Escolha inicial: a sigla mais votada do pleito. Uma escolha anterior que
-  // não tem voto apurado aqui (outro pleito, outro cargo) não vale como filtro
-  // vazio — ela simplesmente cede lugar ao padrão.
+  // Na métrica de sigla, uma escolha que não tem voto apurado aqui (outro
+  // pleito, outro cargo) não vale como filtro vazio — ela cede lugar à sigla
+  // mais votada do pleito, para o mapa não ficar inteiro sem valor.
   const partyCode =
     metric === "votoPartido"
       ? partyOptions.find((option) => option.code === state.partyCode)?.code ??
@@ -972,17 +989,16 @@ export function getPollingUnitLabel(viewMode: PollingViewMode) {
 }
 
 /**
- * O que a camada está mostrando e POR QUE, em uma frase que muda com o cargo
- * do pleito. É aqui que o app explica que Presidente e Governador não têm
- * índice ideológico — a explicação anda junto com o dado, não num rodapé.
+ * O que a camada está mostrando e POR QUE, em uma frase que muda com a MEDIDA
+ * escolhida — nunca com o cargo. A explicação anda junto com o dado, não num
+ * rodapé, e cada texto diz também qual é a outra leitura disponível.
  */
 export function describePollingLayer(model: PollingModel) {
   if (model.metric === "indice") {
-    return "Recorte submunicipal: o índice ideológico 0–10 calculado sobre os votos apurados em cada local de votação, e a soma desses locais por bairro. É a mesma régua da camada de espectro, aplicada abaixo do município.";
+    return "Recorte submunicipal: o índice ideológico 0–10 calculado sobre os votos apurados em cada local de votação, e a soma desses locais por bairro. É a mesma régua da camada de espectro, aplicada abaixo do município. Para ler distribuição de voto em vez de posição no espectro, troque a medida para o percentual de uma sigla.";
   }
-  const office = model.officeName || "este cargo";
   const party = model.partyCode || "uma sigla";
-  return `Recorte submunicipal: quanto do voto apurado em cada local de votação foi para o ${party}, e a soma desses locais por bairro. Em ${office} a disputa tem poucos nomes na urna, então uma média das notas ideológicas dos partidos não descreveria nada — o que existe aqui é distribuição de voto, e é ela que o mapa mostra.`;
+  return `Recorte submunicipal: quanto do voto apurado em cada local de votação foi para o ${party}, e a soma desses locais por bairro. Aqui o mapa mostra distribuição de voto, não posição no espectro — o índice ideológico 0–10 continua a um clique, na outra medida da camada.`;
 }
 
 /**

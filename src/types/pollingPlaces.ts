@@ -70,10 +70,10 @@ export type PollingViewMode = "places" | "neighborhoods";
  * município. `votoPartido` = percentual de voto de UMA sigla sobre os votos
  * apurados da unidade.
  *
- * A escolha NÃO é um botão: ela é derivada do cargo do pleito (ver
- * `getPollingMetric`). Numa disputa majoritária de dois ou três candidatos a
- * média ponderada das notas dos partidos não descreve nada — o que existe ali
- * é distribuição de voto, não posição no espectro.
+ * As duas existem em QUALQUER pleito e a escolha é de quem olha: o índice é o
+ * padrão, o percentual é a segunda opção do alternador. Quem decide é a sigla
+ * em foco (`PollingState.partyCode`), lida por `getPollingMetric` — o cargo do
+ * pleito não entra nessa conta.
  */
 export type PollingMetric = "indice" | "votoPartido";
 
@@ -104,9 +104,11 @@ export type PollingState = {
   /** filtro por município (código IBGE); null = todo o estado */
   municipalityId: string | null;
   /**
-   * Sigla escolhida na métrica de voto por partido. `null` = ainda não houve
-   * escolha explícita e vale o padrão (a sigla mais votada do pleito). A
-   * escolha sobrevive à troca de pleito quando a sigla também tem voto lá.
+   * Sigla em foco — e, por consequência, a MEDIDA da camada. `null` = nenhuma
+   * sigla escolhida, ou seja, índice ideológico (o padrão). Uma sigla aqui
+   * significa "meça o percentual dela"; a escolha sobrevive à troca de pleito
+   * quando a sigla também tem voto lá, e cede lugar à mais votada quando não
+   * tem.
    */
   partyCode: string | null;
   activeBands: AnalysisBand[];
@@ -227,7 +229,7 @@ export type PollingModel = {
   contestId: string;
   contestLabel: string;
   waveYear: number;
-  /** cargo do pleito (TSE): é ele que decide a métrica da camada */
+  /** cargo do pleito (TSE), só para rótulo: não decide nada da métrica */
   officeCode: number;
   officeName: string;
   metric: PollingMetric;
