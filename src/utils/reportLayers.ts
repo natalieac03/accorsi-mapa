@@ -392,6 +392,12 @@ export function buildElectionReport(input: {
 export function buildPollingTable(model: PollingModel): ReportTable {
   const bairros = model.viewMode === "neighborhoods";
   const porPartido = model.metric === "votoPartido";
+  const porCandidata = model.metric === "votosCandidata";
+  const nomeCandidata = model.candidate?.nomeUrna ?? "candidata";
+  const rotuloMedida = getPollingMetricLabel(model.metric, model.partyCode, {
+    rate: model.candidateRate,
+    nome: model.candidate?.nomeUrna,
+  });
   const columns: ReportColumn[] = [
     { header: "Posição", format: "numero" },
     { header: "Município", format: "texto" },
@@ -409,30 +415,46 @@ export function buildPollingTable(model: PollingModel): ReportTable {
         ] satisfies ReportColumn[])),
     { header: "Seções", format: "inteiro", pdfHidden: true },
     { header: "Eleitorado", format: "inteiro" },
-    ...(porPartido
+    ...(porCandidata
       ? ([
-          { header: `Votos ${model.partyCode || "da sigla"}`, format: "inteiro" },
+          { header: `Votos de ${nomeCandidata}`, format: "inteiro" },
           {
-            header: `% ${model.partyCode || "da sigla"}`,
-            format: "percentual",
-            decimals: 1,
+            header: "Votos por 1.000 eleitores",
+            format: "decimal",
+            decimals: 2,
           },
+          { header: "Estava na urna", format: "texto", pdfHidden: true },
         ] satisfies ReportColumn[])
+      : porPartido
+        ? ([
+            { header: `Votos ${model.partyCode || "da sigla"}`, format: "inteiro" },
+            {
+              header: `% ${model.partyCode || "da sigla"}`,
+              format: "percentual",
+              decimals: 1,
+            },
+          ] satisfies ReportColumn[])
+        : ([
+            { header: "Índice ideológico (0–10)", format: "decimal", decimals: 2 },
+            { header: "Esquerda", format: "percentual", decimals: 1 },
+            { header: "Centro", format: "percentual", decimals: 1 },
+            { header: "Direita", format: "percentual", decimals: 1 },
+            { header: "Cobertura", format: "percentual", decimals: 1 },
+          ] satisfies ReportColumn[])),
+    // Numa tabela de voto dela, "votos apurados" (o total da urna, de todas as
+    // candidaturas) e "partido mais votado" descrevem outra pergunta.
+    ...(porCandidata
+      ? []
       : ([
-          { header: "Índice ideológico (0–10)", format: "decimal", decimals: 2 },
-          { header: "Esquerda", format: "percentual", decimals: 1 },
-          { header: "Centro", format: "percentual", decimals: 1 },
-          { header: "Direita", format: "percentual", decimals: 1 },
-          { header: "Cobertura", format: "percentual", decimals: 1 },
+          { header: "Votos apurados", format: "inteiro" },
+          { header: "Partido mais votado", format: "texto" },
         ] satisfies ReportColumn[])),
-    { header: "Votos apurados", format: "inteiro" },
-    { header: "Partido mais votado", format: "texto" },
   ];
   const escopo = model.municipalityName ?? ESTADO.nome;
   return {
     id: "locais",
     title: bairros ? `Bairros ${model.contestId}` : `Locais ${model.contestId}`,
-    subtitle: `${model.contestLabel} · ${escopo} · ${getPollingMetricLabel(model.metric, model.partyCode)}`,
+    subtitle: `${model.contestLabel} · ${escopo} · ${rotuloMedida}`,
     columns,
     rows: model.filteredUnits.map((unit) => [
       unit.rank,
@@ -443,30 +465,46 @@ export function buildPollingTable(model: PollingModel): ReportTable {
         : [unit.name, unit.neighborhood, unit.address, unit.zone]),
       unit.sectionCount,
       unit.electorate,
-      ...(porPartido
-        ? // partyVotes 0 com voto apurado é zero DE VERDADE (a urna apurou e a
-          // sigla não teve voto); o que falta quando não há denominador é o
-          // percentual, e esse sai vazio.
-          [unit.partyVotes, unit.partySharePct]
-        : [
-            unit.index,
-            unit.blockSharePct.left,
-            unit.blockSharePct.center,
-            unit.blockSharePct.right,
-            unit.coveragePct,
-          ]),
-      unit.totalVotes,
-      unit.leadingPartyCode,
+      ...(porCandidata
+        ? // Célula vazia = ela não era candidata ali; 0 é zero DE VERDADE, com
+          // ela na urna daquele local.
+          [
+            unit.candidateVotes,
+            unit.candidateVotesPerThousand,
+            unit.candidateInScope ? "Sim" : "Não",
+          ]
+        : porPartido
+          ? // partyVotes 0 com voto apurado é zero DE VERDADE (a urna apurou e
+            // a sigla não teve voto); o que falta quando não há denominador é
+            // o percentual, e esse sai vazio.
+            [unit.partyVotes, unit.partySharePct]
+          : [
+              unit.index,
+              unit.blockSharePct.left,
+              unit.blockSharePct.center,
+              unit.blockSharePct.right,
+              unit.coveragePct,
+            ]),
+      ...(porCandidata ? [] : [unit.totalVotes, unit.leadingPartyCode]),
     ]),
     notes: [
       "A medida é do LOCAL ONDE SE VOTA, não do bairro onde se mora: quem vota numa escola pode morar em outro bairro.",
-      porPartido
-        ? "Percentual vazio significa unidade sem voto apurado (sem denominador). Zero votos da sigla com votos apurados é zero de verdade."
-        : "Índice vazio significa que nenhum voto da unidade caiu em partido com nota no survey — jamais é zero.",
+      porCandidata
+        ? `Célula de votos vazia significa que ${nomeCandidata} não era candidata naquele local (pleito municipal, outra cidade): valor ausente, fora do ranking. Zero votos com ela na urna é zero de verdade.`
+        : porPartido
+          ? "Percentual vazio significa unidade sem voto apurado (sem denominador). Zero votos da sigla com votos apurados é zero de verdade."
+          : "Índice vazio significa que nenhum voto da unidade caiu em partido com nota no survey — jamais é zero.",
       `${formatInteger(model.missingValueCount)} unidades do recorte ficaram fora por não terem valor na métrica ativa.`,
+      ...(porCandidata && model.candidate
+        ? [
+            `${formatInteger(model.candidate.unmatchedPlaceCount)} locais com voto dela neste pleito não existem no cadastro de locais (${formatInteger(model.candidate.unmatchedVotes)} votos): ficam fora do mapa e desta tabela, e estão declarados aqui em vez de descartados em silêncio.`,
+          ]
+        : []),
     ],
     source: {
-      label: "TSE · Boletins de urna por seção + cadastro de locais de votação",
+      label: porCandidata
+        ? "TSE · Votação nominal por seção da candidata + cadastro de locais de votação"
+        : "TSE · Boletins de urna por seção + cadastro de locais de votação",
       detail: `${model.contestLabel}${model.metric === "indice" ? ` · onda ${model.waveYear} do survey` : ""} · ${escopo}`,
       url: "https://dadosabertos.tse.jus.br/dataset/resultados",
     },
@@ -481,8 +519,13 @@ export function buildPollingReport(input: {
   const { model } = input;
   const escopo = model.municipalityName ?? ESTADO.nome;
   const modo = model.viewMode === "neighborhoods" ? "bairros" : "locais";
-  const medida =
-    model.metric === "votoPartido" && model.partyCode
+  const porCandidata = model.metric === "votosCandidata";
+  const nomeCandidata = model.candidate?.nomeUrna ?? "candidata";
+  const medida = porCandidata
+    ? model.candidateRate
+      ? "votos-candidata-por-mil"
+      : "votos-candidata"
+    : model.metric === "votoPartido" && model.partyCode
       ? `voto-${slugifyReport(model.partyCode)}`
       : "indice";
   const doc = base({
@@ -491,7 +534,10 @@ export function buildPollingReport(input: {
       model.viewMode === "neighborhoods"
         ? "Bairros por local de votação"
         : "Locais de votação",
-    subtitle: getPollingMetricLabel(model.metric, model.partyCode),
+    subtitle: getPollingMetricLabel(model.metric, model.partyCode, {
+      rate: model.candidateRate,
+      nome: model.candidate?.nomeUrna,
+    }),
     scope: `${model.contestLabel} · ${escopo}`,
     generatedAt: input.generatedAt,
     images: input.images,
@@ -499,20 +545,29 @@ export function buildPollingReport(input: {
   return {
     ...doc,
     highlights: [
-      {
-        label:
-          model.metric === "votoPartido"
-            ? `% do ${model.partyCode || "partido"} no recorte`
-            : "Índice do recorte",
-        value:
-          model.metric === "votoPartido"
-            ? highlightValue(model.summary.partySharePct, formatPercent)
-            : highlightValue(model.summary.index, formatDecimal),
-        note:
-          model.metric === "votoPartido"
-            ? `${formatInteger(model.summary.partyVotes)} votos da sigla sobre ${formatInteger(model.summary.totalVotes)} apurados`
-            : `escala 0–10 · onda ${model.waveYear} do survey`,
-      },
+      porCandidata
+        ? {
+            label: `Votos de ${nomeCandidata} no recorte`,
+            value: highlightValue(model.summary.candidateVotes, formatInteger),
+            note:
+              model.summary.candidateVotesPerThousand === null
+                ? `${model.contestLabel} · votos nominais somados dos locais do recorte`
+                : `${formatDecimal(model.summary.candidateVotesPerThousand)} por 1.000 eleitores · ${formatInteger(model.summary.candidateUnitsWithVotes)} unidades com voto dela`,
+          }
+        : {
+            label:
+              model.metric === "votoPartido"
+                ? `% do ${model.partyCode || "partido"} no recorte`
+                : "Índice do recorte",
+            value:
+              model.metric === "votoPartido"
+                ? highlightValue(model.summary.partySharePct, formatPercent)
+                : highlightValue(model.summary.index, formatDecimal),
+            note:
+              model.metric === "votoPartido"
+                ? `${formatInteger(model.summary.partyVotes)} votos da sigla sobre ${formatInteger(model.summary.totalVotes)} apurados`
+                : `escala 0–10 · onda ${model.waveYear} do survey`,
+          },
       {
         label: "Locais de votação",
         value: formatInteger(model.summary.placeCount),
@@ -523,11 +578,19 @@ export function buildPollingReport(input: {
         value: formatInteger(model.summary.electorate),
         note: `${formatInteger(model.electorateWithoutCoordinate)} em locais sem coordenada`,
       },
-      {
-        label: "Unidades na tabela",
-        value: formatInteger(model.filteredUnits.length),
-        note: `${formatInteger(model.missingValueCount)} sem valor na métrica ativa ficaram fora`,
-      },
+      porCandidata && model.candidate
+        ? {
+            // O número de confiança do recorte: quanto do voto dela ficou fora
+            // por não haver aquele local no cadastro.
+            label: "Locais dela fora do cadastro",
+            value: formatInteger(model.candidate.unmatchedPlaceCount),
+            note: `${formatInteger(model.candidate.unmatchedVotes)} votos dela sem local no cadastro · ${formatInteger(model.candidate.matchedPlaceCount)} de ${formatInteger(model.candidate.placesInContest)} locais casaram`,
+          }
+        : {
+            label: "Unidades na tabela",
+            value: formatInteger(model.filteredUnits.length),
+            note: `${formatInteger(model.missingValueCount)} sem valor na métrica ativa ficaram fora`,
+          },
     ],
     tables: [buildPollingTable(model)],
   };

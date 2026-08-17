@@ -12,6 +12,13 @@ import type { ReportImage } from "./reportModel.ts";
  *
  * Tudo aqui depende de DOM e canvas: não é chamado nos testes de modelo, que é
  * justamente por que a montagem do relatório não mora neste arquivo.
+ *
+ * ONDE ISTO NÃO É MAIS USADO: o relatório de um PLEITO. Os gráficos daquele
+ * documento são desenhados em VETOR pelo próprio PDF (`pdfDraw.ts`), com eixo
+ * rotulado, legenda e descrição textual — texto pesquisável, arquivo leve e
+ * ampliação sem serrilhado. Rasterizar o SVG da tela por cima disso só
+ * acrescentaria um PNG redundante. O que continua passando por aqui é o mapa
+ * e os gráficos das visões que ainda não têm equivalente vetorial.
  */
 
 /**

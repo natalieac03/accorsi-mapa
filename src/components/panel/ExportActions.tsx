@@ -54,7 +54,7 @@ export function ExportActions({
           className="panel-export__button"
           onClick={() => onExport("pdf")}
           disabled={csvDisabled || exportando !== null}
-          title="Relatório em PDF com capa, números de destaque, mapa e tabela paginada"
+          title="Relatório em PDF com capa, números de destaque, mapa e tabela paginada. O anexo municipal completo é opção da janela de Estatísticas e sai desligado."
         >
           <FileText size={15} />
           {exportando === "pdf" ? "Gerando…" : "PDF"}

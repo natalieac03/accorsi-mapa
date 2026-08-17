@@ -182,10 +182,12 @@ test("todo cargo abre no índice ideológico, inclusive Presidente e Governador"
   assert.equal(getPollingMetric(null), "indice");
   assert.equal(getPollingMetric(undefined), "indice");
   assert.equal(getPollingMetric(""), "indice");
-  // O alternador oferece as duas medidas, com o índice na frente.
+  // O alternador oferece as três medidas, com o índice na frente. A terceira
+  // (votos da candidata) tem lista de pleitos própria e é coberta por inteiro
+  // em pollingcandidata.test.ts.
   assert.deepEqual(
     POLLING_METRICS.map((option) => option.id),
-    ["indice", "votoPartido"],
+    ["indice", "votoPartido", "votosCandidata"],
   );
 
   for (const contest of [presidente, governador, prefeito, vereador]) {

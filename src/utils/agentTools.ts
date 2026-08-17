@@ -1035,9 +1035,13 @@ async function executarEspectroSubmunicipal(
       viewMode: unidade === "bairro" ? "neighborhoods" : "places",
       municipalityId: municipio.ibgeCode,
       // A ferramenta reporta o índice ideológico, nunca o percentual de uma
-      // sigla: sem sigla escolhida o modelo mede o índice em QUALQUER cargo,
-      // inclusive Presidente e Governador.
+      // sigla nem o voto nominal da candidata: sem sigla e sem pleito dela
+      // escolhidos o modelo mede o índice em QUALQUER cargo, inclusive
+      // Presidente e Governador. O voto dela por local tem ferramenta própria
+      // na aba da candidata, com a trajetória inteira por trás.
       partyCode: null,
+      candidateContestId: null,
+      candidateRate: false,
       activeBands: [...ALL_ANALYSIS_BANDS],
       sortDirection: direcaoDaOrdem(ordem),
     },

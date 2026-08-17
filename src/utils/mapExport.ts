@@ -2,6 +2,7 @@ import type { AnalysisModel } from "../types/analysis";
 import type { ElectionModel } from "../types/elections";
 import type { PollingModel } from "../types/pollingPlaces";
 import type { SpectrumModel } from "../types/spectrum";
+import { ESTADO } from "../config/estado.ts";
 import {
   ALL_ANALYSIS_BANDS,
   formatAnalysisMetricValue,
@@ -297,8 +298,15 @@ export function buildSpectrumMapExport(model: SpectrumModel): MapExportData {
 export function buildPollingMapExport(model: PollingModel): MapExportData {
   // O PNG carrega a MESMA medida da tela, seja qual for o pleito: com uma
   // sigla em foco o mapa exportado é de percentual, com a rampa sequencial e
-  // sem nenhuma palavra sobre índice ideológico; sem sigla, é o índice.
+  // sem nenhuma palavra sobre índice ideológico; com um pleito da candidata em
+  // foco, é o voto nominal dela, na rampa vermelha da campanha; sem nada
+  // escolhido, é o índice.
   const isPartyShare = model.metric === "votoPartido";
+  const isCandidate = model.metric === "votosCandidata";
+  const candidateLabels = {
+    rate: model.candidateRate,
+    nome: model.candidate?.nomeUrna,
+  };
   const colors = getPollingMetricColors(model.metric);
   const focusedIds = new Set(
     model.municipalityId ? [model.municipalityId] : model.municipalityAggregates.map((item) => item.ibgeCode),
@@ -309,7 +317,10 @@ export function buildPollingMapExport(model: PollingModel): MapExportData {
       name: item.name,
       value: item.value,
       band: item.band,
-      valueLabel: formatPollingValue(model.metric, item.value),
+      valueLabel: formatPollingValue(model.metric, item.value, {
+        ...candidateLabels,
+        inScope: item.candidateInScope,
+      }),
       focused: focusedIds.has(item.ibgeCode),
     })),
     colors,
@@ -323,33 +334,53 @@ export function buildPollingMapExport(model: PollingModel): MapExportData {
   const missingCount = model.municipalityAggregates.filter(
     (item) => item.value === null,
   ).length;
+  // As faixas do polígono municipal saem da régua MUNICIPAL do modelo: no voto
+  // da candidata os cortes são por quantil dos totais das cidades, e usar aqui
+  // os cortes das unidades (voto de um local) pintaria quase tudo na cor mais
+  // escura.
   const legend: MapExportLegendEntry[] = [
     ...ALL_ANALYSIS_BANDS.map((band) => ({
       color: colors[band],
-      label: isPartyShare
-        ? `${getPollingRangeLabel(model.metric, model.thresholds, band)} do voto apurado`
-        : `${getSpectrumBandLabel(band)} · ${getSpectrumRangeLabel("index", model.thresholds, band)}`,
+      label: isCandidate
+        ? `${getPollingRangeLabel(model.metric, model.municipalityThresholds, band, candidateLabels)}${model.candidateRate ? " por 1.000 eleitores" : " votos no município"}`
+        : isPartyShare
+          ? `${getPollingRangeLabel(model.metric, model.municipalityThresholds, band)} do voto apurado`
+          : `${getSpectrumBandLabel(band)} · ${getSpectrumRangeLabel("index", model.municipalityThresholds, band)}`,
       count: bandCounts[band] ?? 0,
     })),
     ...missingLegendEntry(
-      isPartyShare ? "Sem voto apurado neste pleito" : "Sem índice neste pleito",
+      isCandidate
+        ? "Fora da disputa neste pleito"
+        : isPartyShare
+          ? "Sem voto apurado neste pleito"
+          : "Sem índice neste pleito",
       missingCount,
     ),
   ];
-  const scope = model.municipalityName ?? "Goiás";
+  const scope = model.municipalityName ?? ESTADO.nome;
+  const candidateName = model.candidate?.nomeUrna ?? "candidata";
+  const candidateTitle = model.candidateRate
+    ? `Locais de votação · votos de ${candidateName} por 1.000 eleitores`
+    : `Locais de votação · votos de ${candidateName}`;
   return {
     styleById,
-    title: isPartyShare
-      ? `Locais de votação · % de voto do ${model.partyCode || "partido"}`
-      : "Locais de votação · índice ideológico",
-    subtitle: isPartyShare
-      ? `${model.contestLabel} · percentual sobre os votos apurados · agregado por município a partir de ${model.summary.placeCount} locais de votação`
-      : `${model.contestLabel} · onda ${model.waveYear} do survey · agregado por município a partir de ${model.summary.placeCount} locais de votação`,
+    title: isCandidate
+      ? candidateTitle
+      : isPartyShare
+        ? `Locais de votação · % de voto do ${model.partyCode || "partido"}`
+        : "Locais de votação · índice ideológico",
+    subtitle: isCandidate
+      ? `${model.contestLabel} · votos nominais dela somados por município a partir de ${model.summary.placeCount} locais de votação · faixas por quantil`
+      : isPartyShare
+        ? `${model.contestLabel} · percentual sobre os votos apurados · agregado por município a partir de ${model.summary.placeCount} locais de votação`
+        : `${model.contestLabel} · onda ${model.waveYear} do survey · agregado por município a partir de ${model.summary.placeCount} locais de votação`,
     legend,
     attribution: MAP_EXPORT_ATTRIBUTION,
-    filename: isPartyShare
-      ? `locais-voto-${slugify(model.partyCode || "partido")}-${slugify(scope)}-${model.contestId || "pleito"}.png`
-      : `locais-votacao-${slugify(scope)}-${model.contestId || "pleito"}.png`,
+    filename: isCandidate
+      ? `locais-${model.candidateRate ? "votos-candidata-por-mil" : "votos-candidata"}-${slugify(scope)}-${model.contestId || "pleito"}.png`
+      : isPartyShare
+        ? `locais-voto-${slugify(model.partyCode || "partido")}-${slugify(scope)}-${model.contestId || "pleito"}.png`
+        : `locais-votacao-${slugify(scope)}-${model.contestId || "pleito"}.png`,
   };
 }
 

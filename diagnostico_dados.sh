@@ -14,7 +14,7 @@
 
 set -uo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 PYTHON="$(command -v python3.11 || command -v python3)"
 

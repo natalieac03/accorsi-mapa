@@ -164,7 +164,7 @@ function pleitoEstadual(ano, votoBase) {
     // recorte, o caso em que a seção de bairros não tem com o que comparar.
     temRecorteSubmunicipal: ano === 2022,
     municipios,
-    locais: null,
+    locais: LOCAIS_ESTADUAIS[ano] ?? null,
     bairros:
       ano === 2022
         ? {
@@ -178,6 +178,34 @@ function pleitoEstadual(ano, votoBase) {
         : null,
   };
 }
+
+/* Locais de votação sintéticos, com os MESMOS ids que a vista "locais" do
+   harness usa em scripts/dev/harness/main.tsx. O id "99999-9-9999" existe de
+   propósito e não está no cadastro de locais: é o caso real de renumeração de
+   seção entre eleições, que a tela precisa contar e declarar em vez de
+   descartar em silêncio. */
+const LOCAIS_MUNICIPAIS = {
+  2020: {
+    "10010-1-1010": 5200,
+    "10010-2-2010": 2100,
+    "99999-9-9999": 480,
+  },
+  2024: {
+    "10010-1-1010": 7400,
+    "10010-1-1020": 1900,
+    "10010-2-2010": 3100,
+  },
+};
+
+/* No pleito ESTADUAL ela estava na urna do estado inteiro: Anápolis entra. */
+const LOCAIS_ESTADUAIS = {
+  2022: {
+    "10010-1-1010": 3100,
+    "10010-2-2010": 1250,
+    "10010-2-2020": 640,
+    "20020-3-1010": 890,
+  },
+};
 
 /* Bairros sintéticos de Goiânia: o suficiente para a visão Geral ter recorte
    para comparar. "Setor Sul" some de 2020 DE PROPÓSITO — é o caso de ausência
@@ -216,7 +244,7 @@ function pleitoMunicipal(ano, turno, votos) {
         candidaturasComVoto: 8,
       },
     },
-    locais: null,
+    locais: LOCAIS_MUNICIPAIS[ano] ?? null,
     bairros: BAIRROS_FIXTURE[ano] ? { "5208707": BAIRROS_FIXTURE[ano] } : null,
   };
 }

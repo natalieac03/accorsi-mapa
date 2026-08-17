@@ -98,6 +98,10 @@ export function usePollingPlaces(
   const votesStatusRef = useRef<PollingDataStatus>("idle");
   const votesContestRef = useRef("");
 
+  // Os votos por sigla continuam sendo baixados mesmo quando a medida ativa é
+  // a da candidata (que vem da trajetória, já embutida no bundle): é o que
+  // mantém as outras duas medidas a um clique — sem esse arquivo o alternador
+  // não teria sigla nenhuma para oferecer e prenderia quem olha numa medida só.
   useEffect(() => {
     if (!active || placesStatus !== "ready" || !pollingContestId) return;
     // Trocar de pleito é um pedido novo: o status volta para "idle" antes de
@@ -135,6 +139,28 @@ export function usePollingPlaces(
     const next = partyCode ? partyCode : null;
     setState((current) =>
       current.partyCode === next ? current : { ...current, partyCode: next },
+    );
+  }, []);
+
+  // O pleito DELA é a terceira medida: um id aqui significa "meça os votos da
+  // candidata"; vazio significa "volte para a régua da sigla/índice". Como o
+  // pleito dela e o pleito do espectro são listas diferentes, o `contestId`
+  // acima não é tocado — voltar para o índice devolve o pleito de espectro que
+  // já estava escolhido, sem recarregar arquivo nenhum.
+  const setCandidateContestId = useCallback((contestId: string | null) => {
+    const next = contestId ? contestId : null;
+    setState((current) =>
+      current.candidateContestId === next
+        ? current
+        : { ...current, candidateContestId: next },
+    );
+  }, []);
+
+  const setCandidateRate = useCallback((candidateRate: boolean) => {
+    setState((current) =>
+      current.candidateRate === candidateRate
+        ? current
+        : { ...current, candidateRate },
     );
   }, []);
 
@@ -177,6 +203,8 @@ export function usePollingPlaces(
     setContestId,
     setViewMode,
     setPartyCode,
+    setCandidateContestId,
+    setCandidateRate,
     setMunicipalityId,
     setSortDirection,
     toggleBand,

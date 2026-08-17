@@ -478,7 +478,7 @@ test("CSV traz uma linha por unidade em foco e índice vazio quando null", { ski
   assert.ok(!csv.includes("Ginásio Sem Nota"));
   assert.equal(
     getPollingCsvFilename(buildModel()),
-    "locais-votacao-rs-2024-13-1.csv",
+    "locais-votacao-go-2024-13-1.csv",
   );
   assert.equal(
     getPollingCsvFilename(buildModel({ viewMode: "neighborhoods", municipalityId: "4314902" })),

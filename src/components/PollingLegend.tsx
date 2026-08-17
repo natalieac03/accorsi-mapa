@@ -14,6 +14,13 @@ type PollingLegendProps = {
   viewMode: PollingViewMode;
   metric: PollingMetric;
   partyCode: string;
+  /** nome de urna da candidata; "" fora da medida de voto dela */
+  candidateName: string;
+  /** true = a medida da candidata está em votos por 1.000 eleitores */
+  candidateRate: boolean;
+  /** locais dela ausentes do cadastro de locais: contados, nunca calados */
+  candidateUnmatchedPlaceCount: number;
+  candidateUnmatchedVotes: number;
   thresholds: number[];
   bandCounts: number[];
   missingValueCount: number;
@@ -30,6 +37,10 @@ export function PollingLegend({
   viewMode,
   metric,
   partyCode,
+  candidateName,
+  candidateRate,
+  candidateUnmatchedPlaceCount,
+  candidateUnmatchedVotes,
   thresholds,
   bandCounts,
   missingValueCount,
@@ -44,7 +55,9 @@ export function PollingLegend({
   const allBandsActive = activeBands.length === ALL_ANALYSIS_BANDS.length;
   const unitLabel = viewMode === "neighborhoods" ? "bairros" : "locais";
   const isPartyShare = metric === "votoPartido";
-  const metricLabel = getPollingMetricShortLabel(metric, partyCode);
+  const isCandidate = metric === "votosCandidata";
+  const labelOptions = { rate: candidateRate, nome: candidateName || undefined };
+  const metricLabel = getPollingMetricShortLabel(metric, partyCode, labelOptions);
   const colors = getPollingMetricColors(metric);
 
   return (
@@ -70,11 +83,13 @@ export function PollingLegend({
       <div className="legend-scale">
         {ALL_ANALYSIS_BANDS.map((band) => {
           const active = activeBands.includes(band);
-          // No índice o nome do bloco vem antes do intervalo; no percentual o
-          // rótulo JÁ é o intervalo e repeti-lo só faria ruído.
-          const label = isPartyShare
-            ? getPollingRangeLabel(metric, thresholds, band)
-            : `${getPollingBandLabel(metric, thresholds, band)} · ${getPollingRangeLabel(metric, thresholds, band)}`;
+          // No índice o nome do bloco vem antes do intervalo; no percentual e
+          // no voto da candidata o rótulo JÁ é o intervalo e repeti-lo só faria
+          // ruído.
+          const label =
+            isPartyShare || isCandidate
+              ? getPollingRangeLabel(metric, thresholds, band, labelOptions)
+              : `${getPollingBandLabel(metric, thresholds, band)} · ${getPollingRangeLabel(metric, thresholds, band)}`;
           return (
             <button
               className={`legend-item ${active ? "legend-item--active" : ""}`}
@@ -100,9 +115,11 @@ export function PollingLegend({
               style={{ backgroundColor: MISSING_DATA_COLOR }}
             />
             <span>
-              {isPartyShare
-                ? "Sem voto apurado neste pleito"
-                : "Sem índice neste pleito"}
+              {isCandidate
+                ? "Fora da disputa (ela não era candidata aqui)"
+                : isPartyShare
+                  ? "Sem voto apurado neste pleito"
+                  : "Sem índice neste pleito"}
             </span>
             <small>{missingValueCount}</small>
           </div>
@@ -112,14 +129,21 @@ export function PollingLegend({
       <small>
         {formatInteger(bubbleCount)} bolhas ({unitLabel}) · área proporcional ao
         eleitorado ·{" "}
-        {isPartyShare
-          ? "percentual sobre os votos apurados de cada unidade"
-          : `onda ${waveYear} do survey`}
+        {isCandidate
+          ? `votos nominais ${candidateName ? `de ${candidateName}` : "da candidata"}${candidateRate ? " por 1.000 eleitores" : ""}, faixas por quantil do recorte`
+          : isPartyShare
+            ? "percentual sobre os votos apurados de cada unidade"
+            : `onda ${waveYear} do survey`}
         {hiddenBubbleCount > 0
           ? ` · ${formatInteger(hiddenBubbleCount)} bolhas menores fora do desenho (filtre por município para vê-las)`
           : ""}
         {placesWithoutCoordinateCount > 0
           ? ` · ${formatInteger(placesWithoutCoordinateCount)} locais sem coordenada ficam fora do mapa e contam no bairro`
+          : ""}
+        {/* O TSE renumera locais entre eleições: o que não casou com o cadastro
+            é declarado aqui, porque é a medida de confiança deste recorte. */}
+        {isCandidate && candidateUnmatchedPlaceCount > 0
+          ? ` · ${formatInteger(candidateUnmatchedPlaceCount)} locais com voto dela não existem no cadastro (${formatInteger(candidateUnmatchedVotes)} votos fora do mapa)`
           : ""}
         {viewMode === "neighborhoods"
           ? " · bairro = agregação de locais, não polígono"

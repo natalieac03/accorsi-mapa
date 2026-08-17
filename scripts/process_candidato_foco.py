@@ -258,7 +258,13 @@ def carregar_locais(
                     continue
                 bairro = clean_label(linha.get(col_bairro)) if col_bairro else ""
                 indice[chave] = {
-                    "placeId": f"{tse}-{zona}-{local}",
+                    # Zero à esquerda preservado (zfill 5) para casar com o
+                    # cadastro que o process_tse_sections.py grava. O
+                    # normalize_code deste script REMOVE zeros à esquerda —
+                    # ótimo para as chaves internas, fatal aqui: "9373-1-1015"
+                    # nunca casaria com "09373-1-1015" do cadastro, e o mapa de
+                    # votos dela por local sairia zerado sem dar erro.
+                    "placeId": f"{tse.zfill(5)}-{zona}-{local}",
                     "ibgeCode": ibge,
                     "nome": clean_label(linha.get("NM_LOCAL_VOTACAO")),
                     "bairro": bairro,

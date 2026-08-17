@@ -16,6 +16,7 @@ import type {
   ScatterModel,
   ScatterPoint,
   StatsIndicator,
+  StatsElectorateMunicipio,
   StatsIndicatorId,
   StatsIndicatorSource,
 } from "../types/candidate";
@@ -595,13 +596,14 @@ export function getStatsIndicator(id: StatsIndicatorId): StatsIndicator {
 }
 
 /**
- * Valores socioeconômicos inertes para completar o shape MunicipalityProfile:
- * nenhum indicador desta janela lê esses campos, e null é "sem dado" em toda
- * a aplicação — se um dia alguém adicionar aqui um indicador que os use, o
- * resultado é o comportamento correto (município fora do scatter), não um
- * número inventado.
+ * Valores socioeconômicos AUSENTES — todos os campos em null.
+ *
+ * É o que entra quando o insumo não traz o snapshot do IBGE (ou traz o
+ * placeholder "pendente"). null é "sem dado" em toda a aplicação, então o
+ * resultado é o comportamento correto — município fora do cruzamento, o
+ * indicador declarado como sem dado —, nunca um número inventado.
  */
-const SOCIOECONOMIC_INERTE: MunicipalityProfile["socioeconomic"] = {
+const SOCIOECONOMIC_AUSENTE: MunicipalityProfile["socioeconomic"] = {
   populationEstimate: null,
   censusPopulation: null,
   populationDensity: null,
@@ -614,12 +616,44 @@ const SOCIOECONOMIC_INERTE: MunicipalityProfile["socioeconomic"] = {
 };
 
 /**
+ * O snapshot socioeconômico é utilizável? Placeholder "pendente" e mapa vazio
+ * contam como ausência: um arquivo de zeros e nulls não é dado do IBGE, é a
+ * espera pelo `gerar_dados.sh`.
+ */
+export function hasSocioeconomicSnapshot(
+  source: StatsIndicatorSource,
+): source is StatsIndicatorSource & {
+  socioeconomic: NonNullable<StatsIndicatorSource["socioeconomic"]>;
+} {
+  const snapshot = source.socioeconomic;
+  return (
+    !!snapshot &&
+    snapshot.metadata.status !== "pendente" &&
+    Object.keys(snapshot.municipalities).length > 0
+  );
+}
+
+/**
  * Monta o índice ibge -> perfil que alimenta getAnalysisMetricValue — o
  * cálculo de cada indicador é REUSADO da aba Análise, não reimplementado.
  * Devolve null enquanto o snapshot do eleitorado for placeholder ("pendente"
  * ou vazio): sem eleitorado não há nenhum indicador confiável. Censo pendente
  * não anula o índice — só deixa null os indicadores que dependem dele.
  * Município com eleitorado zerado fica fora (não pode ser denominador).
+ *
+ * O bloco socioeconômico entra do snapshot REAL quando o insumo o traz. Isto
+ * é o que faz renda, PIB, densidade, saneamento, escolarização e população
+ * chegarem ao relatório: até aqui o perfil era montado com todos esses campos
+ * em null e os indicadores do IBGE nunca apareciam, mesmo com o arquivo
+ * gerado no disco. Sem o snapshot, os campos seguem null — o indicador é
+ * declarado como sem dado, e jamais entra valendo zero.
+ *
+ * Os campos do eleitorado que o insumo não traz (zonas, biometria,
+ * deficiência, nome social) continuam preenchidos com 0 aqui apenas para
+ * satisfazer o shape de MunicipalityProfile, que os declara como number. Quem
+ * consome isto em análise precisa distinguir "0 apurado" de "campo ausente" —
+ * `hasStatsElectorateField` existe exatamente para isso, e o motor do
+ * relatório (reportDataset.ts) a usa antes de aceitar qualquer um deles.
  */
 export function buildStatsProfiles(
   source: StatsIndicatorSource,
@@ -628,6 +662,9 @@ export function buildStatsProfiles(
   if (source.electorate.metadata.status === "pendente" || entries.length === 0) {
     return null;
   }
+  const socioeconomic = hasSocioeconomicSnapshot(source)
+    ? source.socioeconomic.municipalities
+    : null;
   const profiles: Record<string, MunicipalityProfile> = {};
   for (const [ibge, municipio] of entries) {
     if (municipio.electorate <= 0) continue;
@@ -638,19 +675,46 @@ export function buildStatsProfiles(
       electorate: municipio.electorate,
       stateSharePct: 0,
       stateRank: 0,
-      zoneCount: 0,
+      zoneCount: municipio.zoneCount ?? 0,
       biometrics: 0,
-      biometricsPct: 0,
-      registeredDisability: 0,
-      socialName: 0,
+      biometricsPct: municipio.biometricsPct ?? 0,
+      registeredDisability: municipio.registeredDisability ?? 0,
+      socialName: municipio.socialName ?? 0,
       topAgeGroup: { label: "", electorate: 0, percentage: 0 },
       gender: municipio.gender,
-      socioeconomic: SOCIOECONOMIC_INERTE,
+      socioeconomic: socioeconomic?.[ibge]?.values ?? SOCIOECONOMIC_AUSENTE,
       age: source.age.municipalities[ibge] ?? null,
       literacy: source.literacy.municipalities[ibge] ?? null,
     };
   }
   return Object.keys(profiles).length > 0 ? profiles : null;
+}
+
+/** Campos do eleitorado que o snapshot pode não trazer. */
+export type StatsElectorateField =
+  | "zoneCount"
+  | "biometricsPct"
+  | "registeredDisability"
+  | "socialName";
+
+/**
+ * O snapshot trouxe o campo bruto para ESTE município?
+ *
+ * Sem esta pergunta, um insumo sem biometria produziria "0% de biometria em
+ * todos os municípios" — um dado sintético perfeitamente plausível, com
+ * variância zero, que entraria em correlação e em comparação de grupos sem
+ * ninguém perceber. Zonas eleitorais também: `zoneCount` em 0 faria
+ * "eleitores por zona" devolver o eleitorado inteiro.
+ */
+export function hasStatsElectorateField(
+  municipio: StatsElectorateMunicipio | undefined,
+  field: StatsElectorateField,
+): boolean {
+  if (!municipio) return false;
+  const valor = municipio[field];
+  if (valor === undefined || !Number.isFinite(valor)) return false;
+  // Zona eleitoral é denominador: zero zonas não divide nada.
+  return field !== "zoneCount" || valor > 0;
 }
 
 /**

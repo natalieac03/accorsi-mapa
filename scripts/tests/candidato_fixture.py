@@ -55,7 +55,7 @@ SQ_HOMONIMA = "700002"  # mesmo nome, outro partido: não pode ser somada
 SQ_RIVAL = "700003"
 
 CAND_COLS = [
-    "ANO_ELEICAO", "SG_UF", "CD_CARGO", "SQ_CANDIDATO", "NR_CANDIDATO",
+    "ANO_ELEICAO", "SG_UF", "SG_UE", "CD_CARGO", "SQ_CANDIDATO", "NR_CANDIDATO",
     "NM_CANDIDATO", "NM_URNA_CANDIDATO", "SG_PARTIDO", "NM_PARTIDO",
     "DS_SITUACAO_CANDIDATURA", "DS_SIT_TOT_TURNO",
 ]
@@ -63,6 +63,13 @@ VOTO_COLS = [
     "DT_GERACAO", "ANO_ELEICAO", "CD_TIPO_ELEICAO", "NR_TURNO", "DT_ELEICAO",
     "SG_UF", "CD_MUNICIPIO", "NR_ZONA", "NR_SECAO", "CD_CARGO", "NR_VOTAVEL",
     "NM_VOTAVEL", "SQ_CANDIDATO", "SG_PARTIDO", "QT_VOTOS",
+]
+# Formato antigo (2014 e anteriores): identifica quem recebeu o voto SÓ pelo
+# número de urna. Sem SQ_CANDIDATO e sem sigla de partido na linha.
+VOTO_COLS_ANTIGO = [
+    "DT_GERACAO", "ANO_ELEICAO", "CD_TIPO_ELEICAO", "NR_TURNO", "DT_ELEICAO",
+    "SG_UF", "SG_UE", "CD_MUNICIPIO", "NR_ZONA", "NR_SECAO", "CD_CARGO",
+    "NR_VOTAVEL", "NM_VOTAVEL", "QT_VOTOS",
 ]
 LOCAL_COLS = [
     "AA_ELEICAO", "NR_TURNO", "SG_UF", "CD_MUNICIPIO", "NM_MUNICIPIO", "NR_ZONA",
@@ -83,12 +90,28 @@ def grava_zip(caminho: Path, membro: str, colunas: list[str], linhas: list[dict]
         arquivo.writestr(membro, buffer.getvalue().encode(SOURCE_ENCODING))
 
 
-def cand(ano, cargo, sq, nome, urna, partido, numero, resultado):
+def cand(ano, cargo, sq, nome, urna, partido, numero, resultado, ue=None):
+    # SG_UE: sigla do estado nos cargos estaduais/federais, código TSE do
+    # município nos municipais. É o que dá escopo ao número de urna.
     return {
-        "ANO_ELEICAO": str(ano), "SG_UF": UF, "CD_CARGO": str(cargo),
+        "ANO_ELEICAO": str(ano), "SG_UF": UF,
+        "SG_UE": ue if ue is not None else (MUN_A if cargo in (11, 13) else UF),
+        "CD_CARGO": str(cargo),
         "SQ_CANDIDATO": sq, "NR_CANDIDATO": numero, "NM_CANDIDATO": nome,
         "NM_URNA_CANDIDATO": urna, "SG_PARTIDO": partido, "NM_PARTIDO": partido,
         "DS_SITUACAO_CANDIDATURA": "APTO", "DS_SIT_TOT_TURNO": resultado,
+    }
+
+
+def voto_antigo(ano, cargo, turno, municipio, zona, secao, numero, nome, votos, ue=None):
+    """Linha no formato antigo: sem SQ_CANDIDATO, identificada pelo número."""
+    return {
+        "DT_GERACAO": "01/01/2026", "ANO_ELEICAO": str(ano), "CD_TIPO_ELEICAO": "2",
+        "NR_TURNO": str(turno), "DT_ELEICAO": f"05/10/{ano}", "SG_UF": UF,
+        "SG_UE": ue if ue is not None else (municipio if cargo in (11, 13) else UF),
+        "CD_MUNICIPIO": municipio, "NR_ZONA": str(zona), "NR_SECAO": str(secao),
+        "CD_CARGO": str(cargo), "NR_VOTAVEL": str(numero), "NM_VOTAVEL": nome,
+        "QT_VOTOS": str(votos),
     }
 
 
@@ -133,6 +156,33 @@ ESPERADO = {
         "votosNoEstado": 150,
         "posicaoNoEstado": 2,          # rival tem 400
         "temRecorteSubmunicipal": False,
+    },
+    # --- pacotes no formato antigo, sem SQ_CANDIDATO na linha de voto --------
+    "2014-7-1": {  # Deputada Estadual identificada só pelo número de urna
+        "votosNoEstado": 340,          # 250 (A) + 90 (B)
+        "posicaoNoEstado": 2,          # rival 13999 soma 460
+        "votosSemLocalDeVotacao": 0,
+        "municipios": {
+            # 250 de 310 válidos (250 dela + 60 do rival). Branco (95) e nulo
+            # (96) não entram no denominador: não são candidatura.
+            IBGE_A: {
+                "votos": 250,
+                "posicaoNoMunicipio": 1,
+                "percentualValidos": 80.6452,
+                # O pacote antigo não traz sigla na linha; sem denominador de
+                # partido a taxa é None, nunca 0.
+                "percentualDoPartido": None,
+                "votosDoPartido": None,
+            },
+            IBGE_B: {"votos": 90, "posicaoNoMunicipio": 2},
+        },
+        "bairros": {IBGE_A: {"CENTRO": 150, "VILA NOVA": 100}},
+    },
+    "2012-11-1": {  # Prefeita: o número 13 existe nas duas cidades
+        # Só os 500 do município dela. Os 700 do "13" da outra cidade são de
+        # outra pessoa — somar daria 1.200 com cara de verdade.
+        "votosNoEstado": 500,
+        "municipios": {IBGE_A: {"votos": 500, "posicaoNoMunicipio": 1}},
     },
 }
 
@@ -203,6 +253,65 @@ def build(destino: Path) -> None:
         ],
     )
 
+    # --- 2014: pacote ANTIGO, sem SQ_CANDIDATO na linha de voto --------------
+    # Reproduz o formato que fez Goiás sair sem 2014 na primeira geração: o
+    # cadastro tem a candidatura, o arquivo de votos identifica só pelo número.
+    grava_zip(
+        destino / "consulta_cand_2014.zip", "consulta_cand_2014_GO.csv", CAND_COLS,
+        [
+            cand(2014, 7, "700101", "MARIA DE TESTE", "MARIA", "PT", "13111", "ELEITO"),
+            cand(2014, 7, "700102", "JOAO RIVAL", "JOAO", "PT", "13999", "ELEITO"),
+        ],
+    )
+    grava_zip(
+        destino / "votacao_secao_2014_GO.zip", "votacao_secao_2014_GO.csv",
+        VOTO_COLS_ANTIGO,
+        [
+            voto_antigo(2014, 7, 1, MUN_A, 1, 10, 13111, "MARIA", 150),
+            voto_antigo(2014, 7, 1, MUN_A, 1, 20, 13111, "MARIA", 100),
+            voto_antigo(2014, 7, 1, MUN_A, 1, 10, 13999, "JOAO", 60),
+            voto_antigo(2014, 7, 1, MUN_B, 2, 30, 13111, "MARIA", 90),
+            voto_antigo(2014, 7, 1, MUN_B, 2, 30, 13999, "JOAO", 400),
+            # branco e nulo: não são candidatura e não podem virar denominador
+            voto_antigo(2014, 7, 1, MUN_A, 1, 10, 95, "BRANCO", 200),
+            voto_antigo(2014, 7, 1, MUN_A, 1, 10, 96, "NULO", 100),
+        ],
+    )
+    grava_zip(
+        destino / "eleitorado_local_votacao_2014.zip",
+        "eleitorado_local_votacao_2014.csv", LOCAL_COLS,
+        [
+            local(2014, MUN_A, 1, 10, "1001", "ESCOLA CENTRO", "CENTRO"),
+            local(2014, MUN_A, 1, 20, "1002", "ESCOLA VILA", "VILA NOVA"),
+            local(2014, MUN_B, 2, 30, "2001", "ESCOLA B", "BAIRRO B"),
+        ],
+    )
+
+    # --- 2012: cargo MUNICIPAL no formato antigo ----------------------------
+    # A armadilha: "13" para Prefeito existe em toda cidade. O escopo é a
+    # unidade eleitoral, não o número solto.
+    grava_zip(
+        destino / "consulta_cand_2012.zip", "consulta_cand_2012_GO.csv", CAND_COLS,
+        [
+            cand(2012, 11, "700201", "MARIA DE TESTE", "MARIA", "PT", "13",
+                 "NAO ELEITO", ue=MUN_A),
+            cand(2012, 11, "700202", "ANA OUTRA", "ANA", "PT", "13", "ELEITO",
+                 ue=MUN_B),
+            cand(2012, 11, "700203", "JOAO RIVAL", "JOAO", "PL", "22", "ELEITO",
+                 ue=MUN_A),
+        ],
+    )
+    grava_zip(
+        destino / "votacao_secao_2012_GO.zip", "votacao_secao_2012_GO.csv",
+        VOTO_COLS_ANTIGO,
+        [
+            voto_antigo(2012, 11, 1, MUN_A, 1, 10, 13, "MARIA", 500),
+            voto_antigo(2012, 11, 1, MUN_A, 1, 10, 22, "JOAO", 300),
+            # mesmo número, OUTRA cidade, OUTRA pessoa
+            voto_antigo(2012, 11, 1, MUN_B, 2, 30, 13, "ANA", 700),
+        ],
+    )
+
 
 def check(caminho: Path) -> int:
     falhas: list[str] = []
@@ -251,6 +360,10 @@ def check(caminho: Path) -> int:
     print("  2018 bairros: Centro 120 · Vila Nova 80")
     print("  2020 Prefeita: 150 votos, 2ª — sem cadastro de locais, só recorte municipal")
     print("  homônima de outro partido corretamente ignorada")
+    print("  2014 (pacote antigo, sem SQ_CANDIDATO): 340 votos pelo número de urna,")
+    print("       branco e nulo fora do denominador, bairros preservados")
+    print("  2012 (cargo municipal, formato antigo): 500 votos — o '13' da outra")
+    print("       cidade NÃO foi somado")
     return 0
 
 

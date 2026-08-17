@@ -18,8 +18,7 @@ import type {
   CandidateContest,
   CandidateDataset,
   CandidateMunicipio,
-  CandidateRankingRow,
-  ScatterModel,
+  StatsIndicatorSource,
 } from "../../src/types/candidate.ts";
 import type { MunicipalityProfile } from "../../src/types/electorate.ts";
 import { buildAnalysisModel } from "../../src/utils/analysis.ts";
@@ -28,8 +27,8 @@ import { buildTrajectory } from "../../src/utils/candidate.ts";
 import {
   buildCareerOverview,
   buildGrowthModel,
-  getStatsIndicator,
 } from "../../src/utils/candidateStats.ts";
+import { buildReportDataset } from "../../src/utils/reportDataset.ts";
 import { buildWorkbookBuffer } from "../../src/utils/exportExcel.ts";
 import { buildPdfBuffer, renderReportPdf } from "../../src/utils/exportPdf.ts";
 import { buildReportFilename } from "../../src/utils/reportModel.ts";
@@ -145,34 +144,56 @@ const dataset: CandidateDataset = {
 
 const contestAtual = dataset.contests[2];
 
-const ranking: CandidateRankingRow[] = CIDADES.map(([ibge, nome], indice) => {
-  const dados = contestAtual.municipios[ibge];
-  return {
-    ibgeCode: ibge,
-    nome,
-    votos: dados.votos,
-    value: dados.votos,
-    posicaoNoMunicipio: dados.posicaoNoMunicipio,
-    // Duas cidades sem eleitorado apurado: célula vazia no Excel.
-    eleitorado: indice % 5 === 4 ? null : 12000 + indice * 5400,
-  };
-}).sort((a, b) => b.votos - a.votos);
-
-const scatter: ScatterModel = {
-  indicator: getStatsIndicator("female"),
-  points: CIDADES.slice(0, 10).map(([ibge, nome], indice) => ({
-    ibgeCode: ibge,
-    nome,
-    x: 50 + indice * 0.4,
-    indicadorValor: 50 + indice * 0.4,
-    y: Math.round((12.5 - indice * 0.6) * 100) / 100,
-    votos: contestAtual.municipios[ibge].votos,
-  })),
-  semIndicador: 1,
-  semPercentual: 1,
-  pearson: -0.62,
-  amostraInsuficiente: false,
+/* Snapshot territorial sintético para o relatório do pleito: é ele que faz o
+   PDF sair com os cruzamentos de TODOS os indicadores com dado, e não só com
+   o que estivesse selecionado numa tela. Duas cidades entram sem
+   alfabetização apurada — o caso que precisa ficar de fora, nunca virar 0. */
+const fonteIndicadores: StatsIndicatorSource = {
+  electorate: {
+    metadata: {},
+    municipalities: Object.fromEntries(
+      CIDADES.map(([ibge, nome], indice) => {
+        const eleitorado = 12000 + indice * 5400;
+        return [
+          ibge,
+          {
+            name: nome,
+            electorate: eleitorado,
+            gender: {
+              female: Math.round(eleitorado * (0.49 + indice * 0.003)),
+              male: Math.round(eleitorado * 0.47),
+              notInformed: 0,
+            },
+          },
+        ];
+      }),
+    ),
+  },
+  age: { metadata: {}, municipalities: {} },
+  literacy: {
+    metadata: {},
+    municipalities: Object.fromEntries(
+      CIDADES.filter((_, indice) => indice % 6 !== 5).map(
+        ([ibge], indice) => {
+          const populacao = 12000 + indice * 5400;
+          return [
+            ibge,
+            {
+              literate15Plus: Math.round(populacao * (0.88 + indice * 0.007)),
+              population15Plus: populacao,
+              literacyRate: Math.round((88 + indice * 0.7) * 10) / 10,
+            },
+          ];
+        },
+      ),
+    ),
+  },
 };
+
+const reportDataset = buildReportDataset({
+  contest: contestAtual,
+  source: fonteIndicadores,
+});
 
 /* Camada de análise territorial: perfis sintéticos passando pelo MOTOR real
    (buildAnalysisModel), para o exemplo provar também o caminho dos painéis do
@@ -255,9 +276,9 @@ const relatorios = [
   buildContestReport({
     dataset,
     contest: contestAtual,
-    ranking,
-    rankingMetric: "votos",
-    scatter,
+    reportDataset,
+    // O destaque é o único efeito do que estava selecionado na tela.
+    activeViewFilter: { featuredIndicatorId: "female" },
     generatedAt: AGORA,
   }),
   buildGrowthReport({

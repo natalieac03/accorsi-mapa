@@ -68,14 +68,21 @@ export type PollingViewMode = "places" | "neighborhoods";
  *
  * `indice` = índice ideológico 0–10, a régua do espectro aplicada abaixo do
  * município. `votoPartido` = percentual de voto de UMA sigla sobre os votos
- * apurados da unidade.
+ * apurados da unidade. `votosCandidata` = os votos NOMINAIS da candidata em
+ * foco naquele local, eleição por eleição.
  *
- * As duas existem em QUALQUER pleito e a escolha é de quem olha: o índice é o
- * padrão, o percentual é a segunda opção do alternador. Quem decide é a sigla
- * em foco (`PollingState.partyCode`), lida por `getPollingMetric` — o cargo do
- * pleito não entra nessa conta.
+ * As duas primeiras existem em QUALQUER pleito do arquivo de votos por local
+ * e a escolha é de quem olha: o índice é o padrão, o percentual é a segunda
+ * opção do alternador. Quem decide entre elas é a sigla em foco
+ * (`PollingState.partyCode`) — o cargo do pleito não entra nessa conta.
+ *
+ * A terceira é de outra natureza e por isso tem estado próprio
+ * (`PollingState.candidateContestId`): ela NÃO sai do arquivo `votes-*.json`,
+ * sai da trajetória da candidata, e por isso tem a PRÓPRIA lista de pleitos —
+ * os que ela disputou com cadastro de locais publicado, que quase não coincidem
+ * com os do espectro. Ver `getPollingMetric`.
  */
-export type PollingMetric = "indice" | "votoPartido";
+export type PollingMetric = "indice" | "votoPartido" | "votosCandidata";
 
 /** Sigla com voto apurado no pleito, para o seletor da métrica de partido. */
 export type PollingPartyOption = {
@@ -111,6 +118,22 @@ export type PollingState = {
    * tem.
    */
   partyCode: string | null;
+  /**
+   * Pleito DELA em foco — e, por consequência, a terceira MEDIDA da camada.
+   * `null` = a camada não está medindo o voto da candidata (vale a régua da
+   * sigla/índice). Um id aqui significa "meça os votos nominais dela naquele
+   * pleito"; o id é o `CandidateContest.id` ("2018-7-1"), que vive numa lista
+   * PRÓPRIA — os pleitos dela com cadastro de locais — e não tem relação com o
+   * `contestId` do espectro acima.
+   */
+  candidateContestId: string | null;
+  /**
+   * Na medida da candidata: `false` mede o voto absoluto do local, `true` mede
+   * votos por 1.000 eleitores. É a MESMA medida vista em duas escalas, então
+   * cor, faixa, ranking e CSV mudam juntos — nunca um ranking por densidade
+   * sobre um mapa pintado por voto absoluto.
+   */
+  candidateRate: boolean;
   activeBands: AnalysisBand[];
   sortDirection: AnalysisSortDirection;
 };
@@ -161,7 +184,27 @@ export type PollingUnit = {
    * quando não há denominador (nenhum voto apurado ali) — nunca 0%.
    */
   partySharePct: number | null;
-  /** valor da MÉTRICA ATIVA: índice 0–10 ou % da sigla. null = ausente. */
+  /**
+   * Votos NOMINAIS da candidata em foco nesta unidade, no pleito dela
+   * escolhido. `null` = ela NÃO estava na urna aqui (ver `candidateInScope`);
+   * `0` = ela estava na urna e não teve voto neste local — zero de verdade.
+   */
+  candidateVotes: number | null;
+  /**
+   * Votos dela por 1.000 eleitores da unidade. `null` sem eleitorado positivo
+   * (não existe taxa sem denominador) ou quando ela não disputou aqui.
+   */
+  candidateVotesPerThousand: number | null;
+  /**
+   * true quando a candidata estava na urna nesta unidade. Só tem sentido na
+   * medida `votosCandidata`: fora dela é sempre false, porque não há disputa
+   * dela em foco para avaliar — e nenhum rótulo o consulta ali.
+   */
+  candidateInScope: boolean;
+  /**
+   * valor da MÉTRICA ATIVA: índice 0–10, % da sigla, voto dela ou voto dela
+   * por 1.000 eleitores. null = ausente.
+   */
   value: number | null;
   /** faixa da paleta; só tem sentido quando `value` não é null */
   band: AnalysisBand;
@@ -189,6 +232,11 @@ export type PollingBubble = {
   placeCount: number;
   /** dentro das faixas em foco: fora disso a bolha é desenhada esmaecida */
   focused: boolean;
+  /**
+   * false = a candidata não disputou aqui (só na medida `votosCandidata`, em
+   * pleito municipal). Separa "sem voto dela" de "ela nem era candidata".
+   */
+  candidateInScope: boolean;
 };
 
 export type PollingMunicipalityAggregate = {
@@ -203,6 +251,10 @@ export type PollingMunicipalityAggregate = {
   coveragePct: number;
   partyVotes: number;
   partySharePct: number | null;
+  /** votos dela no município; null quando ela não disputou nesta cidade */
+  candidateVotes: number | null;
+  candidateVotesPerThousand: number | null;
+  candidateInScope: boolean;
   /** valor da métrica ativa; é o que pinta o polígono do município */
   value: number | null;
   band: AnalysisBand;
@@ -219,10 +271,87 @@ export type PollingSummary = {
   blockSharePct: Record<SpectrumBlock, number>;
   partyVotes: number;
   partySharePct: number | null;
+  /** votos dela somados no recorte; null quando o recorte inteiro está fora */
+  candidateVotes: number | null;
+  candidateVotesPerThousand: number | null;
+  /** unidades do recorte em que ela teve pelo menos um voto */
+  candidateUnitsWithVotes: number;
+  /** unidades do recorte onde ela nem estava na urna (só na medida dela) */
+  candidateUnitsOutOfScope: number;
   placeCount: number;
   mappedPlaceCount: number;
   neighborhoodCount: number;
   leadingPartyCode: string;
+};
+
+/**
+ * Por que a medida "votos da candidata" pode não estar disponível.
+ *
+ * `pendente` = a trajetória ainda não foi gerada (placeholder do ETL);
+ * `sem-recorte` = a trajetória existe, mas nenhum pleito dela tem cadastro de
+ * locais (o TSE só publica esse cadastro em alguns anos). Nos dois casos a
+ * medida não é oferecida e a interface DIZ o porquê, em vez de mostrar um mapa
+ * vazio ou, pior, um mapa de zeros.
+ */
+export type PollingCandidateAvailability =
+  | "disponivel"
+  | "pendente"
+  | "sem-recorte";
+
+/** Um pleito DELA oferecido no seletor da medida de voto da candidata. */
+export type PollingCandidateContestOption = {
+  /** `CandidateContest.id`, ex.: "2018-7-1" */
+  id: string;
+  /** "2018 · Deputada Federal" (cargo no feminino, turno quando > 1) */
+  label: string;
+  electionYear: number;
+  officeCode: number;
+  officeName: string;
+  round: number;
+  /** true = Prefeita/Vereadora: a disputa aconteceu em UMA cidade só */
+  municipal: boolean;
+  /** locais em que ela teve voto naquele pleito (tamanho do mapa `locais`) */
+  placeCount: number;
+  /** votos nominais dela no pleito inteiro */
+  votes: number;
+};
+
+/**
+ * O recorte da candidata no pleito escolhido — inclusive o que NÃO deu para
+ * medir. Os números de "não casou" são a medida de confiança desta leitura:
+ * `places-go.json` foi montado com os cadastros de 2022/2024 e o TSE renumera
+ * seções entre eleições, então pleito antigo dela sempre perde alguns locais.
+ */
+export type PollingCandidateInfo = {
+  nomeUrna: string;
+  partido: string;
+  contestId: string;
+  contestLabel: string;
+  electionYear: number;
+  officeCode: number;
+  officeName: string;
+  round: number;
+  /** true = Prefeita/Vereadora: ela estava na urna de UMA cidade só */
+  municipal: boolean;
+  /**
+   * IBGE das cidades em que ela estava na urna; `null` = estado inteiro
+   * (pleito estadual/federal). É o que separa "0 voto de verdade" de "fora da
+   * disputa".
+   */
+  scopeIbgeCodes: string[] | null;
+  scopeLabel: string;
+  /** votos nominais dela no pleito inteiro, direto do ETL */
+  votesInContest: number;
+  /** locais do pleito dela (tamanho do mapa `locais`) */
+  placesInContest: number;
+  /** votos dela somados nos locais que casaram com o cadastro de locais */
+  matchedVotes: number;
+  matchedPlaceCount: number;
+  /** locais do mapa dela AUSENTES do cadastro de locais — nunca descartados em silêncio */
+  unmatchedPlaceCount: number;
+  unmatchedVotes: number;
+  /** votos dela sem local de votação identificado no próprio ETL */
+  votesWithoutPlace: number;
 };
 
 export type PollingModel = {
@@ -237,10 +366,25 @@ export type PollingModel = {
   partyCode: string;
   /** siglas com voto apurado no pleito, da mais votada para a menos votada */
   partyOptions: PollingPartyOption[];
+  /** true = a medida da candidata está em votos por 1.000 eleitores */
+  candidateRate: boolean;
+  /** por que a medida da candidata está (ou não) disponível */
+  candidateAvailability: PollingCandidateAvailability;
+  /** pleitos DELA com cadastro de locais, do mais recente para o mais antigo */
+  candidateOptions: PollingCandidateContestOption[];
+  /** recorte da candidata no pleito escolhido; null fora dessa medida */
+  candidate: PollingCandidateInfo | null;
   viewMode: PollingViewMode;
   municipalityId: string | null;
   municipalityName: string | null;
   thresholds: number[];
+  /**
+   * Faixas do AGREGADO MUNICIPAL (o polígono do mapa e o PNG). Iguais a
+   * `thresholds` no índice e no percentual, que são escalas fixas; diferentes
+   * na medida da candidata, cujos cortes saem por quantil — o total de uma
+   * cidade e o voto de um único local não cabem na mesma régua.
+   */
+  municipalityThresholds: number[];
   bandCounts: number[];
   /** todas as unidades do recorte, com e sem valor */
   units: PollingUnit[];
