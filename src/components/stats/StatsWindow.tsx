@@ -17,6 +17,7 @@ import ageStructureJson from "../../data/age-structure-go.json";
 import candidatoJson from "../../data/candidato/adriana-accorsi.json";
 import electorateJson from "../../data/electorate-go.json";
 import literacyJson from "../../data/literacy-go.json";
+import socioeconomicJson from "../../data/socioeconomic-go.json";
 import type {
   CandidateContest,
   CandidateDataset,
@@ -65,7 +66,12 @@ import { formatInteger, formatPercent } from "../../utils/electorate";
 import { svgToReportImage } from "../../utils/chartImage";
 import { exportReportAsExcel } from "../../utils/exportExcel";
 import { exportReportAsPdf } from "../../utils/exportPdf";
-import type { ReportDocument, ReportImage } from "../../utils/reportModel";
+import type {
+  ReportDocument,
+  ReportImage,
+  ReportVariant,
+} from "../../utils/reportModel";
+import { buildReportDataset } from "../../utils/reportDataset";
 import {
   buildContestReport,
   buildGrowthReport,
@@ -85,10 +91,20 @@ import {
 
 const dataset = candidatoJson as unknown as CandidateDataset;
 const electorateSource = electorateJson as unknown as ElectorateSource;
+/*
+ * Os quatro snapshots territoriais. O socioeconômico entrou aqui junto com o
+ * motor do relatório: sem ele, renda, PIB, densidade, saneamento,
+ * escolarização e população ficavam de fora do PDF mesmo com o arquivo
+ * gerado no disco — o perfil dos municípios era montado com todos esses
+ * campos em null. Enquanto o arquivo for placeholder ("pendente"), o motor
+ * simplesmente não oferece esses indicadores; nenhum deles entra zerado.
+ */
 const indicatorSource: StatsIndicatorSource = {
   electorate: electorateJson as unknown as StatsIndicatorSource["electorate"],
   age: ageStructureJson as unknown as StatsIndicatorSource["age"],
   literacy: literacyJson as unknown as StatsIndicatorSource["literacy"],
+  socioeconomic:
+    socioeconomicJson as unknown as StatsIndicatorSource["socioeconomic"],
 };
 
 const RANKING_SIZE = 15;
@@ -130,6 +146,22 @@ function columnPath(x: number, y: number, width: number, height: number) {
 
 type StatsView = "overview" | string;
 
+/**
+ * Os formatos de entrega da barra de exportação.
+ *
+ * O PDF tem duas versões e elas convivem: a completa é o documento inteiro,
+ * com um capítulo por indicador; a resumida é o mesmo dado em oito ou nove
+ * páginas, para levar a uma reunião curta. Nenhuma substitui a outra, e o
+ * arquivo gerado diz no nome e na capa qual delas é.
+ */
+type FormatoExport = "excel" | "pdfResumido" | "pdfCompleto";
+
+const ROTULO_FORMATO: Record<FormatoExport, string> = {
+  excel: "Excel",
+  pdfResumido: "PDF resumido",
+  pdfCompleto: "PDF completo",
+};
+
 export function StatsWindow({ onClose }: { onClose: () => void }) {
   const [view, setView] = useState<StatsView>("overview");
   const [rankingMetric, setRankingMetric] =
@@ -138,8 +170,21 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
   const [exportMessage, setExportMessage] = useState("");
   /* Qual formato está sendo gerado agora: as bibliotecas de .xlsx e .pdf são
      carregadas por import dinâmico, então o primeiro clique tem uma espera
-     real de rede e precisa aparecer no botão. */
-  const [exportando, setExportando] = useState<"excel" | "pdf" | null>(null);
+     real de rede e precisa aparecer no botão. O PDF tem DOIS botões, e o
+     estado guarda qual deles está rodando: os dois demoram, e "Gerando…" no
+     botão errado é pior do que nenhum aviso. */
+  const [exportando, setExportando] = useState<FormatoExport | null>(null);
+  /**
+   * Anexo municipal do PDF — DESLIGADO por padrão, e é assim que ele tem de
+   * chegar na mão de quem clica: o relatório é documento de leitura, e a base
+   * municipal inteira já sai completa no Excel e no CSV. Quem precisa dela
+   * impressa liga a opção aqui.
+   *
+   * A opção vale para a versão COMPLETA. Anexar centenas de linhas de tabela
+   * a um resumo de oito páginas desmontaria a única coisa que a versão
+   * resumida promete, que é caber numa leitura curta.
+   */
+  const [comAnexo, setComAnexo] = useState(false);
   const conteudoRef = useRef<HTMLDivElement | null>(null);
   /* Recortes comparados na visão Geral, guardados POR GRUPO: trocar de
      municipal para federal e voltar não deve perder a seleção anterior — e os
@@ -219,6 +264,18 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     [contest, indicatorId, profiles],
   );
 
+  /*
+   * O universo COMPLETO do relatório, reconstruído do zero a partir do pleito
+   * e dos snapshots. Repare que `indicatorId` e `rankingMetric` NÃO estão nas
+   * dependências: o que está selecionado na tela não pode alterar uma linha
+   * deste conjunto. Era exatamente esse o defeito antigo — o PDF herdava o
+   * scatter de um indicador só e saía parcial com cara de completo.
+   */
+  const reportDataset = useMemo(
+    () => (contest ? buildReportDataset({ contest, source: indicatorSource }) : null),
+    [contest],
+  );
+
   const anunciarExport = (linhas: number) =>
     setExportMessage(`${formatInteger(linhas)} linhas exportadas em CSV.`);
 
@@ -238,10 +295,17 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
    */
   const montarRelatorio = async (
     comImagens: boolean,
+    variante: ReportVariant,
   ): Promise<ReportDocument | null> => {
     const generatedAt = new Date();
     const images: ReportImage[] = [];
-    if (comImagens) {
+    // O relatório de um PLEITO não rasteriza mais o gráfico da tela: o PDF
+    // desenha os seus próprios gráficos em vetor, com escala, legenda e
+    // descrição textual. Rasterizar por cima disso só acrescentaria um PNG
+    // redundante — e páginas em imagem, que era justamente o que se queria
+    // evitar. As demais visões continuam levando o gráfico da tela.
+    const rasterizar = comImagens && !(contest && reportDataset);
+    if (rasterizar) {
       const graficos =
         conteudoRef.current?.querySelectorAll<SVGSVGElement>("svg.stats-chart") ??
         [];
@@ -262,15 +326,18 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
         images,
       });
     }
-    if (contest) {
+    if (contest && reportDataset) {
       return buildContestReport({
         dataset,
         contest,
-        ranking,
-        rankingMetric,
-        scatter,
+        reportDataset,
+        // O filtro da tela chega ao relatório apenas como DESTAQUE: ele
+        // decide a ordem dos capítulos e qual indicador ganha as tabelas de
+        // detalhe. Todo indicador com dado entra no arquivo de qualquer jeito.
+        activeViewFilter: { featuredIndicatorId: indicatorId },
         generatedAt,
         images,
+        variante,
       });
     }
     return buildTrajectoryReport({
@@ -282,18 +349,22 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     });
   };
 
-  const exportarRelatorio = async (formato: "excel" | "pdf") => {
+  const exportarRelatorio = async (formato: FormatoExport) => {
     if (exportando) return;
+    const resumido = formato === "pdfResumido";
     setExportando(formato);
     setExportMessage(
       formato === "excel"
         ? "Gerando a pasta de trabalho…"
-        : "Gerando o relatório em PDF…",
+        : `Gerando o relatório em PDF (versão ${resumido ? "resumida" : "completa"})…`,
     );
     try {
       // O Excel não embute imagem (a planilha é para trabalhar os números);
       // rasterizar o gráfico à toa custaria segundos no clique.
-      const relatorio = await montarRelatorio(formato === "pdf");
+      const relatorio = await montarRelatorio(
+        formato !== "excel",
+        resumido ? "resumido" : "completo",
+      );
       if (!relatorio) {
         setExportMessage("Não há dados neste recorte para exportar.");
         return;
@@ -301,12 +372,17 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
       const gerado =
         formato === "excel"
           ? await exportReportAsExcel(relatorio)
-          : await exportReportAsPdf(relatorio);
+          : await exportReportAsPdf(relatorio, {
+              // O anexo municipal é da versão completa: a resumida existe
+              // para caber numa leitura curta, e centenas de linhas de tabela
+              // desmontariam exatamente isso.
+              incluirAnexoMunicipal: comAnexo && !resumido,
+            });
       setExportMessage(
         gerado
           ? formato === "excel"
             ? "Pasta de trabalho .xlsx baixada."
-            : "Relatório em PDF baixado."
+            : `Relatório em PDF baixado (versão ${resumido ? "resumida" : "completa"}).`
           : "Este recorte não tem nenhuma tabela com linhas para exportar.",
       );
     } catch {
@@ -430,6 +506,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
             <BarraRelatorio
               exportando={exportando}
               onExportar={exportarRelatorio}
+              comAnexo={comAnexo}
+              onAlternarAnexo={setComAnexo}
             />
             {grupoGeral && growth ? (
               <GrowthView
@@ -515,9 +593,13 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
 function BarraRelatorio({
   exportando,
   onExportar,
+  comAnexo,
+  onAlternarAnexo,
 }: {
-  exportando: "excel" | "pdf" | null;
-  onExportar: (formato: "excel" | "pdf") => void;
+  exportando: FormatoExport | null;
+  onExportar: (formato: FormatoExport) => void;
+  comAnexo: boolean;
+  onAlternarAnexo: (valor: boolean) => void;
 }) {
   return (
     <div className="stats-report-bar">
@@ -525,11 +607,26 @@ function BarraRelatorio({
         <strong>Exportar este recorte</strong>
         <span>
           Planilha com capa de procedência, uma aba por conjunto e filtros
-          prontos; relatório em PDF com os números de destaque, os gráficos e as
-          tabelas paginadas.
+          prontos; relatório em PDF em duas versões — a resumida para levar a
+          uma reunião curta, a completa com um capítulo por indicador. As duas
+          saem do mesmo dado e trazem a tabela com todos os indicadores.
         </span>
       </p>
       <div className="stats-report-bar__actions">
+        <label className="stats-report-option">
+          <input
+            type="checkbox"
+            checked={comAnexo}
+            onChange={(evento) => onAlternarAnexo(evento.target.checked)}
+          />
+          <span>
+            Anexar a tabela municipal completa ao PDF
+            <small>
+              Só na versão completa. Desligado por padrão: a base inteira já sai
+              no Excel e no CSV.
+            </small>
+          </span>
+        </label>
         <button
           type="button"
           className="stats-report-button"
@@ -537,16 +634,31 @@ function BarraRelatorio({
           disabled={exportando !== null}
         >
           <FileSpreadsheet size={15} aria-hidden />
-          {exportando === "excel" ? "Gerando…" : "Excel"}
+          {exportando === "excel" ? "Gerando…" : ROTULO_FORMATO.excel}
+        </button>
+        {/* Duas versões, dois botões — e não um botão com um seletor
+            escondido: quem clica precisa ver, sem abrir nada, que existe uma
+            resumida e uma completa, e o que cada uma é. O título de cada botão
+            diz o tamanho aproximado para a escolha não depender de tentativa. */}
+        <button
+          type="button"
+          className="stats-report-button stats-report-button--pdf"
+          onClick={() => onExportar("pdfResumido")}
+          disabled={exportando !== null}
+          title="Versão de leitura curta: leituras principais, os cruzamentos de associação mais forte e a tabela com todos os indicadores."
+        >
+          <FileText size={15} aria-hidden />
+          {exportando === "pdfResumido" ? "Gerando…" : ROTULO_FORMATO.pdfResumido}
         </button>
         <button
           type="button"
           className="stats-report-button stats-report-button--pdf"
-          onClick={() => onExportar("pdf")}
+          onClick={() => onExportar("pdfCompleto")}
           disabled={exportando !== null}
+          title="Documento inteiro: um capítulo por indicador com dado, os quatro recortes do território, os rankings e a metodologia completa."
         >
           <FileText size={15} aria-hidden />
-          {exportando === "pdf" ? "Gerando…" : "PDF"}
+          {exportando === "pdfCompleto" ? "Gerando…" : ROTULO_FORMATO.pdfCompleto}
         </button>
       </div>
     </div>

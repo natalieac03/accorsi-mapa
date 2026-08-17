@@ -101,11 +101,247 @@ export type ReportImage = {
   caption?: string;
 };
 
+/* -------------------------------------------------------------------------
+ * Documento analítico do PDF — seções, blocos e gráficos
+ *
+ * A pasta de trabalho continua sendo uma lista de TABELAS: é o formato de quem
+ * vai cruzar os números. O PDF é outro documento — um relatório de leitura, com
+ * capa, capítulos, gráficos e página de metodologia —, e descrevê-lo como
+ * "tabelas + imagens" era o que produzia um arquivo com cara de despejo.
+ *
+ * Por isso o modelo ganha uma segunda projeção, `sections`, que só o PDF
+ * consome. Ela é DECLARATIVA e sem DOM: os testes verificam que a seção de
+ * cada indicador existe, que o título não muda com o filtro da tela e que a
+ * ausência virou travessão, sem abrir um PDF.
+ *
+ * Os gráficos são ESPECIFICAÇÕES, não imagens. O renderizador os desenha em
+ * vetor no jsPDF — o texto do relatório continua pesquisável e selecionável, e
+ * a página não vira um PNG de 2 MB. Todo gráfico carrega `description`: o
+ * gráfico nunca é a única forma de ler o dado.
+ * ------------------------------------------------------------------------- */
+
+/** Um eixo declarado: rótulo, unidade, escala. Nada de eixo mudo. */
+export type ReportAxisSpec = {
+  /** "Mulheres no cadastro", "Votos apurados"… */
+  label: string;
+  /** Unidade por extenso: "% do eleitorado", "votos". Sempre declarada. */
+  unit: string;
+  /** log10 quando a distribuição é muito assimétrica; declarado no eixo. */
+  scale?: "linear" | "log10";
+  /** Casas decimais dos rótulos da escala. */
+  decimals?: number;
+  /** Domínio fixado (0–100 num percentual); calculado do dado quando ausente. */
+  min?: number;
+  max?: number;
+  /** true quando o valor menor fica no alto (posição no município: 1º é o topo). */
+  inverted?: boolean;
+};
+
+/** Um município no gráfico de dispersão. `weight` vira o raio do ponto. */
+export type ReportScatterPoint = {
+  label: string;
+  x: number;
+  y: number;
+  /** Eleitorado do município; null quando não há snapshot (raio mínimo). */
+  weight?: number | null;
+  /** true nos poucos pontos que recebem rótulo direto (os extremos). */
+  callout?: boolean;
+};
+
+/** Uma barra. `value` null = sem dado: a barra não é desenhada, é declarada. */
+export type ReportBarItem = {
+  label: string;
+  value: number | null;
+  note?: string;
+  /** Passo da rampa de uma cor só (0 claro … 2 escuro). Grupos ordenados. */
+  step?: number;
+};
+
+export type ReportBoxSeries = {
+  label: string;
+  values: number[];
+  note?: string;
+  step?: number;
+};
+
+/** Uma célula da matriz de quadrantes. O nome é o do corte — nunca um juízo. */
+export type ReportQuadrantCell = {
+  label: string;
+  count: number;
+  /** No máximo `limite` nomes; a lista é ilustrativa, não um ranking. */
+  items: string[];
+  limite: number;
+  xAcima: boolean;
+  yAcima: boolean;
+};
+
+export type ReportParetoPoint = {
+  posicao: number;
+  label: string;
+  participacaoPct: number;
+  acumuladoPct: number;
+};
+
+/** Um marco anotado na curva acumulada (top 5, top 10, metade dos votos…). */
+export type ReportParetoMark = {
+  posicao: number;
+  acumuladoPct: number;
+  label: string;
+};
+
+/** O conteúdo de um painel de pequenos múltiplos. */
+export type ReportPanelSpec =
+  | {
+      kind: "tira";
+      /** Um valor por município; a tira mostra a distribuição inteira. */
+      values: number[];
+      axis: ReportAxisSpec;
+    }
+  | {
+      kind: "dispersaoMini";
+      points: ReportScatterPoint[];
+      x: ReportAxisSpec;
+      y: ReportAxisSpec;
+    };
+
+export type ReportPanel = {
+  title: string;
+  subtitle?: string;
+  /** Municípios sem dado neste painel: cinza no desenho e número declarado. */
+  semDado?: number;
+  /** Leitura textual do painel — some do gráfico e continua no texto. */
+  note?: string;
+  spec: ReportPanelSpec;
+};
+
+export type ReportChartSpec =
+  | {
+      kind: "dispersao";
+      points: ReportScatterPoint[];
+      x: ReportAxisSpec;
+      y: ReportAxisSpec;
+      /** Reta de mínimos quadrados sobre os pontos desenhados. */
+      tendencia?: boolean;
+      /** O que o tamanho do ponto significa: "eleitorado do município". */
+      pesoLabel?: string;
+    }
+  | { kind: "barras"; items: ReportBarItem[]; axis: ReportAxisSpec }
+  | { kind: "boxplot"; series: ReportBoxSeries[]; axis: ReportAxisSpec }
+  | {
+      kind: "quadrantes";
+      cells: ReportQuadrantCell[];
+      x: ReportAxisSpec;
+      y: ReportAxisSpec;
+      medianaX: number;
+      medianaY: number;
+    }
+  | {
+      kind: "pareto";
+      points: ReportParetoPoint[];
+      marcos: ReportParetoMark[];
+      axis: ReportAxisSpec;
+    }
+  | { kind: "multiplos"; panels: ReportPanel[]; colunas: number };
+
+export type ReportChartLegendItem = {
+  label: string;
+  kind: "ponto" | "linha" | "caixa" | "caixaMediana" | "barra";
+  /** Passo da rampa; ausente = cinza de apoio (sem dado, referência). */
+  step?: number;
+  cinza?: boolean;
+};
+
+export type ReportChart = {
+  id: string;
+  title: string;
+  /** Escala, ano de referência, recorte — o que a leitura precisa saber. */
+  subtitle?: string;
+  legend: ReportChartLegendItem[];
+  /**
+   * A leitura do gráfico em palavras. OBRIGATÓRIA: quem imprime em preto e
+   * branco, quem usa leitor de tela e quem só lê o texto precisa do mesmo
+   * conteúdo. Nenhum gráfico deste relatório é a única forma de ler o dado.
+   */
+  description: string;
+  /** Municípios sem dado: desenhados em cinza, contados e declarados. */
+  semDado?: { count: number; label: string };
+  source?: ReportSource;
+  /** Altura do desenho em mm, sem título nem descrição. */
+  plotHeight?: number;
+  spec: ReportChartSpec;
+};
+
+/** Um par rótulo/valor da ficha de identificação. */
+export type ReportField = { label: string; value: string };
+
+export type ReportBlock =
+  /** Divisão interna de uma seção — "Resumo da análise", "Convenções". */
+  | { kind: "subtitulo"; text: string }
+  | { kind: "paragrafo"; text: string; tone?: "normal" | "suave" }
+  | { kind: "lista"; items: string[] }
+  | { kind: "cartoes"; items: ReportHighlight[]; colunas?: 2 | 3 }
+  | { kind: "campos"; items: ReportField[]; colunas?: 2 | 3 }
+  | { kind: "grafico"; chart: ReportChart }
+  /** Imagem rasterizada — só o mapa, que é captura de tela e não gráfico. */
+  | { kind: "imagem"; image: ReportImage }
+  | { kind: "tabela"; table: ReportTable; maxRows?: number }
+  /** Aviso emoldurado: compatibilidade temporal, limitação metodológica. */
+  | { kind: "aviso"; title?: string; text: string }
+  | { kind: "fonte"; source: ReportSource; note?: string }
+  | { kind: "links"; items: Array<{ label: string; url: string }> };
+
+export type ReportSection = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  /** Marcador no topo da página ("Anexo municipal"). */
+  marker?: string;
+  /** true quando a seção precisa começar em página nova. */
+  startsNewPage?: boolean;
+  blocks: ReportBlock[];
+};
+
+/** Opções de renderização do PDF. O anexo municipal sai DESLIGADO por padrão. */
+export type ReportPdfOptions = {
+  /**
+   * Anexa a tabela municipal completa depois do relatório analítico.
+   * Desligada por padrão: a base completa é do Excel/CSV, e um anexo de
+   * centenas de linhas some com o relatório que a pessoa abriu para ler.
+   */
+  incluirAnexoMunicipal?: boolean;
+};
+
+/**
+ * As duas versões do relatório em PDF.
+ *
+ * "completo" é o documento inteiro: um capítulo por indicador com dado, os
+ * quatro recortes do território, os três rankings e a metodologia completa.
+ * "resumido" é o mesmo dado com menos página: as leituras principais, um
+ * punhado de capítulos escolhidos por régua declarada e a tabela com TODOS os
+ * indicadores — para levar a uma reunião, não para substituir o completo.
+ *
+ * A variante muda o QUE ENTRA no papel. Não muda nenhuma conta: as duas
+ * versões saem da mesma `ReportAnalysis`, e um número que aparece nas duas
+ * aparece igual.
+ */
+export type ReportVariant = "completo" | "resumido";
+
 export type ReportDocument = {
   /** Nome do arquivo sem extensão e sem data (o sufixo é acrescentado). */
   filenameBase: string;
   title: string;
   subtitle: string;
+  /**
+   * Qual versão este documento imprime. Ausente nos relatórios que ainda não
+   * têm variante (trajetória, crescimento): eles são o que são.
+   */
+  variant?: ReportVariant;
+  /**
+   * A marca da versão impressa na CAPA, à direita do nome da candidatura.
+   * Existe para que duas impressões do mesmo recorte não se confundam em cima
+   * da mesa — e para que a resumida nunca passe por completa.
+   */
+  versionBadge?: string;
   /** O recorte visível: "Deputada Federal 2022 · 1º turno", "Goiás"… */
   scope: string;
   candidatura: string;
@@ -116,6 +352,18 @@ export type ReportDocument = {
   omitted: ReportOmission[];
   images: ReportImage[];
   attribution: string;
+  /**
+   * O relatório analítico do PDF. Vazio nos documentos que ainda são só
+   * tabelas — o renderizador então monta as seções padrão a partir dos
+   * cartões, das fontes e das tabelas, e nenhum documento fica sem PDF.
+   */
+  sections?: ReportSection[];
+  /**
+   * A tabela municipal completa do anexo OPCIONAL do PDF. Ela também está em
+   * `tables` (é de lá que o Excel a lê); aqui ela é apontada para o anexo
+   * saber qual imprimir quando — e só quando — a opção for ligada.
+   */
+  annexTable?: ReportTable;
 };
 
 /* -------------------------------------------------------------------------

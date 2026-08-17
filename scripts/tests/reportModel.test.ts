@@ -4,13 +4,16 @@ import type {
   CandidateContest,
   CandidateDataset,
   CandidateMunicipio,
-  CandidateRankingRow,
-  ScatterModel,
+  StatsIndicatorSource,
 } from "../../src/types/candidate.ts";
 import { buildGrowthModel } from "../../src/utils/candidateStats.ts";
 import { buildCareerOverview } from "../../src/utils/candidateStats.ts";
 import { buildTrajectory } from "../../src/utils/candidate.ts";
-import { getStatsIndicator } from "../../src/utils/candidateStats.ts";
+import {
+  buildReportDataset,
+  type ReportDataset,
+} from "../../src/utils/reportDataset.ts";
+import { buildReportAnalysis } from "../../src/utils/reportAnalysis.ts";
 import { toPdfText, getPdfColumns } from "../../src/utils/exportPdf.ts";
 import {
   buildCoverBlocks,
@@ -30,8 +33,8 @@ import {
 import {
   buildContestReport,
   buildGrowthReport,
-  buildRankingTable,
-  buildScatterTable,
+  buildIndicatorTable,
+  buildMunicipiosTable,
   buildTrajectoryReport,
 } from "../../src/utils/reportStats.ts";
 
@@ -140,6 +143,75 @@ function datasetPendente(): CandidateDataset {
     },
     contests: [],
   };
+}
+
+/**
+ * Snapshot territorial sintético: 12 municípios com eleitorado, gênero e
+ * alfabetização. Doze porque o mínimo de amostra do motor é 10 — abaixo disso
+ * nenhum indicador entra, e o que se quer verificar aqui é a tabela montada.
+ */
+function fonteIndicadores(): StatsIndicatorSource {
+  const municipalities: StatsIndicatorSource["electorate"]["municipalities"] = {};
+  const literacy: StatsIndicatorSource["literacy"]["municipalities"] = {};
+  for (let indice = 0; indice < 12; indice += 1) {
+    const ibge = `52000${String(indice).padStart(2, "0")}`;
+    const eleitorado = 10_000 + indice * 900;
+    municipalities[ibge] = {
+      name: `Município ${indice}`,
+      electorate: eleitorado,
+      gender: {
+        female: Math.round(eleitorado * (0.48 + indice * 0.004)),
+        male: Math.round(eleitorado * 0.45),
+        notInformed: 0,
+      },
+    };
+    literacy[ibge] = {
+      literate15Plus: Math.round(eleitorado * (0.9 + indice * 0.005)),
+      population15Plus: eleitorado,
+      literacyRate: 90 + indice * 0.5,
+    };
+  }
+  // Os três municípios do pleito sintético entram no snapshot também.
+  for (const [ibge, nome] of [
+    ["5208707", "Goiânia"],
+    ["5201405", "Anápolis"],
+    ["5212501", "Luziânia"],
+  ]) {
+    municipalities[ibge] = {
+      name: nome,
+      electorate: 200_000,
+      gender: { female: 104_000, male: 96_000, notInformed: 0 },
+    };
+    literacy[ibge] = {
+      literate15Plus: 190_000,
+      population15Plus: 200_000,
+      literacyRate: 95,
+    };
+  }
+  return {
+    electorate: { metadata: {}, municipalities },
+    age: { metadata: {}, municipalities: {} },
+    literacy: { metadata: {}, municipalities: literacy },
+  };
+}
+
+/** Pleito com municípios suficientes para os indicadores existirem. */
+function contestAmplo(): CandidateContest {
+  const municipios: CandidateContest["municipios"] = {};
+  for (let indice = 0; indice < 12; indice += 1) {
+    const ibge = `52000${String(indice).padStart(2, "0")}`;
+    municipios[ibge] = municipio(`Município ${indice}`, 1000 + indice * 120, {
+      percentualValidos: 2 + indice * 0.3,
+    });
+  }
+  return contest("2022-6-1", 2022, { municipios, municipiosComVoto: 12 });
+}
+
+function universo(contestAlvo: CandidateContest = contestAmplo()): ReportDataset {
+  return buildReportDataset({
+    contest: contestAlvo,
+    source: fonteIndicadores(),
+  });
 }
 
 /* -------------------------------------------------------------------------
@@ -321,13 +393,17 @@ test("pleito municipal declara o ranking e o cruzamento como não gerados", () =
   const doc = buildContestReport({
     dataset: base,
     contest: municipal,
-    ranking: [],
-    rankingMetric: "votos",
-    scatter: null,
+    reportDataset: universo(municipal),
     generatedAt: AGORA,
   });
-  assert.deepEqual(doc.tables, []);
-  assert.equal(doc.omitted.length, 2);
+  // Sobra só o resumo executivo: quadro de municípios, concentração e
+  // cruzamento não existem numa disputa de uma cidade só, e os três saem
+  // declarados em vez de virarem tabela de uma linha.
+  assert.deepEqual(
+    doc.tables.map((tabela) => tabela.id),
+    ["resumo"],
+  );
+  assert.equal(doc.omitted.length, 3);
   assert.match(doc.omitted[0].reason, /Goiânia/);
   // A régua do cartão é a da cidade, não a do estado.
   assert.equal(doc.highlights[0].label, "Votos em Goiânia");
@@ -384,85 +460,76 @@ test("relatório da trajetória monta capa, cartões e a tabela do recorte", () 
   ]);
 });
 
-test("ranking mantém ausências vazias e leva as colunas técnicas só ao Excel", () => {
-  const rows: CandidateRankingRow[] = [
-    {
-      ibgeCode: "5208707",
-      nome: "Goiânia",
-      votos: 40000,
-      value: 40000,
-      posicaoNoMunicipio: 2,
-      eleitorado: 1100000,
+test("quadro municipal mantém ausências vazias e leva as técnicas só ao Excel", () => {
+  // Município sem denominador: percentual dos válidos e do partido AUSENTES.
+  // Ele continua no quadro — com célula vazia —, em vez de sumir dele.
+  const semDenominador = contest("2022-6-1", 2022, {
+    municipios: {
+      "5208707": municipio("Goiânia", 40000),
+      "5212501": municipio("Luziânia", 4000, {
+        percentualValidos: null,
+        percentualDoPartido: null,
+        posicaoNoMunicipio: null,
+      }),
     },
-    {
-      ibgeCode: "5212501",
-      nome: "Luziânia",
-      votos: 4000,
-      value: 4000,
-      // Sem colocação apurada e sem eleitorado: as duas células ficam VAZIAS.
-      posicaoNoMunicipio: null,
-      eleitorado: null,
-    },
-  ];
-  const tabela = buildRankingTable(dataset(), contest("2022-6-1", 2022), "votos", rows);
-  assert.deepEqual(tabela.rows[1], [2, "Luziânia", "5212501", 4000, null, null]);
+  });
+  const tabela = buildMunicipiosTable(
+    dataset(),
+    semDenominador,
+    universo(semDenominador),
+  );
+  const luziania = tabela.rows[1];
+  assert.equal(luziania[1], "Luziânia");
+  assert.equal(luziania[3], 4000);
+  assert.equal(luziania[4], null, "% dos válidos ausente fica vazio, nunca 0");
+  assert.equal(luziania[5], null, "% do partido ausente fica vazio, nunca 0");
+  assert.equal(luziania[8], null, "posição não apurada fica vazia");
+
   const colunasPdf = getPdfColumns(tabela).map((coluna) => coluna.header);
-  // "Votos absolutos" não repete a coluna de votos; nada de duas "Votos".
-  // O código IBGE fica só na planilha: o PDF é documento de leitura.
+  // Código IBGE e eleitorado ficam só na planilha: o PDF é de leitura.
   assert.deepEqual(colunasPdf, [
     "Posição",
     "Município",
     "Votos",
+    "% dos válidos",
+    "% do partido",
+    "Votos por mil eleitores",
+    "% dos votos da candidatura",
     "Posição no município",
-    "Eleitorado do município",
   ]);
-
-  // Com a métrica de densidade a coluna extra aparece, com as casas declaradas.
-  const porMil = buildRankingTable(
-    dataset(),
-    contest("2022-6-1", 2022),
-    "votosPorMilEleitores",
-    rows.map((row) => ({ ...row, value: 36.4 })),
-  );
-  assert.deepEqual(getPdfColumns(porMil).map((coluna) => coluna.header), [
-    "Posição",
-    "Município",
-    "Votos",
-    "Votos por 1.000 eleitores",
-    "Posição no município",
-    "Eleitorado do município",
-  ]);
-  // As técnicas continuam existindo — no Excel.
   assert.ok(
-    tabela.columns.some((coluna) => coluna.header === "Código IBGE" && coluna.pdfHidden),
+    tabela.columns.some(
+      (coluna) => coluna.header === "Código IBGE" && coluna.pdfHidden,
+    ),
   );
 });
 
-test("cruzamento conta as exclusões e carrega o aviso da falácia ecológica", () => {
-  const scatter: ScatterModel = {
-    indicator: getStatsIndicator("female"),
-    points: [
-      {
-        ibgeCode: "5208707",
-        nome: "Goiânia",
-        x: 52.4,
-        indicadorValor: 52.4,
-        y: 12.35,
-        votos: 40000,
-      },
-    ],
-    semIndicador: 3,
-    semPercentual: 2,
-    pearson: null,
-    amostraInsuficiente: true,
-  };
-  const tabela = buildScatterTable(contest("2022-6-1", 2022), scatter);
-  assert.equal(tabela.rows.length, 1);
-  assert.deepEqual(tabela.rows[0], ["Goiânia", "5208707", 40000, 12.35, 52.4]);
+test("capítulo de cruzamento declara exclusões, estatística e as ressalvas", () => {
+  // Um município do pleito não tem denominador: fica fora da análise e é
+  // declarado, em vez de entrar valendo zero.
+  const alvo = contestAmplo();
+  alvo.municipios["5200003"] = municipio("Município 3", 1360, {
+    percentualValidos: null,
+  });
+  const reportDataset = universo(alvo);
+  const analysis = buildReportAnalysis({ dataset: reportDataset });
+  const feminino = analysis.indicadores.find(
+    (item) => item.indicator.id === "female",
+  );
+  assert.ok(feminino, "o percentual feminino tem dado neste recorte");
+  if (!feminino) return;
+
+  const tabela = buildIndicatorTable(feminino, alvo, reportDataset);
+  assert.equal(tabela.rows.length, reportDataset.analiticos.length);
   const notas = (tabela.notes ?? []).join(" ");
-  assert.match(notas, /5 municípios ficaram fora/);
-  assert.match(notas, /não prova que as mulheres votaram mais nela/);
-  assert.match(notas, /amostra|mínimo/i);
+  assert.match(notas, /Ficaram fora deste cruzamento/);
+  assert.match(notas, /sem total de válidos apurado/);
+  assert.match(notas, /Correlação não implica causalidade/);
+  assert.match(
+    notas,
+    /não revelam o perfil individual de quem votou na candidatura/,
+  );
+  assert.match(notas, /Spearman/);
 });
 
 test("crescimento deixa vazio o pleito sem apuração do recorte", () => {

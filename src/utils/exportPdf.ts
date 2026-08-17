@@ -1,53 +1,65 @@
 import type { jsPDF } from "jspdf";
 import { downloadBlobFile } from "./browser.ts";
 import {
+  criarTemaPdf,
+  definirTexto,
+  desenharGrafico,
+  encurtar,
+  medirGrafico,
+  paragrafo,
+  quebrar,
+  toPdfText,
+  type PdfTheme,
+} from "./pdfDraw.ts";
+import {
   buildReportFilename,
   formatGeneratedAt,
   formatReportCell,
+  hasExportableContent,
   isNumericColumn,
+  type ReportBlock,
   type ReportColumn,
   type ReportDocument,
+  type ReportPdfOptions,
+  type ReportSection,
+  type ReportSource,
   type ReportTable,
 } from "./reportModel.ts";
 
 /**
- * Relatório em PDF — tradução do modelo (reportModel) em um documento com
- * capa, sumário, tabelas paginadas e rodapé numerado.
+ * RELATÓRIO EM PDF — a tradução do modelo em um documento de leitura.
+ *
+ * O documento é montado em SEÇÕES (`report.sections`), na ordem em que se lê:
+ * capa com identificação e resumo executivo, distribuição territorial,
+ * concentração e rankings, um capítulo por indicador, resumo comparativo,
+ * metodologia e — só quando pedido — o anexo municipal. Um documento que ainda
+ * não tem seções (a trajetória, o crescimento, os painéis do mapa) recebe as
+ * seções padrão montadas a partir dos próprios cartões, fontes e tabelas: o
+ * renderizador tem UM caminho só.
  *
  * ESCOLHA DA BIBLIOTECA: jsPDF + jspdf-autotable, e não pdfmake.
  *
  * - o autotable resolve de graça as três coisas que fazem uma tabela longa
  *   parecer relatório e não despejo: cabeçalho repetido em toda página
  *   (`showHead: "everyPage"`), quebra de página por linha e zebra;
- * - o jsPDF desenha em coordenadas, o que é exatamente o que a capa com faixa
- *   vermelha e a grade de cartões precisam — em pdfmake isso viraria uma
- *   árvore declarativa com tabelas invisíveis fazendo as vezes de layout;
+ * - o jsPDF desenha em COORDENADAS, que é o que a capa, a grade de cartões e —
+ *   principalmente — os gráficos em vetor precisam. Nenhum gráfico deste
+ *   relatório é imagem: o texto continua pesquisável, o arquivo fica em
+ *   dezenas de kB e a ampliação não pixeliza nome de município (`pdfDraw.ts`);
  * - tamanho: jsPDF + autotable somam ~380 kB minificados contra ~1,2 MB do
  *   pdfmake com o vfs de fontes embutido. Como as duas bibliotecas entram por
  *   import dinâmico, isso só pesa para quem exporta — mas o de menor peso
- *   ganha o desempate;
- * - as imagens (mapa e gráficos) já chegam como PNG em data URL, e
- *   `addImage` as coloca direto.
+ *   ganha o desempate.
  *
  * ACENTUAÇÃO: as fontes padrão do PDF usam WinAnsi (cp1252), que cobre todo o
  * português — "Goiânia", "Anápolis", "Luziânia", "eleição", "índice" saem
  * corretos e são extraíveis como texto. O que cp1252 NÃO cobre são símbolos
- * como a seta "→", que sairiam como lixo: `toPdfText` os transcreve antes de
- * escrever. Embutir uma fonte UTF-8 custaria ~400 kB por arquivo gerado para
- * resolver meia dúzia de setas — não compensa.
+ * como a seta "→": `toPdfText` os transcreve antes de escrever. Embutir uma
+ * fonte UTF-8 custaria ~400 kB por arquivo gerado para resolver meia dúzia de
+ * setas — não compensa.
  */
 
 const PDF_MIME = "application/pdf";
-
-/* Paleta da campanha em RGB, como o jsPDF pede. */
-const VERMELHO: [number, number, number] = [193, 18, 31];
-const VERMELHO_CLARO: [number, number, number] = [240, 67, 59];
-const SUPERFICIE: [number, number, number] = [246, 243, 242];
-const BRANCO: [number, number, number] = [255, 255, 255];
-const TINTA: [number, number, number] = [32, 27, 26];
-const TINTA_SUAVE: [number, number, number] = [85, 78, 76];
-const TINTA_FRACA: [number, number, number] = [110, 101, 96];
-const LINHA: [number, number, number] = [225, 218, 216];
 
 /* Geometria da página A4 retrato, em milímetros. */
 const LARGURA = 210;
@@ -65,277 +77,351 @@ const UTIL = LARGURA - 2 * MARGEM;
  */
 export const PDF_MAX_ROWS = 250;
 
+/** Reexportado de `pdfDraw`: é o utilitário que os testes de texto usam. */
+export { toPdfText } from "./pdfDraw.ts";
+
 /* -------------------------------------------------------------------------
- * Texto seguro para as fontes padrão (cp1252)
+ * Estado do desenho
  * ------------------------------------------------------------------------- */
 
-/** Símbolos fora do cp1252 que aparecem nos textos da plataforma. */
-const SUBSTITUICOES: Record<string, string> = {
-  "→": "->",
-  "←": "<-",
-  "↑": "^",
-  "↓": "v",
-  "≥": ">=",
-  "≤": "<=",
-  "≠": "!=",
-  "≈": "~",
-  "⁰": "0",
-  "′": "'",
-  "″": '"',
-  "∞": "infinito",
+type AutoTable = (doc: jsPDF, options: Record<string, unknown>) => void;
+
+type Contexto = {
+  doc: jsPDF;
+  tema: PdfTheme;
+  autoTable: AutoTable;
+  y: number;
+  /** Páginas que levam marcador no topo ("Anexo municipal"). */
+  marcadores: Map<number, string>;
 };
 
-/** Faixa extra do cp1252 (0x80–0x9F): aspas curvas, travessões, bullet… */
-const CP1252_EXTRA = new Set([
-  "\u20ac", "\u201a", "\u0192", "\u201e", "\u2026", "\u2020", "\u2021",
-  "\u02c6", "\u2030", "\u0160", "\u2039", "\u0152", "\u017d", "\u2018",
-  "\u2019", "\u201c", "\u201d", "\u2022", "\u2013", "\u2014", "\u02dc",
-  "\u2122", "\u0161", "\u203a", "\u0153", "\u017e", "\u0178",
-]);
-
-/**
- * Prepara um texto para as fontes padrão do PDF.
- *
- * Acentuação portuguesa passa intacta (está toda em Latin-1). Símbolos
- * conhecidos viram equivalentes legíveis; o que sobrar fora do cp1252 perde os
- * diacríticos e, em último caso, é descartado — melhor uma palavra sem acento
- * do que um glifo aleatório no meio de um relatório de campanha.
- */
-export function toPdfText(value: string): string {
-  let saida = "";
-  for (const char of value) {
-    const substituto = SUBSTITUICOES[char];
-    if (substituto !== undefined) {
-      saida += substituto;
-      continue;
-    }
-    const codigo = char.codePointAt(0) ?? 0;
-    if (codigo < 0x80 || (codigo >= 0xa0 && codigo <= 0xff)) {
-      saida += char;
-      continue;
-    }
-    if (CP1252_EXTRA.has(char)) {
-      saida += char;
-      continue;
-    }
-    const semAcento = char
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-    saida += [...semAcento].every(
-      (item) => (item.codePointAt(0) ?? 0) <= 0xff,
-    )
-      ? semAcento
-      : "";
-  }
-  return saida;
+function garantirEspaco(ctx: Contexto, necessario: number) {
+  if (ctx.y + necessario <= ALTURA - RODAPE) return;
+  novaPagina(ctx);
 }
 
-/* -------------------------------------------------------------------------
- * Utilidades de desenho
- * ------------------------------------------------------------------------- */
-
-type Cursor = { y: number };
-
-function definirTexto(
-  doc: jsPDF,
-  size: number,
-  color: [number, number, number],
-  style: "normal" | "bold" | "italic" = "normal",
-) {
-  doc.setFont("helvetica", style);
-  doc.setFontSize(size);
-  doc.setTextColor(color[0], color[1], color[2]);
+function novaPagina(ctx: Contexto) {
+  ctx.doc.addPage();
+  ctx.y = TOPO;
 }
 
-/** Escreve um parágrafo com quebra automática e devolve a altura ocupada. */
-function paragrafo(
-  doc: jsPDF,
-  texto: string,
-  x: number,
-  y: number,
-  largura: number,
-  alturaLinha: number,
-) {
-  const linhas = doc.splitTextToSize(toPdfText(texto), largura) as string[];
-  linhas.forEach((linha, indice) => {
-    doc.text(linha, x, y + indice * alturaLinha);
-  });
-  return linhas.length * alturaLinha;
-}
-
-function garantirEspaco(doc: jsPDF, cursor: Cursor, necessario: number) {
-  if (cursor.y + necessario <= ALTURA - RODAPE) return;
-  doc.addPage();
-  cursor.y = TOPO;
-}
-
-function tituloSecao(doc: jsPDF, cursor: Cursor, texto: string, sub?: string) {
-  garantirEspaco(doc, cursor, sub ? 22 : 16);
-  definirTexto(doc, 13, VERMELHO, "bold");
-  doc.text(toPdfText(texto), MARGEM, cursor.y);
-  cursor.y += 5;
-  if (sub) {
-    definirTexto(doc, 9, TINTA_SUAVE);
-    cursor.y += paragrafo(doc, sub, MARGEM, cursor.y, UTIL, 4);
-  }
-  doc.setDrawColor(VERMELHO_CLARO[0], VERMELHO_CLARO[1], VERMELHO_CLARO[2]);
-  doc.setLineWidth(0.4);
-  doc.line(MARGEM, cursor.y, MARGEM + UTIL, cursor.y);
-  cursor.y += 5;
+function noTopo(ctx: Contexto) {
+  return ctx.y <= TOPO + 0.5;
 }
 
 /* -------------------------------------------------------------------------
  * Capa
  * ------------------------------------------------------------------------- */
 
-const FAIXA_ALTURA = 74;
+/** Altura mínima da faixa; ela cresce quando o título ocupa mais linhas. */
+const FAIXA_MINIMA = 72;
 
-function desenharCapa(doc: jsPDF, report: ReportDocument): Cursor {
-  doc.setFillColor(VERMELHO[0], VERMELHO[1], VERMELHO[2]);
-  doc.rect(0, 0, LARGURA, FAIXA_ALTURA, "F");
-
-  definirTexto(doc, 9, BRANCO, "bold");
-  doc.text(toPdfText(report.candidatura.toUpperCase()), MARGEM, 22);
-
-  definirTexto(doc, 26, BRANCO, "bold");
-  const titulo = doc.splitTextToSize(
-    toPdfText(report.title),
-    UTIL,
-  ) as string[];
-  titulo.forEach((linha, indice) => doc.text(linha, MARGEM, 36 + indice * 11));
-
-  definirTexto(doc, 13, BRANCO);
-  doc.text(toPdfText(report.subtitle), MARGEM, 36 + titulo.length * 11 + 4);
-
-  definirTexto(doc, 9.5, BRANCO);
+/**
+ * A capa. A faixa vermelha tem altura VARIÁVEL: com um título de duas linhas
+ * (o caso comum — "Desempenho eleitoral — 2022 · Deputada Federal"), uma faixa
+ * fixa empurrava o subtítulo para cima do recorte, e as duas linhas saíam
+ * sobrepostas. Aqui cada linha é escrita a partir do fim da anterior, e a
+ * faixa é fechada onde o texto terminou.
+ */
+function desenharCapa(ctx: Contexto, report: ReportDocument) {
+  const { doc, tema } = ctx;
+  definirTexto(doc, 23, tema.branco, "bold");
+  const titulo = quebrar(doc, report.title, UTIL).slice(0, 3);
+  let base = 34 + titulo.length * 10;
+  const linhas: Array<{ texto: string; size: number; y: number }> = [];
+  linhas.push({ texto: report.subtitle, size: 12, y: base });
+  base += 7;
   // O estado só entra quando o recorte ainda não o nomeia — "Goiás · Goiás"
   // na capa é o tipo de repetição que denuncia arquivo montado por script.
   const escopo = report.scope.includes(report.estado)
     ? report.scope
     : `${report.scope} · ${report.estado}`;
-  doc.text(toPdfText(escopo), MARGEM, FAIXA_ALTURA - 10);
-
-  const cursor: Cursor = { y: FAIXA_ALTURA + 12 };
-  definirTexto(doc, 9, TINTA_FRACA);
-  doc.text(
-    toPdfText(`Gerado em ${formatGeneratedAt(report.generatedAt)}`),
-    MARGEM,
-    cursor.y,
-  );
-  cursor.y += 10;
-  return cursor;
-}
-
-const CARTAO_COLUNAS = 2;
-const CARTAO_ALTURA = 26;
-const CARTAO_ESPACO = 4;
-
-/** Os mesmos cartões que a tela mostra, na grade da capa. */
-function desenharCartoes(doc: jsPDF, cursor: Cursor, report: ReportDocument) {
-  if (report.highlights.length === 0) return;
-  tituloSecao(doc, cursor, "Números do recorte");
-  const largura = (UTIL - CARTAO_ESPACO * (CARTAO_COLUNAS - 1)) / CARTAO_COLUNAS;
-
-  report.highlights.forEach((item, indice) => {
-    const coluna = indice % CARTAO_COLUNAS;
-    if (coluna === 0) garantirEspaco(doc, cursor, CARTAO_ALTURA + 2);
-    const x = MARGEM + coluna * (largura + CARTAO_ESPACO);
-    const y = cursor.y;
-    doc.setFillColor(SUPERFICIE[0], SUPERFICIE[1], SUPERFICIE[2]);
-    doc.roundedRect(x, y, largura, CARTAO_ALTURA, 1.6, 1.6, "F");
-    definirTexto(doc, 7.5, TINTA_FRACA, "bold");
-    doc.text(toPdfText(item.label.toUpperCase()), x + 4, y + 6);
-    definirTexto(doc, 16, TINTA, "bold");
-    doc.text(toPdfText(item.value), x + 4, y + 15);
-    if (item.note) {
-      definirTexto(doc, 7, TINTA_SUAVE);
-      const linhas = (
-        doc.splitTextToSize(toPdfText(item.note), largura - 8) as string[]
-      ).slice(0, 2);
-      linhas.forEach((linha, posicao) =>
-        doc.text(linha, x + 4, y + 20 + posicao * 3.2),
-      );
-    }
-    if (coluna === CARTAO_COLUNAS - 1) cursor.y += CARTAO_ALTURA + CARTAO_ESPACO;
+  linhas.push({ texto: escopo, size: 9.5, y: base });
+  base += 6.4;
+  linhas.push({
+    texto: `Gerado em ${formatGeneratedAt(report.generatedAt)}`,
+    size: 8,
+    y: base,
   });
-  if (report.highlights.length % CARTAO_COLUNAS !== 0) {
-    cursor.y += CARTAO_ALTURA + CARTAO_ESPACO;
-  }
-  cursor.y += 4;
-}
+  const altura = Math.max(FAIXA_MINIMA, base + 9);
 
-/** Procedência: de onde veio cada tabela do documento. */
-function desenharFontes(doc: jsPDF, cursor: Cursor, report: ReportDocument) {
-  if (report.tables.length === 0) return;
-  tituloSecao(doc, cursor, "Fontes e procedência");
-  for (const table of report.tables) {
-    garantirEspaco(doc, cursor, 16);
-    definirTexto(doc, 9.5, TINTA, "bold");
-    doc.text(toPdfText(table.title), MARGEM, cursor.y);
-    cursor.y += 4;
-    definirTexto(doc, 8.5, TINTA_SUAVE);
-    const fonte = [table.source.label, table.source.detail]
-      .filter(Boolean)
-      .join(" · ");
-    cursor.y += paragrafo(doc, fonte, MARGEM, cursor.y, UTIL, 3.8);
-    if (table.source.url) {
-      definirTexto(doc, 7.5, TINTA_FRACA);
-      cursor.y += paragrafo(doc, table.source.url, MARGEM, cursor.y, UTIL, 3.4);
-    }
-    cursor.y += 3;
+  doc.setFillColor(tema.marca[0], tema.marca[1], tema.marca[2]);
+  doc.rect(0, 0, LARGURA, altura, "F");
+  definirTexto(doc, 9, tema.branco, "bold");
+  // A linha de topo é dividida: a candidatura à esquerda e a marca da versão à
+  // direita. Com o nome ocupando a largura inteira, um badge alinhado à
+  // direita cairia por cima dele — por isso cada lado tem a sua metade.
+  const badge = report.versionBadge ?? "";
+  const larguraNome = badge === "" ? UTIL : UTIL * 0.52;
+  doc.text(encurtar(doc, report.candidatura, larguraNome), MARGEM, 20);
+  if (badge !== "") {
+    definirTexto(doc, 8, tema.branco, "bold");
+    doc.text(encurtar(doc, badge, UTIL * 0.46), MARGEM + UTIL, 20, {
+      align: "right",
+    });
   }
-}
-
-/**
- * Conjuntos que NÃO estão no documento, com o motivo. Declarar a ausência é
- * parte do relatório: quem lê precisa distinguir "não houve voto" de "este
- * dado não foi gerado nesta instalação".
- */
-function desenharOmissoes(doc: jsPDF, cursor: Cursor, report: ReportDocument) {
-  if (report.omitted.length === 0) return;
-  tituloSecao(doc, cursor, "Conjuntos não incluídos");
-  for (const item of report.omitted) {
-    garantirEspaco(doc, cursor, 14);
-    definirTexto(doc, 9.5, TINTA, "bold");
-    doc.text(toPdfText(item.title), MARGEM, cursor.y);
-    cursor.y += 4;
-    definirTexto(doc, 8.5, TINTA_SUAVE);
-    cursor.y += paragrafo(doc, item.reason, MARGEM, cursor.y, UTIL, 3.8);
-    cursor.y += 3;
+  definirTexto(doc, 23, tema.branco, "bold");
+  titulo.forEach((linha, indice) => doc.text(linha, MARGEM, 34 + indice * 10));
+  for (const linha of linhas) {
+    definirTexto(doc, linha.size, tema.branco);
+    doc.text(encurtar(doc, linha.texto, UTIL), MARGEM, linha.y);
   }
+  ctx.y = altura + 10;
 }
 
 /* -------------------------------------------------------------------------
- * Imagens e tabelas
+ * Títulos
  * ------------------------------------------------------------------------- */
 
-function desenharImagens(doc: jsPDF, cursor: Cursor, report: ReportDocument) {
-  for (const image of report.images) {
-    const largura = UTIL;
-    const altura = Math.min(
-      largura / (image.aspectRatio > 0 ? image.aspectRatio : 1.6),
-      ALTURA - TOPO - RODAPE - 24,
-    );
-    garantirEspaco(doc, cursor, altura + 22);
-    tituloSecao(doc, cursor, image.title);
-    doc.addImage(
-      image.dataUrl,
-      "PNG",
-      MARGEM,
-      cursor.y,
-      largura,
-      altura,
-      undefined,
-      "FAST",
-    );
-    cursor.y += altura + 3;
-    if (image.caption) {
-      definirTexto(doc, 8, TINTA_FRACA, "italic");
-      cursor.y += paragrafo(doc, image.caption, MARGEM, cursor.y, UTIL, 3.6);
-    }
-    cursor.y += 6;
+/**
+ * Corpo mínimo que precisa caber DEPOIS do título de uma seção.
+ *
+ * Sem essa reserva, uma seção que começa no meio da página (é o caso da
+ * versão resumida, que não quebra folha a cada seção) podia imprimir o título
+ * a três milímetros do rodapé e abrir o conteúdo na página seguinte — um
+ * título órfão, que lê como se a seção estivesse vazia. Nas seções que já
+ * começam em página nova isto nunca dispara: no topo da folha sobram 259 mm.
+ */
+const CORPO_MINIMO_APOS_TITULO = 24;
+
+function tituloSecao(ctx: Contexto, texto: string, sub?: string) {
+  const { doc, tema } = ctx;
+  definirTexto(doc, 7.4, tema.tintaSuave);
+  const alturaSub = sub ? quebrar(doc, sub, UTIL).length * 3.6 : 0;
+  garantirEspaco(ctx, 14 + alturaSub + CORPO_MINIMO_APOS_TITULO);
+  definirTexto(doc, 14, tema.marca, "bold");
+  doc.text(encurtar(doc, texto, UTIL), MARGEM, ctx.y + 4);
+  ctx.y += 6.4;
+  if (sub) {
+    definirTexto(doc, 7.4, tema.tintaSuave);
+    ctx.y += paragrafo(doc, sub, MARGEM, ctx.y + 1, UTIL, 3.6) + 0.6;
   }
+  doc.setDrawColor(tema.marca[0], tema.marca[1], tema.marca[2]);
+  doc.setLineWidth(0.5);
+  doc.line(MARGEM, ctx.y + 1, MARGEM + UTIL, ctx.y + 1);
+  ctx.y += 5.5;
 }
+
+function subtitulo(ctx: Contexto, texto: string) {
+  const { doc, tema } = ctx;
+  // 26 mm: o título mais três linhas do que vem depois. Sem essa reserva o
+  // subtítulo caía sozinho no pé da página e o conteúdo abria a seguinte.
+  garantirEspaco(ctx, 26);
+  definirTexto(doc, 10, tema.tinta, "bold");
+  doc.text(encurtar(doc, texto, UTIL), MARGEM, ctx.y + 3.4);
+  ctx.y += 5;
+  doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
+  doc.setLineWidth(0.2);
+  doc.line(MARGEM, ctx.y, MARGEM + UTIL, ctx.y);
+  ctx.y += 3.4;
+}
+
+/* -------------------------------------------------------------------------
+ * Blocos
+ * ------------------------------------------------------------------------- */
+
+function blocoParagrafo(ctx: Contexto, texto: string, suave: boolean) {
+  const { doc, tema } = ctx;
+  definirTexto(doc, 8.6, suave ? tema.tintaFraca : tema.tinta);
+  const linhas = quebrar(doc, texto, UTIL);
+  // Parágrafo curto nunca é partido; longo quebra por linha, com pelo menos
+  // duas linhas em cada página (viúva de uma linha só lê como erro).
+  garantirEspaco(ctx, Math.min(linhas.length, 3) * 4.1);
+  for (const linha of linhas) {
+    garantirEspaco(ctx, 4.1);
+    doc.text(linha, MARGEM, ctx.y + 3);
+    ctx.y += 4.1;
+  }
+  ctx.y += 2.2;
+}
+
+function blocoLista(ctx: Contexto, itens: readonly string[]) {
+  const { doc, tema } = ctx;
+  const recuo = 4.6;
+  for (const item of itens) {
+    definirTexto(doc, 8.6, tema.tinta);
+    const linhas = quebrar(doc, item, UTIL - recuo);
+    garantirEspaco(ctx, Math.min(linhas.length, 3) * 4.1 + 1);
+    definirTexto(doc, 8.6, tema.marca, "bold");
+    doc.text("•", MARGEM, ctx.y + 3);
+    definirTexto(doc, 8.6, tema.tinta);
+    linhas.forEach((linha, indice) => {
+      if (indice > 0) garantirEspaco(ctx, 4.1);
+      doc.text(linha, MARGEM + recuo, ctx.y + 3);
+      ctx.y += 4.1;
+    });
+    ctx.y += 1.2;
+  }
+  ctx.y += 1.4;
+}
+
+const CARTAO_ALTURA = 25;
+const CARTAO_ESPACO = 4;
+
+function blocoCartoes(
+  ctx: Contexto,
+  itens: ReadonlyArray<{ label: string; value: string; note?: string }>,
+  colunas: number,
+) {
+  const { doc, tema } = ctx;
+  if (itens.length === 0) return;
+  const largura = (UTIL - CARTAO_ESPACO * (colunas - 1)) / colunas;
+  itens.forEach((item, indice) => {
+    const coluna = indice % colunas;
+    if (coluna === 0) garantirEspaco(ctx, CARTAO_ALTURA + 2);
+    const x = MARGEM + coluna * (largura + CARTAO_ESPACO);
+    const y = ctx.y;
+    doc.setFillColor(tema.superficie[0], tema.superficie[1], tema.superficie[2]);
+    doc.roundedRect(x, y, largura, CARTAO_ALTURA, 1.6, 1.6, "F");
+    doc.setFillColor(tema.marca[0], tema.marca[1], tema.marca[2]);
+    doc.rect(x, y, 1.2, CARTAO_ALTURA, "F");
+    definirTexto(doc, 7, tema.tintaFraca, "bold");
+    doc.text(
+      encurtar(doc, item.label.toUpperCase(), largura - 7),
+      x + 4.4,
+      y + 5.6,
+    );
+    definirTexto(doc, 15, tema.tinta, "bold");
+    doc.text(encurtar(doc, item.value, largura - 7), x + 4.4, y + 14);
+    if (item.note) {
+      definirTexto(doc, 6.8, tema.tintaSuave);
+      quebrar(doc, item.note, largura - 7)
+        .slice(0, 2)
+        .forEach((texto, posicao) =>
+          doc.text(texto, x + 4.4, y + 18.4 + posicao * 3.2),
+        );
+    }
+    if (coluna === colunas - 1) ctx.y += CARTAO_ALTURA + CARTAO_ESPACO;
+  });
+  if (itens.length % colunas !== 0) ctx.y += CARTAO_ALTURA + CARTAO_ESPACO;
+  ctx.y += 1.6;
+}
+
+function blocoCampos(
+  ctx: Contexto,
+  itens: ReadonlyArray<{ label: string; value: string }>,
+  colunas: number,
+) {
+  const { doc, tema } = ctx;
+  const largura = (UTIL - 4 * (colunas - 1)) / colunas;
+  for (let inicio = 0; inicio < itens.length; inicio += colunas) {
+    const linha = itens.slice(inicio, inicio + colunas);
+    definirTexto(doc, 8, tema.tinta);
+    const alturas = linha.map(
+      (item) => quebrar(doc, item.value, largura).length * 3.6,
+    );
+    const alturaLinha = Math.max(...alturas) + 4.6;
+    garantirEspaco(ctx, alturaLinha + 1);
+    linha.forEach((item, coluna) => {
+      const x = MARGEM + coluna * (largura + 4);
+      definirTexto(doc, 6.8, tema.tintaFraca);
+      doc.text(encurtar(doc, item.label, largura), x, ctx.y + 2.6);
+      definirTexto(doc, 8, tema.tinta);
+      quebrar(doc, item.value, largura).forEach((texto, indice) =>
+        doc.text(texto, x, ctx.y + 6.6 + indice * 3.6),
+      );
+    });
+    ctx.y += alturaLinha + 1;
+    doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
+    doc.setLineWidth(0.2);
+    doc.line(MARGEM, ctx.y - 1, MARGEM + UTIL, ctx.y - 1);
+  }
+  ctx.y += 2.4;
+}
+
+function blocoAviso(ctx: Contexto, titulo: string | undefined, texto: string) {
+  const { doc, tema } = ctx;
+  definirTexto(doc, 7.8, tema.tintaSuave);
+  const linhas = quebrar(doc, texto, UTIL - 9);
+  const altura = linhas.length * 3.7 + (titulo ? 4.4 : 0) + 5;
+  garantirEspaco(ctx, altura + 2);
+  doc.setFillColor(tema.superficie[0], tema.superficie[1], tema.superficie[2]);
+  doc.rect(MARGEM, ctx.y, UTIL, altura, "F");
+  doc.setFillColor(tema.marca[0], tema.marca[1], tema.marca[2]);
+  doc.rect(MARGEM, ctx.y, 1.2, altura, "F");
+  let interno = ctx.y + 4.4;
+  if (titulo) {
+    definirTexto(doc, 8, tema.tinta, "bold");
+    doc.text(encurtar(doc, titulo, UTIL - 9), MARGEM + 5, interno);
+    interno += 4.4;
+  }
+  definirTexto(doc, 7.8, tema.tintaSuave);
+  linhas.forEach((linha, indice) =>
+    doc.text(linha, MARGEM + 5, interno + indice * 3.7),
+  );
+  ctx.y += altura + 3.4;
+}
+
+function textoFonte(source: ReportSource) {
+  return [source.label, source.detail].filter(Boolean).join(" · ");
+}
+
+function blocoFonte(ctx: Contexto, source: ReportSource, nota?: string) {
+  const { doc, tema } = ctx;
+  definirTexto(doc, 7, tema.tintaFraca);
+  const texto = [textoFonte(source), source.url, nota]
+    .filter(Boolean)
+    .join(" · ");
+  garantirEspaco(ctx, 6);
+  ctx.y += paragrafo(doc, `Fonte: ${texto}`, MARGEM, ctx.y + 2.4, UTIL, 3.3) + 3;
+}
+
+function blocoLinks(
+  ctx: Contexto,
+  itens: ReadonlyArray<{ label: string; url: string }>,
+) {
+  const { doc, tema } = ctx;
+  for (const item of itens) {
+    garantirEspaco(ctx, 8);
+    definirTexto(doc, 8, tema.tinta);
+    doc.text(encurtar(doc, item.label, UTIL), MARGEM, ctx.y + 3);
+    ctx.y += 4;
+    definirTexto(doc, 7.2, tema.marca);
+    // Link clicável de verdade: o endereço é o texto, e o retângulo do link
+    // acompanha a linha escrita.
+    doc.textWithLink(encurtar(doc, item.url, UTIL), MARGEM, ctx.y + 2.6, {
+      url: item.url,
+    });
+    ctx.y += 5;
+  }
+  ctx.y += 1.4;
+}
+
+function blocoImagem(
+  ctx: Contexto,
+  image: { title: string; dataUrl: string; aspectRatio: number; caption?: string },
+) {
+  const { doc, tema } = ctx;
+  const largura = UTIL;
+  const altura = Math.min(
+    largura / (image.aspectRatio > 0 ? image.aspectRatio : 1.6),
+    ALTURA - TOPO - RODAPE - 30,
+  );
+  garantirEspaco(ctx, altura + 14);
+  definirTexto(doc, 9.5, tema.tinta, "bold");
+  doc.text(encurtar(doc, image.title, UTIL), MARGEM, ctx.y + 3.6);
+  ctx.y += 6;
+  doc.addImage(image.dataUrl, "PNG", MARGEM, ctx.y, largura, altura, undefined, "FAST");
+  ctx.y += altura + 2;
+  if (image.caption) {
+    definirTexto(doc, 7.4, tema.tintaFraca);
+    ctx.y += paragrafo(doc, image.caption, MARGEM, ctx.y + 2, UTIL, 3.4);
+  }
+  ctx.y += 5;
+}
+
+function blocoGrafico(ctx: Contexto, chart: Parameters<typeof desenharGrafico>[1]) {
+  const altura = medirGrafico(ctx.doc, chart, UTIL);
+  // O gráfico é indivisível: título, desenho, descrição e fonte moram na
+  // mesma página. Se não couber, a página vira ANTES de desenhar qualquer
+  // traço — nunca no meio de um eixo.
+  garantirEspaco(ctx, altura);
+  ctx.y += desenharGrafico(ctx.doc, chart, MARGEM, ctx.y, UTIL, ctx.tema);
+}
+
+/* -------------------------------------------------------------------------
+ * Tabelas
+ * ------------------------------------------------------------------------- */
 
 /** Colunas que entram no PDF (as técnicas ficam só na planilha). */
 export function getPdfColumns(table: ReportTable): ReportColumn[] {
@@ -343,14 +429,14 @@ export function getPdfColumns(table: ReportTable): ReportColumn[] {
   return visiveis.length > 0 ? visiveis : table.columns;
 }
 
-function linhasVisiveis(table: ReportTable) {
+function linhasVisiveis(table: ReportTable, maxRows: number) {
   const indices = table.columns
     .map((column, indice) => ({ column, indice }))
     .filter(({ column }) => !column.pdfHidden)
     .map(({ indice }) => indice);
   const usados = indices.length > 0 ? indices : table.columns.map((_, i) => i);
   return table.rows
-    .slice(0, PDF_MAX_ROWS)
+    .slice(0, maxRows)
     .map((row) =>
       usados.map((indice) =>
         formatReportCell(row[indice] ?? null, table.columns[indice]),
@@ -358,14 +444,12 @@ function linhasVisiveis(table: ReportTable) {
     );
 }
 
-type AutoTable = (doc: jsPDF, options: Record<string, unknown>) => void;
-
 /** As notas de rodapé de uma tabela, na ordem em que são lidas. */
-function montarNotas(table: ReportTable): string[] {
+function montarNotas(table: ReportTable, maxRows: number): string[] {
   const notas = [...(table.notes ?? [])];
-  if (table.rows.length > PDF_MAX_ROWS) {
+  if (table.rows.length > maxRows) {
     notas.unshift(
-      `Mostrando as ${PDF_MAX_ROWS} primeiras de ${table.rows.length} linhas. A pasta de trabalho em Excel traz todas.`,
+      `Mostrando as ${maxRows} primeiras de ${table.rows.length} linhas. A pasta de trabalho em Excel traz todas.`,
     );
   }
   if (table.columns.some((column) => column.pdfHidden)) {
@@ -379,39 +463,86 @@ function montarNotas(table: ReportTable): string[] {
   return notas;
 }
 
-function desenharTabela(
-  doc: jsPDF,
-  cursor: Cursor,
-  table: ReportTable,
-  autoTable: AutoTable,
-) {
+function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
+  const { doc, tema } = ctx;
   const columns = getPdfColumns(table);
-  const linhas = linhasVisiveis(table);
-  garantirEspaco(doc, cursor, 40);
-  tituloSecao(doc, cursor, table.title, table.subtitle);
+  const linhas = linhasVisiveis(table, maxRows);
 
-  /* Largura proporcional ao CONTEÚDO, e não a divisão igual que o autotable
-     faz por padrão: numa tabela de três colunas a divisão igual deixa
-     "Posição" com 6 cm vazios e "Município" apertado.
-     O cabeçalho pesa MENOS que as células (fator 0,55) porque ele quebra em
-     várias linhas sem prejuízo, enquanto um nome de município cortado no meio
-     é ilegível — sem esse desconto, "Mulheres no cadastro (% do eleitorado)"
-     roubaria metade da página para exibir um número de quatro dígitos. */
-  const pesos = columns.map((column, indice) => {
-    const cabecalho = column.header.length * 0.55;
-    // Piso: a MAIOR PALAVRA do cabeçalho tem de caber inteira. Sem esse piso,
-    // "Turno" (5 letras, células de 1 dígito) ganhava largura de 3 caracteres
-    // e o cabeçalho saía partido como "Turn / o".
-    const maiorPalavra = Math.max(
-      ...column.header.split(/[\s·]+/).map((palavra) => palavra.length),
-    );
-    const maiorCelula = linhas.reduce(
-      (maior, linha) => Math.max(maior, (linha[indice] ?? "").length),
+  definirTexto(doc, 7.4, tema.tintaSuave);
+  const alturaSub = table.subtitle
+    ? quebrar(doc, table.subtitle, UTIL).length * 3.4
+    : 0;
+  // Cabeçalho da tabela mais três linhas: menos que isso na página é órfão.
+  garantirEspaco(ctx, 22 + alturaSub);
+
+  /* LARGURA DE COLUNA MEDIDA, não estimada por contagem de caracteres.
+     A conta antiga contava letras: numa tabela com uma coluna de texto longo,
+     "Ano" recebia 9 mm e o autotable quebrava "2026" em "20 / 26" — um ano
+     partido no meio lê como dois números. Aqui cada coluna declara duas
+     larguras, as duas medidas em milímetros com a fonte da tabela:
+
+       mínimo   — a maior PALAVRA do cabeçalho e, nas colunas numéricas, o
+                  número inteiro. Nada disso pode quebrar;
+       desejado — o cabeçalho inteiro e a maior célula em uma linha só.
+
+     O que sobra depois dos mínimos é distribuído na proporção do que cada
+     coluna ainda queria; só as colunas de texto encolhem, e elas quebram em
+     mais linhas sem perder legibilidade. */
+  const PADDING = 4.4;
+  const maiorPalavra = (texto: string) =>
+    Math.max(
+      ...toPdfText(texto)
+        .split(/[\s·]+/)
+        .map((palavra) => doc.getTextWidth(palavra)),
       0,
     );
-    return Math.max(cabecalho, maiorPalavra, maiorCelula) + 2;
-  });
-  const somaPesos = pesos.reduce((soma, peso) => soma + peso, 0) || 1;
+  definirTexto(doc, 8, tema.tinta, "bold");
+  const cabecalhoCheio = columns.map((column) =>
+    doc.getTextWidth(toPdfText(column.header)),
+  );
+  const cabecalhoPalavra = columns.map((column) => maiorPalavra(column.header));
+  definirTexto(doc, 8, tema.tinta);
+  const celulaCheia = columns.map((_, indice) =>
+    linhas.reduce(
+      (maior, linha) => Math.max(maior, doc.getTextWidth(linha[indice] ?? "")),
+      0,
+    ),
+  );
+  const celulaPalavra = columns.map((_, indice) =>
+    linhas.reduce(
+      (maior, linha) => Math.max(maior, maiorPalavra(linha[indice] ?? "")),
+      0,
+    ),
+  );
+  const minimos = columns.map((column, indice) =>
+    Math.max(
+      cabecalhoPalavra[indice],
+      isNumericColumn(column) ? celulaCheia[indice] : celulaPalavra[indice],
+    ) + PADDING,
+  );
+  const desejados = columns.map((_, indice) =>
+    Math.max(cabecalhoCheio[indice], celulaCheia[indice], minimos[indice] - PADDING) +
+    PADDING,
+  );
+  const somaMinimos = minimos.reduce((soma, valor) => soma + valor, 0);
+  const somaDesejados = desejados.reduce((soma, valor) => soma + valor, 0);
+  let larguras: number[];
+  if (somaDesejados <= UTIL) {
+    // Sobrou espaço: cresce todo mundo na proporção do que pediu.
+    larguras = desejados.map((valor) => (valor * UTIL) / somaDesejados);
+  } else if (somaMinimos <= UTIL) {
+    const folga = UTIL - somaMinimos;
+    const excedentes = desejados.map(
+      (valor, indice) => valor - minimos[indice],
+    );
+    const somaExcedentes = excedentes.reduce((soma, valor) => soma + valor, 0) || 1;
+    larguras = minimos.map(
+      (valor, indice) => valor + (folga * excedentes[indice]) / somaExcedentes,
+    );
+  } else {
+    // Nem os mínimos cabem: encolhe proporcionalmente e o cabeçalho quebra.
+    larguras = minimos.map((valor) => (valor * UTIL) / somaMinimos);
+  }
   const columnStyles: Record<
     number,
     { halign: "right" | "left"; cellWidth: number }
@@ -419,9 +550,75 @@ function desenharTabela(
   columns.forEach((column, indice) => {
     columnStyles[indice] = {
       halign: isNumericColumn(column) ? "right" : "left",
-      cellWidth: (UTIL * pesos[indice]) / somaPesos,
+      cellWidth: larguras[indice],
     };
   });
+
+  /* Tabela CURTA não se parte. Uma tabela de doze linhas quebrada em nove e
+     três, com o cabeçalho repetido para três linhas, lê como defeito. Se ela
+     cabe inteira numa página e não cabe no que sobrou desta, a página vira
+     antes. Tabela longa (o anexo municipal) continua paginando normalmente:
+     ali a quebra é inevitável e o cabeçalho repetido é o que a resolve. */
+  const notas = montarNotas(table, maxRows);
+  definirTexto(doc, 7.5, tema.tintaFraca);
+  const blocosNotas = notas.map((nota) => ({
+    linhas: quebrar(doc, `• ${nota}`, UTIL),
+  }));
+  const alturaNotas = blocosNotas.reduce(
+    (soma, bloco) => soma + bloco.linhas.length * 3.4 + 1,
+    0,
+  );
+  /* Altura estimada da tabela. Duas coisas que a conta ingênua errava:
+     a célula que QUEBRA em duas linhas (uma classificação com o coeficiente
+     entre parênteses passa de uma linha em coluna estreita) e a reserva das
+     notas, que é a mesma margem inferior que o autotable vai aplicar. Sem as
+     duas, a conta dizia que a tabela cabia e a última linha caía sozinha na
+     página seguinte. */
+  definirTexto(doc, 8, tema.tinta);
+  const linhasDaLinha = (linha: string[]) =>
+    Math.max(
+      1,
+      ...linha.map((celula, indice) =>
+        Math.ceil(
+          doc.getTextWidth(celula ?? "") / Math.max(2, larguras[indice] - PADDING),
+        ),
+      ),
+    );
+  const alturaCorpo = linhas.reduce(
+    (soma, linha) => soma + 3.6 + linhasDaLinha(linha) * 3.2,
+    0,
+  );
+  const alturaCabecalho =
+    3.6 +
+    Math.max(
+      ...columns.map((_, indice) =>
+        Math.ceil(
+          cabecalhoCheio[indice] / Math.max(2, larguras[indice] - PADDING),
+        ),
+      ),
+      1,
+    ) * 3.2;
+  const alturaEstimada =
+    12 + alturaSub + alturaCabecalho + alturaCorpo + alturaNotas + 9;
+  const alturaUtil = ALTURA - TOPO - RODAPE;
+  if (
+    linhas.length <= 25 &&
+    ctx.y + alturaEstimada > ALTURA - RODAPE &&
+    alturaEstimada <= alturaUtil
+  ) {
+    novaPagina(ctx);
+  }
+  definirTexto(doc, 9.5, tema.tinta, "bold");
+  doc.text(encurtar(doc, table.title, UTIL), MARGEM, ctx.y + 3.4);
+  ctx.y += 5;
+  if (table.subtitle) {
+    definirTexto(doc, 7.4, tema.tintaSuave);
+    ctx.y += paragrafo(doc, table.subtitle, MARGEM, ctx.y + 1, UTIL, 3.4) + 1;
+  }
+  doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
+  doc.setLineWidth(0.2);
+  doc.line(MARGEM, ctx.y, MARGEM + UTIL, ctx.y);
+  ctx.y += 2.6;
 
   /* As notas são montadas e MEDIDAS antes da tabela, e a altura delas entra na
      margem inferior do autotable. Sem isso a tabela ocupava até o pé da página
@@ -429,20 +626,16 @@ function desenharTabela(
      folha nova, deixando o relatório terminar numa página quase vazia com
      meia dúzia de linhas de legenda. Reservando o espaço, a tabela quebra um
      pouco antes e as notas ficam sempre logo abaixo dela. */
-  const notas = montarNotas(table);
-  definirTexto(doc, 7.5, TINTA_FRACA);
-  const blocosNotas = notas.map((nota) => ({
-    linhas: doc.splitTextToSize(toPdfText(`• ${nota}`), UTIL) as string[],
-  }));
-  const alturaNotas = blocosNotas.reduce(
-    (soma, bloco) => soma + bloco.linhas.length * 3.4 + 1,
-    0,
-  );
-
-  autoTable(doc, {
+  /* As notas foram montadas e MEDIDAS acima, e a altura delas entra na margem
+     inferior do autotable. Sem isso a tabela ocupava até o pé da página e o
+     bloco de notas — que não pode ser partido — migrava inteiro para uma folha
+     nova, deixando o relatório terminar numa página quase vazia com meia dúzia
+     de linhas de legenda. Reservando o espaço, a tabela quebra um pouco antes
+     e as notas ficam sempre logo abaixo dela. */
+  ctx.autoTable(doc, {
     head: [columns.map((column) => toPdfText(column.header))],
     body: linhas,
-    startY: cursor.y,
+    startY: ctx.y,
     margin: {
       left: MARGEM,
       right: MARGEM,
@@ -461,48 +654,190 @@ function desenharTabela(
       font: "helvetica",
       fontSize: 8,
       cellPadding: { top: 1.8, right: 2, bottom: 1.8, left: 2 },
-      textColor: TINTA,
-      lineColor: LINHA,
+      textColor: tema.tinta,
+      lineColor: tema.linha,
       lineWidth: 0,
       overflow: "linebreak",
     },
     headStyles: {
-      fillColor: VERMELHO,
-      textColor: BRANCO,
+      fillColor: tema.marca,
+      textColor: tema.branco,
       fontStyle: "bold",
       fontSize: 8,
     },
     // Zebra discreta: a superfície secundária da paleta, o suficiente para o
     // olho seguir a linha numa tabela de 246 municípios.
-    alternateRowStyles: { fillColor: SUPERFICIE },
+    alternateRowStyles: { fillColor: tema.superficie },
     columnStyles,
   });
 
   const finalY =
     (doc as unknown as { lastAutoTable?: { finalY?: number } }).lastAutoTable
-      ?.finalY ?? cursor.y;
-  cursor.y = finalY + 5;
+      ?.finalY ?? ctx.y;
+  ctx.y = finalY + 5;
 
-  garantirEspaco(doc, cursor, alturaNotas + 2);
-  definirTexto(doc, 7.5, TINTA_FRACA);
+  garantirEspaco(ctx, alturaNotas + 2);
+  definirTexto(doc, 7.5, tema.tintaFraca);
   for (const bloco of blocosNotas) {
     bloco.linhas.forEach((linha, indice) => {
-      doc.text(linha, MARGEM, cursor.y + indice * 3.4);
+      doc.text(linha, MARGEM, ctx.y + indice * 3.4);
     });
-    cursor.y += bloco.linhas.length * 3.4 + 1;
+    ctx.y += bloco.linhas.length * 3.4 + 1;
   }
-  cursor.y += 6;
+  ctx.y += 6;
 }
 
 /* -------------------------------------------------------------------------
- * Rodapé
+ * Seções
+ * ------------------------------------------------------------------------- */
+
+function desenharBloco(ctx: Contexto, block: ReportBlock) {
+  switch (block.kind) {
+    case "subtitulo":
+      subtitulo(ctx, block.text);
+      break;
+    case "paragrafo":
+      blocoParagrafo(ctx, block.text, block.tone === "suave");
+      break;
+    case "lista":
+      blocoLista(ctx, block.items);
+      break;
+    case "cartoes":
+      blocoCartoes(ctx, block.items, block.colunas ?? 2);
+      break;
+    case "campos":
+      blocoCampos(ctx, block.items, block.colunas ?? 2);
+      break;
+    case "grafico":
+      blocoGrafico(ctx, block.chart);
+      break;
+    case "imagem":
+      blocoImagem(ctx, block.image);
+      break;
+    case "tabela":
+      desenharTabela(ctx, block.table, block.maxRows ?? PDF_MAX_ROWS);
+      break;
+    case "aviso":
+      blocoAviso(ctx, block.title, block.text);
+      break;
+    case "fonte":
+      blocoFonte(ctx, block.source, block.note);
+      break;
+    case "links":
+      blocoLinks(ctx, block.items);
+      break;
+  }
+}
+
+function desenharSecao(ctx: Contexto, section: ReportSection) {
+  if (section.startsNewPage && !noTopo(ctx)) novaPagina(ctx);
+  const inicio = ctx.doc.getNumberOfPages();
+  tituloSecao(ctx, section.title, section.subtitle);
+  section.blocks.forEach((block, indice) => {
+    /* Um subtítulo NUNCA fica sozinho no pé da página. Quando o bloco seguinte
+       é um gráfico — que é indivisível e costuma ser alto —, os dois são
+       reservados JUNTOS: sem isso, o nome do indicador ficava numa página e a
+       nuvem de pontos dele na seguinte, e a página anterior terminava com um
+       título solto que lê como seção vazia. */
+    const proximo = section.blocks[indice + 1];
+    if (block.kind === "subtitulo" && proximo?.kind === "grafico") {
+      garantirEspaco(ctx, 9 + medirGrafico(ctx.doc, proximo.chart, UTIL));
+    }
+    desenharBloco(ctx, block);
+  });
+  if (section.marker) {
+    for (let pagina = inicio; pagina <= ctx.doc.getNumberOfPages(); pagina += 1) {
+      ctx.marcadores.set(pagina, section.marker);
+    }
+  }
+}
+
+/**
+ * As seções de um documento que ainda não tem narrativa própria (trajetória,
+ * crescimento, painéis do mapa). O renderizador continua tendo um caminho só:
+ * cartões, imagens, fontes, omissões e uma seção por tabela.
+ */
+function secoesPadrao(report: ReportDocument): ReportSection[] {
+  const secoes: ReportSection[] = [];
+  const capa: ReportBlock[] = [];
+  if (report.highlights.length > 0) {
+    capa.push({ kind: "cartoes", items: report.highlights, colunas: 2 });
+  }
+  for (const image of report.images) capa.push({ kind: "imagem", image });
+  if (report.tables.length > 0) {
+    capa.push({ kind: "subtitulo", text: "Fontes e procedência" });
+    for (const table of report.tables) {
+      capa.push({ kind: "fonte", source: table.source, note: table.title });
+    }
+  }
+  if (report.omitted.length > 0) {
+    capa.push({ kind: "subtitulo", text: "Conjuntos não incluídos" });
+    capa.push({
+      kind: "lista",
+      items: report.omitted.map((item) => `${item.title}: ${item.reason}`),
+    });
+  }
+  if (capa.length > 0) {
+    secoes.push({ id: "resumo", title: "Números do recorte", blocks: capa });
+  }
+  const comLinhas = report.tables.filter((table) => table.rows.length > 0);
+  comLinhas.forEach((table, indice) => {
+    secoes.push({
+      id: `tabela-${table.id}`,
+      title: table.title,
+      subtitle: table.subtitle,
+      startsNewPage: indice === 0,
+      blocks: [
+        { kind: "tabela", table: { ...table, title: "", subtitle: undefined } },
+      ],
+    });
+  });
+  return secoes;
+}
+
+/**
+ * O anexo municipal — a base inteira, página a página, DESLIGADO por padrão.
+ *
+ * Ligado, ele entra depois do relatório analítico, com marcador próprio no
+ * topo de cada página, cabeçalho repetido e a nota de que a mesma base está no
+ * Excel e no CSV. Desligado (o padrão), o relatório termina na metodologia:
+ * um anexo de centenas de linhas some com o documento que a pessoa abriu para
+ * ler, e a base completa já tem dois formatos melhores para ela.
+ */
+function secaoAnexo(table: ReportTable): ReportSection {
+  return {
+    id: "anexo-municipal",
+    title: "Anexo municipal",
+    subtitle:
+      "Uma linha por município com voto apurado, do mais votado ao menos votado.",
+    marker: "Anexo municipal",
+    startsNewPage: true,
+    blocks: [
+      {
+        kind: "paragrafo",
+        text: "Esta é a mesma base que a pasta de trabalho em Excel e o CSV entregam — aqui ela vem impressa, para consulta em papel. Para cruzar com outra base, use os arquivos: eles trazem também as colunas técnicas (código IBGE, denominadores) que ficam fora do PDF.",
+        tone: "suave",
+      },
+      {
+        kind: "tabela",
+        table: { ...table, title: "", subtitle: undefined },
+        maxRows: PDF_MAX_ROWS,
+      },
+    ],
+  };
+}
+
+/* -------------------------------------------------------------------------
+ * Rodapé e marcadores
  * ------------------------------------------------------------------------- */
 
 /**
  * Rodapé desenhado no fim, quando o total de páginas já é conhecido — assim
- * "página X de Y" é o número real, sem placeholder trocado depois.
+ * "página X de Y" é o número real, sem placeholder trocado depois. O marcador
+ * de anexo entra no mesmo passo, pelo mesmo motivo.
  */
-function desenharRodapes(doc: jsPDF, report: ReportDocument) {
+function desenharRodapes(ctx: Contexto, report: ReportDocument) {
+  const { doc, tema } = ctx;
   const total = doc.getNumberOfPages();
   const data = new Intl.DateTimeFormat("pt-BR", {
     timeZone: "America/Sao_Paulo",
@@ -512,10 +847,19 @@ function desenharRodapes(doc: jsPDF, report: ReportDocument) {
   }).format(report.generatedAt);
   for (let pagina = 1; pagina <= total; pagina += 1) {
     doc.setPage(pagina);
-    doc.setDrawColor(LINHA[0], LINHA[1], LINHA[2]);
+    const marcador = ctx.marcadores.get(pagina);
+    if (marcador && pagina > 1) {
+      definirTexto(doc, 7, tema.tintaFraca);
+      doc.text(toPdfText(marcador), MARGEM + UTIL, TOPO - 8, { align: "right" });
+      doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
+      doc.setLineWidth(0.2);
+      doc.line(MARGEM, TOPO - 6, MARGEM + UTIL, TOPO - 6);
+    }
+    if (pagina === 1) continue;
+    doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
     doc.setLineWidth(0.2);
     doc.line(MARGEM, ALTURA - 14, MARGEM + UTIL, ALTURA - 14);
-    definirTexto(doc, 7, TINTA_FRACA);
+    definirTexto(doc, 7, tema.tintaFraca);
     doc.text(toPdfText(report.attribution), MARGEM, ALTURA - 10);
     doc.text(
       toPdfText(`Página ${pagina} de ${total} · ${data}`),
@@ -524,6 +868,20 @@ function desenharRodapes(doc: jsPDF, report: ReportDocument) {
       { align: "right" },
     );
   }
+  // A capa leva o rodapé em branco, sobre a faixa: escrever cinza sobre
+  // vermelho seria ilegível, e uma capa sem paginação parece página perdida.
+  doc.setPage(1);
+  definirTexto(doc, 7, tema.tintaFraca);
+  doc.text(toPdfText(report.attribution), MARGEM, ALTURA - 10);
+  doc.text(
+    toPdfText(`Página 1 de ${total} · ${data}`),
+    MARGEM + UTIL,
+    ALTURA - 10,
+    { align: "right" },
+  );
+  doc.setDrawColor(tema.linha[0], tema.linha[1], tema.linha[2]);
+  doc.setLineWidth(0.2);
+  doc.line(MARGEM, ALTURA - 14, MARGEM + UTIL, ALTURA - 14);
 }
 
 /* -------------------------------------------------------------------------
@@ -541,53 +899,63 @@ async function carregarJsPdf() {
 }
 
 /** Monta o documento inteiro e devolve a instância do jsPDF. */
-export async function renderReportPdf(report: ReportDocument) {
+export async function renderReportPdf(
+  report: ReportDocument,
+  options: ReportPdfOptions = {},
+) {
   const { jsPDF: JsPdf, autoTable } = await carregarJsPdf();
   const doc = new JsPdf({ unit: "mm", format: "a4", orientation: "portrait" });
   doc.setProperties({
     title: report.title,
     subject: `${report.subtitle} · ${report.scope}`,
     author: report.candidatura,
+    keywords: [report.estado, report.scope, "TSE", "IBGE"].join(", "),
     creator: "Plataforma de inteligência eleitoral",
   });
 
-  const cursor = desenharCapa(doc, report);
-  desenharCartoes(doc, cursor, report);
-  desenharFontes(doc, cursor, report);
-  desenharOmissoes(doc, cursor, report);
-  desenharImagens(doc, cursor, report);
+  const ctx: Contexto = {
+    doc,
+    tema: criarTemaPdf(),
+    autoTable,
+    y: TOPO,
+    marcadores: new Map<number, string>(),
+  };
 
-  // As tabelas começam em página nova: a primeira página fica sendo a capa com
-  // o sumário do recorte, que é o que se projeta numa reunião, e nenhuma
-  // tabela nasce espremida no rodapé dela.
-  const comLinhas = report.tables.filter((table) => table.rows.length > 0);
-  if (comLinhas.length > 0) {
-    doc.addPage();
-    cursor.y = TOPO;
+  desenharCapa(ctx, report);
+  const secoes =
+    report.sections && report.sections.length > 0
+      ? [...report.sections]
+      : secoesPadrao(report);
+  // O anexo é o ÚLTIMO conteúdo do documento e só existe se for pedido.
+  if (options.incluirAnexoMunicipal && report.annexTable) {
+    secoes.push(secaoAnexo(report.annexTable));
   }
-  for (const table of comLinhas) {
-    desenharTabela(doc, cursor, table, autoTable);
-  }
-  desenharRodapes(doc, report);
+  for (const section of secoes) desenharSecao(ctx, section);
+  desenharRodapes(ctx, report);
   return doc;
 }
 
 /** Bytes do PDF — usado pelos testes e pelo gerador de exemplos. */
 export async function buildPdfBuffer(
   report: ReportDocument,
+  options: ReportPdfOptions = {},
 ): Promise<ArrayBuffer> {
-  const doc = await renderReportPdf(report);
+  const doc = await renderReportPdf(report, options);
   return doc.output("arraybuffer") as ArrayBuffer;
 }
 
 /**
- * Gera e baixa o PDF. Resolve `false` quando não há nenhuma linha para
- * imprimir — um relatório só com capa passaria a impressão de que os dados
- * estão ali para quem não rolar até o fim.
+ * Gera e baixa o PDF. Resolve `false` quando não há nada para imprimir — um
+ * relatório só com capa passaria a impressão de que os dados estão ali para
+ * quem não rolar até o fim.
  */
-export async function exportReportAsPdf(report: ReportDocument): Promise<boolean> {
-  if (!report.tables.some((table) => table.rows.length > 0)) return false;
-  const doc = await renderReportPdf(report);
+export async function exportReportAsPdf(
+  report: ReportDocument,
+  options: ReportPdfOptions = {},
+): Promise<boolean> {
+  const temNarrativa = (report.sections?.length ?? 0) > 0;
+  if (!temNarrativa && !hasExportableContent(report)) return false;
+  const doc = await renderReportPdf(report, options);
   downloadBlobFile(
     new Blob([doc.output("arraybuffer") as ArrayBuffer], { type: PDF_MIME }),
     buildReportFilename(report, "pdf"),
