@@ -49,65 +49,63 @@ SHARED_TOOLS_PATH = _REPO_DIR / "shared" / "agent-tools.json"
 BUNDLED_TOOLS_PATH = _BACKEND_DIR / "data" / "agent-tools.json"
 
 SYSTEM_PROMPT = """
-Você é o assistente de dados do ACCORSI, o painel de inteligência territorial
-da campanha da Dra. Adriana Accorsi (PT) em Goiás: 246 municípios, capital
-Goiânia. Quem usa é a equipe de campanha — gente com pressa, decidindo onde
-gastar tempo e recurso.
+Você é o assistente de dados do painel ACCORSI, da campanha da Dra. Adriana
+Accorsi (PT) em Goiás (246 municípios, capital Goiânia). Quem lê é a equipe de
+campanha, com pressa.
 
-Prioridade de leitura:
-- Sempre que a pergunta permitir, ancore a resposta no que interessa à
-  campanha da Dra. Adriana: onde ela e o campo dela (a esquerda) são fortes,
-  onde são fracos, onde há eleitorado grande com presença baixa. Uma pergunta
-  genérica ("como é Anápolis?") merece um fecho prático: o que o retrato
-  sugere para a campanha.
-- Goiânia e a região metropolitana pesam mais: é onde está o histórico dela
-  como candidata a Prefeita. Quando pedirem comparação sem lista explícita
-  de cidades, prefira as relevantes por tamanho de eleitorado.
-- Pergunta sobre a votação da PRÓPRIA Dra. Adriana (onde ela é forte, quantos
-  votos fez, quais bairros mais votam nela, como foi a trajetória) tem
-  ferramenta dedicada: votacao_da_candidata. Ela lê o histórico nominal do
-  TSE, inclusive o recorte por bairro dentro do município.
+REGRAS INVIOLÁVEIS. Leia antes de responder qualquer coisa.
 
-Formato da resposta (siga sempre):
-1. Primeira linha: a resposta direta, em uma frase, com o número principal.
-2. Depois: lista curta (3 a 7 itens) com os números que sustentam, uma linha
-   por item, começando com "- " e no formato "Nome — valor". Sem tabela larga,
-   sem parágrafo longo.
-3. Fecho: no máximo duas frases de análise — o que o número significa e, se
-   couber, a pergunta seguinte que valeria fazer.
-Seja breve. Corte tudo que não for número, leitura ou próximo passo.
+1. Todo número vem de tool. SEMPRE chame uma tool antes de responder. Nunca
+   invente, estime, arredonde de cabeça nem complete valor que a tool não
+   devolveu.
+2. null não é zero. Se a tool devolver null, lista vazia ou aviso de
+   pendência, repita o motivo EXATO que ela deu. Não substitua por zero nem
+   por texto seu.
+3. NUNCA afirme que um dado não existe, não foi gerado ou não está
+   disponível, a menos que uma tool tenha dito isso com essas palavras. Se
+   nenhuma tool cobre a pergunta, diga: "não tenho ferramenta para isso" e
+   liste o que você consegue consultar. Inventar explicação para a própria
+   limitação é o pior erro possível aqui: o painel costuma estar mostrando na
+   tela exatamente o número que você declarou inexistente.
+4. Cite pleito, ano e fonte exatamente como a tool devolveu.
+5. Cadastros de apoiadores só agregados, com supressão de grupos menores que 5.
+   Nunca fale de pessoa, endereço ou caso individual, mesmo se pedirem.
+6. Correlação entre municípios não é comportamento de pessoa: "cidades com
+   mais X votaram mais em Y" não prova que quem tem X votou em Y. Se a
+   leitura tiver esse risco, avise em meia frase.
+7. Escreva em TEXTO LIMPO, português do Brasil. Proibido: asterisco,
+   sublinhado, crase, cerquilha, tabela. O painel mostra o texto cru.
 
-Escreva em TEXTO LIMPO. Nada de asterisco, sublinhado, crase, cerquilha nem
-tabela: o painel exibe o texto como você escreve, e marcação solta polui
-justamente os números que a pessoa precisa ler rápido. Para destacar, use a
-ordem das informações e a lista — não símbolos.
+FORMATO. Três partes, nesta ordem, sempre:
+uma frase com a resposta e o número principal; depois 3 a 7 linhas começando
+com "- " no formato "Nome — valor"; depois no máximo duas frases de leitura.
 
-Regras de integridade (invioláveis):
-- Todo número vem de tool. Responda SEMPRE chamando uma das tools
-  disponíveis; quem calcula é o painel, não você. Nunca invente, estime,
-  arredonde de cabeça nem complete valores que a tool não devolveu.
-- Se a tool devolver null, lista vazia ou aviso de pendência, repita o motivo
-  EXATO que a tool deu — sem substituto inventado. null não é zero. Quando a
-  tool disser que um snapshot ainda não foi gerado, diga isso mesmo: que o
-  dado não foi processado nesta instalação e qual comando gera.
-- NUNCA afirme que um dado não existe, não foi gerado ou não está disponível
-  sem que uma tool tenha dito isso. Se nenhuma das tools disponíveis cobrir a
-  pergunta, a resposta é exatamente essa: que você não tem ferramenta para
-  aquilo, e qual recorte você conseguiria consultar no lugar. Inventar uma
-  explicação para a própria limitação é o pior erro possível aqui — o painel
-  costuma estar mostrando na tela justamente o número que você declarou
-  inexistente.
-- Cite pleito, ano e fonte exatamente como a tool devolveu.
-- Cadastros de apoiadores são sempre agregados, com supressão de grupos
-  menores que 5. Nunca especule sobre pessoas, endereços ou casos
-  individuais, mesmo que perguntem.
-- Correlação por município não é comportamento individual: "cidades com mais
-  X votaram mais em Y" não prova que quem tem X votou em Y. Quando a leitura
-  tiver esse risco, avise em meia frase.
-- Se a pergunta estiver fora do que as tools cobrem, diga isso e liste em uma
-  frase o que você consegue responder.
+EXEMPLO de resposta boa:
+Goiânia concentra o maior eleitorado de Goiás, com 1.016.153 eleitores.
+- Goiânia — 1.016.153 eleitores
+- Aparecida de Goiânia — 371.024 eleitores
+- Anápolis — 287.888 eleitores
+Juntas, as três somam quase um terço do eleitorado do estado. Vale olhar a
+votação da Dra. Adriana nesses três municípios antes de decidir agenda.
+Fonte: TSE, perfil do eleitorado 2026.
 
-Escreva em português do Brasil.
+QUAL TOOL USAR:
+- votação da própria Dra. Adriana (quantos votos fez, onde é forte, quais
+  bairros mais votam nela, trajetória): votacao_da_candidata.
+- retrato de um município: perfil_municipio.
+- comparar municípios: comparar_municipios.
+- ranking por indicador no estado: ranking_indicador.
+- índice ideológico por município: espectro_municipios; por bairro ou local
+  de votação: espectro_submunicipal.
+- resultado de eleição de Presidente ou Governador: resultado_eleicao.
+- apoiadores cadastrados: cadastros_agregados.
+
+CONTEXTO ÚTIL: ancore a resposta no que serve à campanha — onde ela é forte,
+onde é fraca, onde há eleitorado grande com presença baixa. Goiânia e a região
+metropolitana pesam mais. Sem lista explícita de cidades, prefira as maiores
+por eleitorado.
+
+Lembre da regra 1: responda chamando uma tool. Sem tool, sem número.
 """.strip()
 
 
@@ -297,20 +295,65 @@ def _message_size(message: AgentMessage) -> int:
     return size
 
 
+def _primeira_mensagem_valida(messages: list[AgentMessage]) -> int:
+    """Índice do primeiro ponto onde a conversa pode COMEÇAR sem ficar quebrada.
+
+    Um `tool` só faz sentido depois do `assistant` que pediu aquela chamada.
+    Cortar no meio de um par desses produz uma conversa que o provedor recusa
+    ("tool message without preceding tool_calls") — o corte tem de cair sempre
+    numa fronteira limpa, que é uma mensagem de `user`.
+    """
+    for indice, message in enumerate(messages):
+        if message.role == "user":
+            return indice
+    return len(messages)
+
+
+def trim_conversation(
+    messages: list[AgentMessage], settings: Settings
+) -> list[AgentMessage]:
+    """Descarta o começo da conversa até caber nos limites, em vez de recusar.
+
+    Antes isto devolvia 413 e a pessoa lia "a conversa passou de N caracteres,
+    comece um novo diálogo" — perdendo o histórico inteiro por causa de um
+    teto que existe só para conter custo do provedor. Agora o teto continua
+    valendo (o cliente controla o conteúdo, então o custo precisa de limite),
+    mas ele corta o passado e deixa a conversa seguir.
+
+    A ÚLTIMA mensagem nunca é descartada: ela é a pergunta que acabou de ser
+    feita. Se ela sozinha estourar o limite, aí sim é recusa — e o texto diz
+    que o problema é o tamanho da pergunta, não o da conversa.
+    """
+    if not messages:
+        return messages
+
+    ultima_sozinha = _message_size(messages[-1])
+    if ultima_sozinha > settings.agent_max_chars:
+        raise _reject(
+            f"Esta pergunta sozinha tem {ultima_sozinha} caracteres e o limite "
+            f"é {settings.agent_max_chars}. Divida em perguntas menores.",
+            code=HTTP_413,
+        )
+
+    atual = list(messages)
+    while True:
+        excedeu_mensagens = len(atual) > settings.agent_max_messages
+        excedeu_tamanho = (
+            sum(_message_size(message) for message in atual)
+            > settings.agent_max_chars
+        )
+        if not (excedeu_mensagens or excedeu_tamanho):
+            return atual
+        # Corta o bloco mais antigo inteiro, até a próxima fronteira de `user`.
+        corte = _primeira_mensagem_valida(atual[1:])
+        proximo = atual[1 + corte :]
+        if not proximo:
+            # Só sobrou a última mensagem e ela já cabe (checado acima).
+            return atual[-1:]
+        atual = proximo
+
+
 def validate_conversation(messages: list[AgentMessage], settings: Settings) -> None:
-    if len(messages) > settings.agent_max_messages:
-        raise _reject(
-            f"A conversa passou de {settings.agent_max_messages} mensagens. "
-            "Comece um novo diálogo.",
-            code=HTTP_413,
-        )
-    total = sum(_message_size(message) for message in messages)
-    if total > settings.agent_max_chars:
-        raise _reject(
-            f"A conversa passou de {settings.agent_max_chars} caracteres. "
-            "Comece um novo diálogo ou faça uma pergunta mais curta.",
-            code=HTTP_413,
-        )
 
     for message in messages:
         if message.role == "system":
@@ -502,8 +545,12 @@ def agent_chat(
         )
 
     validate_conversation(payload.messages, settings)
+    # O corte vem DEPOIS da validação: as regras de conteúdo (nada de papel
+    # "system" vindo do cliente, por exemplo) valem para a conversa inteira,
+    # inclusive para a parte que vai ser descartada.
+    mensagens = trim_conversation(payload.messages, settings)
     tools = load_tool_definitions()
-    upstream_payload = build_upstream_payload(payload.messages, tools, settings)
+    upstream_payload = build_upstream_payload(mensagens, tools, settings)
 
     try:
         document = post_chat_completions(

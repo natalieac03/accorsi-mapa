@@ -38,13 +38,22 @@ class Settings(BaseSettings):
     # e só a rota /agent/chat responde 503. Nenhum outro recurso depende disso.
     openrouter_api_key: str | None = None
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    # Alternativas já compatíveis com este mesmo contrato de tool calling:
+    # Trocável por variável de ambiente AGENT_MODEL, sem tocar em código —
+    # é o botão de custo desta plataforma. Qualquer modelo do OpenRouter que
+    # suporte TOOL CALLING serve; sem tool calling o agente não funciona, porque
+    # ele é proibido de responder número sem consultar o painel.
+    # Alternativas já compatíveis com este mesmo contrato:
     # deepseek/deepseek-v4-flash-0731, openai/gpt-5.6-luna, anthropic/claude-sonnet-5.
     agent_model: str = "google/gemini-3.6-flash"
-    # Teto de mensagens e de caracteres por requisição: o cliente controla o
-    # conteúdo da conversa, então o custo do upstream precisa de limite aqui.
-    agent_max_messages: int = Field(default=30, ge=2, le=200)
-    agent_max_chars: int = Field(default=24_000, ge=500, le=400_000)
+    # Teto por requisição: o cliente controla o conteúdo da conversa, então o
+    # custo do upstream precisa de limite aqui. Estourar o teto NÃO derruba a
+    # conversa — o servidor descarta as mensagens mais antigas e segue (ver
+    # trim_conversation). Estes números são, portanto, controle de CUSTO por
+    # pergunta, não uma trava de uso: quanto menor, mais barata e mais curta de
+    # memória fica cada consulta. Ajustáveis por AGENT_MAX_MESSAGES e
+    # AGENT_MAX_CHARS.
+    agent_max_messages: int = Field(default=40, ge=2, le=200)
+    agent_max_chars: int = Field(default=60_000, ge=500, le=400_000)
     agent_max_output_tokens: int = Field(default=1024, ge=64, le=8192)
     agent_timeout_seconds: float = Field(default=30.0, ge=1.0, le=120.0)
     # Mesmo espírito de login_max_attempts/login_window_minutes, por usuário.

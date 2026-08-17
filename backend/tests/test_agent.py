@@ -219,27 +219,73 @@ def test_override_de_modelo_e_temperatura_no_corpo_e_recusado(
     assert response.status_code == 422
 
 
-def test_estouro_de_mensagens_devolve_413(
-    client: TestClient, admin_user: User, monkeypatch: pytest.MonkeyPatch
+def test_conversa_longa_e_cortada_em_vez_de_recusada(
+    client: TestClient,
+    admin_user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    contrato_de_tools: Path,
 ):
+    """Conversa comprida não derruba mais o diálogo: perde o começo e segue.
+
+    Antes isto devolvia 413 e a pessoa lia "comece um novo diálogo", perdendo
+    o histórico inteiro por causa de um teto que existe só para conter custo.
+    """
     login_admin(client)
     ligar_agente(monkeypatch, agent_max_messages=4, agent_max_requests=50)
+    capturado = capturar_payload(monkeypatch)
     response = client.post(
         CHAT_URL,
-        json={"messages": [{"role": "user", "content": f"pergunta {i}"} for i in range(5)]},
+        json={"messages": [{"role": "user", "content": f"pergunta {i}"} for i in range(9)]},
     )
-    assert response.status_code == 413
-    assert "4 mensagens" in response.json()["detail"]
+    assert response.status_code == 200
+    enviadas = [m for m in capturado["payload"]["messages"] if m["role"] != "system"]
+    assert len(enviadas) <= 4
+    # A pergunta ATUAL nunca é descartada — é a que acabou de ser feita.
+    assert enviadas[-1]["content"] == "pergunta 8"
 
 
-def test_estouro_de_caracteres_devolve_413(
+def test_corte_nunca_comeca_num_tool_orfao(
+    client: TestClient,
+    admin_user: User,
+    monkeypatch: pytest.MonkeyPatch,
+    contrato_de_tools: Path,
+):
+    """Um `tool` sem o `assistant` que o pediu faz o provedor recusar.
+
+    O corte precisa cair sempre numa fronteira de `user`.
+    """
+    login_admin(client)
+    ligar_agente(monkeypatch, agent_max_messages=4, agent_max_requests=50)
+    capturado = capturar_payload(monkeypatch)
+    conversa = []
+    for i in range(4):
+        conversa += [
+            {"role": "user", "content": f"pergunta {i}"},
+            {"role": "assistant", "content": None,
+             "tool_calls": [{"id": f"c{i}", "type": "function",
+                             "function": {"name": "perfil_municipio", "arguments": "{}"}}]},
+            {"role": "tool", "content": "resultado", "tool_call_id": f"c{i}"},
+        ]
+    conversa.append({"role": "user", "content": "pergunta final"})
+    response = client.post(CHAT_URL, json={"messages": conversa})
+    assert response.status_code == 200
+    enviadas = [m for m in capturado["payload"]["messages"] if m["role"] != "system"]
+    assert enviadas[0]["role"] == "user"
+    assert enviadas[-1]["content"] == "pergunta final"
+
+
+def test_pergunta_unica_gigante_ainda_e_recusada(
     client: TestClient, admin_user: User, monkeypatch: pytest.MonkeyPatch
 ):
+    """Cortar não resolve quando a pergunta ATUAL sozinha já estoura o teto."""
     login_admin(client)
     ligar_agente(monkeypatch, agent_max_chars=500)
     response = client.post(CHAT_URL, json=mensagens("a" * 501))
     assert response.status_code == 413
-    assert "500 caracteres" in response.json()["detail"]
+    detalhe = response.json()["detail"]
+    # O texto fala do tamanho da PERGUNTA, não em recomeçar a conversa.
+    assert "pergunta sozinha" in detalhe
+    assert "Comece um novo diálogo" not in detalhe
 
 
 def test_rate_limit_por_usuario_devolve_429(
@@ -540,7 +586,7 @@ def test_o_prompt_proibe_declarar_dado_inexistente_sem_tool():
     """
     prompt = agent.SYSTEM_PROMPT
     assert "NUNCA afirme que um dado não existe" in prompt
-    assert "não tem ferramenta para" in prompt
+    assert "não tenho ferramenta para isso" in prompt
     assert "votacao_da_candidata" in prompt
     # As regras antigas continuam de pé — nenhuma foi trocada pela nova.
     assert "Todo número vem de tool" in prompt
