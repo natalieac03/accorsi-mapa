@@ -7,36 +7,6 @@ ideológica por partido, recorte submunicipal por local de votação, um agente 
 perguntas sobre os dados e um módulo de cadastros de apoiadores com minimização
 de dados pessoais.
 
-Frontend React + TypeScript com Google Maps; backend FastAPI + PostgreSQL.
-
-> **Esta instalação nasce sem dados.** Diferente da versão do Rio Grande do Sul,
-> onde os snapshots vinham prontos no repositório, aqui todo `src/data/*.json` é
-> um placeholder com `"status": "pendente"` até você rodar:
->
-> ```bash
-> bash gerar_dados.sh
-> ```
->
-> Enquanto isso, o app sobe e o mapa desenha, mas as camadas aparecem vazias, e
-> os testes que dependem do snapshot se declaram **pulados** com a instrução —
-> em vez de falharem em vermelho por falta de dado. Assim que os arquivos
-> existem, eles voltam a valer sozinhos.
-
-## Trocar de estado
-
-Todo o "que estado é este" mora em dois arquivos que precisam concordar:
-
-| Arquivo | Usado por |
-|---|---|
-| `src/config/estado.ts` | interface, mapa, malha do IBGE |
-| `scripts/estado.py` | scripts de ETL |
-
-Sigla, nome, código do IBGE, número de municípios, centro e limites do mapa
-saem daí. A contagem de municípios é validação **dura** nos processadores: uma
-base que não cubra exatamente esse número é recusada, em vez de gerar um mapa
-com buraco silencioso.
-
----
 
 ## O que a plataforma entrega
 

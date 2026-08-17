@@ -548,6 +548,7 @@ def main() -> None:
     finalized_contests: list[dict[str, Any]] = []
     source_rows = 0
     selected_rows = 0
+    pleitos_descartados: list[tuple[str, str]] = []
 
     for year in YEARS:
         year_paths = paths[year]
@@ -572,10 +573,20 @@ def main() -> None:
         contests = governor_contests | president_contests
         source_rows += governor_source_rows + president_source_rows
         selected_rows += governor_selected_rows + president_selected_rows
-        finalized_contests.extend(
-            finalize_contest(contest, candidate_catalog[year], municipality_names)
-            for contest in contests.values()
-        )
+        # Um pleito por vez, e um que falhe NÃO leva os outros junto. Antes,
+        # qualquer problema num único pleito (por exemplo o de Governador)
+        # abortava tudo e o arquivo não era gravado — a aba Eleições ficava
+        # vazia inclusive de Presidente, que não tem relação nenhuma com ele.
+        for contest in contests.values():
+            try:
+                finalized_contests.append(
+                    finalize_contest(
+                        contest, candidate_catalog[year], municipality_names
+                    )
+                )
+            except RuntimeError as erro:
+                pleitos_descartados.append((contest["id"], str(erro)))
+                print(f"  !! pleito {contest['id']} descartado: {erro}")
 
     finalized_contests.sort(
         key=lambda contest: (
@@ -599,29 +610,28 @@ def main() -> None:
     obrigatorios = {
         f"{year}-{office_code}-1" for year in YEARS for office_code in OFFICES
     }
-    faltando = sorted(obrigatorios - encontrados)
-    if faltando:
+    # Falha só quando NADA foi gerado. Com qualquer pleito de pé, o arquivo é
+    # gravado e o que faltou fica declarado: meia aba de Eleições funcionando
+    # é melhor que uma aba vazia, e o que está lá continua sendo dado real.
+    if not finalized_contests:
         raise RuntimeError(
-            f"Faltam pleitos de 1º turno, que sempre existem: {faltando}. "
-            f"Encontrados: {sorted(encontrados)}."
+            "Nenhum pleito pôde ser gerado. Nada foi gravado. "
+            f"Descartados: {[c for c, _ in pleitos_descartados] or 'nenhum'}."
         )
 
-    # 2º turno sem o 1º do mesmo cargo/ano é incoerente: aí, sim, algo quebrou.
-    orfaos = sorted(
-        contest_id
-        for contest_id in encontrados
-        if contest_id.endswith("-2")
-        and f"{contest_id[:-1]}1" not in encontrados
-    )
-    if orfaos:
-        raise RuntimeError(
-            f"Pleito de 2º turno sem o 1º turno correspondente: {orfaos}."
+    faltando = sorted(obrigatorios - encontrados)
+    if faltando:
+        print(
+            f"  AVISO: faltam pleitos de 1º turno: {', '.join(faltando)}. "
+            "O arquivo foi gravado com o que existe; a aba Eleições mostra "
+            "esses pleitos e omite os ausentes."
         )
 
     segundos = sorted(c for c in encontrados if c.endswith("-2"))
+    primeiros = sorted(c for c in encontrados if c.endswith("-1"))
     print(
         f"  Pleitos: {len(encontrados)} "
-        f"({len(obrigatorios)} de 1º turno + {len(segundos)} de 2º turno"
+        f"({len(primeiros)} de 1º turno + {len(segundos)} de 2º turno"
         + (f": {', '.join(segundos)}" if segundos else " — nenhum")
         + ")"
     )
@@ -643,6 +653,14 @@ def main() -> None:
             ),
             "sourceRows": source_rows,
             "selectedRows": selected_rows,
+            # O que NÃO entrou fica escrito no próprio arquivo. Um snapshot
+            # parcial que não declara a lacuna é pior que nenhum: quem lê
+            # supõe cobertura completa e conclui errado.
+            "missingContests": sorted(obrigatorios - encontrados),
+            "discardedContests": [
+                {"id": contest_id, "reason": motivo}
+                for contest_id, motivo in pleitos_descartados
+            ],
             "privacyLevel": "Resultados públicos agregados por município; sem dados de eleitores.",
             "inputFiles": {
                 f"governorSections{year}": {
