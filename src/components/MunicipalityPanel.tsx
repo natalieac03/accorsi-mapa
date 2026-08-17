@@ -154,6 +154,7 @@ type MunicipalityPanelProps = {
   onSpectrumReset: () => void;
   onPollingContestChange: (contestId: string) => void;
   onPollingViewModeChange: (viewMode: PollingViewMode) => void;
+  onPollingPartyChange: (partyCode: string) => void;
   onPollingMunicipalityChange: (municipalityId: string | null) => void;
   onPollingBandToggle: (band: AnalysisBand) => void;
   onPollingShowAllBands: () => void;
@@ -288,6 +289,7 @@ export function MunicipalityPanel({
   onSpectrumReset,
   onPollingContestChange,
   onPollingViewModeChange,
+  onPollingPartyChange,
   onPollingMunicipalityChange,
   onPollingBandToggle,
   onPollingShowAllBands,
@@ -741,6 +743,7 @@ export function MunicipalityPanel({
             selectedMunicipalityId={selectedId}
             onContestChange={onPollingContestChange}
             onViewModeChange={onPollingViewModeChange}
+            onPartyChange={onPollingPartyChange}
             onMunicipalityChange={onPollingMunicipalityChange}
             onToggleBand={onPollingBandToggle}
             onShowAllBands={onPollingShowAllBands}

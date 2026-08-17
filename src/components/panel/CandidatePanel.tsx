@@ -7,6 +7,7 @@ import {
   Vote,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { ContestCards } from "../ContestCards";
 import candidatoJson from "../../data/candidato/adriana-accorsi.json";
 import electorateJson from "../../data/electorate-go.json";
 import type {
@@ -32,7 +33,8 @@ import {
   isCandidatePendente,
   listContestsComBairros,
 } from "../../utils/candidate";
-import { formatInteger, formatPercent } from "../../utils/electorate";
+import { getMunicipalScope } from "../../utils/candidateStats";
+import { formatInteger } from "../../utils/electorate";
 
 /**
  * Aba "Accorsi": a trajetória nominal da candidata em foco, pleito a pleito.
@@ -138,6 +140,9 @@ export function CandidatePanel() {
 
   const maxRankingValue = ranking.length > 0 ? ranking[0].value : 0;
 
+  /* Num pleito de uma cidade só, o ranking de municípios teria UMA linha
+     repetindo o cartão de cima; quem informa ali embaixo é o de bairros. */
+  const escopo = getMunicipalScope(contest);
   const bairrosAtuais = getBairros(contest)?.slice(0, BAIRROS_SIZE) ?? null;
   const comparacaoPossivel = bairroContests.length >= 2;
   const contestAnterior = comparacaoPossivel ? bairroContests[0] : null;
@@ -239,7 +244,8 @@ export function CandidatePanel() {
                 onClick={() => setContestId(point.id)}
               >
                 <title>
-                  {`${point.electionYear} · ${point.officeName}${turno} · ${formatInteger(point.votos)} votos · ${point.resultadoLabel}`}
+                  {/* resultadoLabel vem vazio quando não é para carimbar. */}
+                  {`${point.electionYear} · ${point.officeName}${turno} · ${formatInteger(point.votos)} votos${point.resultadoLabel ? ` · ${point.resultadoLabel}` : ""}`}
                 </title>
                 {/* alvo de clique maior que a marca (a coluna é fina) */}
                 <rect
@@ -269,14 +275,16 @@ export function CandidatePanel() {
                 >
                   {point.officeShort}
                 </text>
-                <text
-                  x={center}
-                  y={PLOT_TOP + plotH + 34}
-                  className="candidate-chart-office"
-                  textAnchor="middle"
-                >
-                  {point.resultadoShort}
-                </text>
+                {point.resultadoShort && (
+                  <text
+                    x={center}
+                    y={PLOT_TOP + plotH + 34}
+                    className="candidate-chart-office"
+                    textAnchor="middle"
+                  >
+                    {point.resultadoShort}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -294,8 +302,8 @@ export function CandidatePanel() {
           {trajectory.map((point) => (
             <option value={point.id} key={point.id}>
               {point.electionYear} · {point.officeName}
-              {point.round > 1 ? ` · ${point.round}º turno` : ""} ·{" "}
-              {point.resultadoLabel}
+              {point.round > 1 ? ` · ${point.round}º turno` : ""}
+              {point.resultadoLabel ? ` · ${point.resultadoLabel}` : ""}
             </option>
           ))}
         </select>
@@ -305,38 +313,9 @@ export function CandidatePanel() {
         </small>
       </label>
 
-      <section className="candidate-cards" aria-label="Resumo do pleito">
-        <div>
-          <span>Votos no estado</span>
-          <strong>{formatInteger(contest.votosNoEstado)}</strong>
-          <small>{contest.candidatura.resultado || "resultado não informado"}</small>
-        </div>
-        <div>
-          <span>Posição no estado</span>
-          <strong>
-            {contest.posicaoNoEstado !== null
-              ? `${contest.posicaoNoEstado}º`
-              : "—"}
-          </strong>
-          <small>
-            de {formatInteger(contest.candidaturasNoPleito)} candidaturas
-          </small>
-        </div>
-        <div>
-          <span>Municípios com voto</span>
-          <strong>{formatInteger(contest.municipiosComVoto)}</strong>
-          <small>com voto nominal apurado</small>
-        </div>
-        <div>
-          <span>Concentração top 5</span>
-          <strong>{formatPercent(contest.concentracaoPercentual.top5)}</strong>
-          <small>
-            top 10 {formatPercent(contest.concentracaoPercentual.top10)} · top 20{" "}
-            {formatPercent(contest.concentracaoPercentual.top20)}
-          </small>
-        </div>
-      </section>
+      <ContestCards contest={contest} className="candidate-cards" />
 
+      {!escopo && (
       <section className="analysis-ranking-section" aria-label="Ranking de municípios">
         <div className="analysis-ranking-header">
           <div>
@@ -425,6 +404,7 @@ export function CandidatePanel() {
           {exportMessage}
         </div>
       </section>
+      )}
 
       {(bairrosAtuais || comparacaoBairros) && (
         <section

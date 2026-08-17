@@ -1,7 +1,8 @@
 import { Bot, Loader2, Send, Trash2, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDataAgent } from "../hooks/useDataAgent";
 import type { EntradaContextoAgente } from "../utils/agentTools";
+import { formatarRespostaAgente, type TrechoAgente } from "../utils/agentText";
 
 /**
  * Botão flutuante + painel de conversa do agente de dados.
@@ -27,6 +28,63 @@ const SUGESTOES = [
   "Compare Goiânia, Anápolis e Rio Verde",
   "Onde o índice ideológico é mais à esquerda em Goiás?",
 ];
+
+/** Trechos de uma linha: negrito vira <strong>, o resto é texto. */
+function Trechos(props: { trechos: TrechoAgente[] }) {
+  return (
+    <>
+      {props.trechos.map((trecho, indice) =>
+        trecho.forte ? (
+          <strong key={indice}>{trecho.texto}</strong>
+        ) : (
+          <span key={indice}>{trecho.texto}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+/**
+ * Resposta do agente em blocos legíveis.
+ *
+ * O modelo é instruído a responder em texto corrido com lista curta, mas ele
+ * escorrega para Markdown de vez em quando. Em vez de exibir os asteriscos
+ * crus na cara de quem lê, a resposta é convertida em elementos React — nunca
+ * em HTML por string, porque o conteúdo vem de fora.
+ */
+function RespostaFormatada(props: { texto: string }) {
+  const blocos = useMemo(() => formatarRespostaAgente(props.texto), [props.texto]);
+  return (
+    <>
+      {blocos.map((bloco, indice) => {
+        if (bloco.tipo === "titulo") {
+          return (
+            <p className="agent-message__titulo" key={indice}>
+              <Trechos trechos={bloco.trechos} />
+            </p>
+          );
+        }
+        if (bloco.tipo === "lista") {
+          const Lista = bloco.ordenada ? "ol" : "ul";
+          return (
+            <Lista className="agent-message__lista" key={indice}>
+              {bloco.itens.map((item, posicao) => (
+                <li key={posicao}>
+                  <Trechos trechos={item} />
+                </li>
+              ))}
+            </Lista>
+          );
+        }
+        return (
+          <p key={indice}>
+            <Trechos trechos={bloco.trechos} />
+          </p>
+        );
+      })}
+    </>
+  );
+}
 
 export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
   const { status, mensagens, pensando, erro, perguntar, limpar } = useDataAgent(
@@ -148,7 +206,9 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
                 key={`${mensagem.autor}-${indice}`}
                 className={`agent-message agent-message--${mensagem.autor}`}
               >
-                <p className="agent-message__text">{mensagem.texto}</p>
+                <div className="agent-message__text">
+                  <RespostaFormatada texto={mensagem.texto} />
+                </div>
                 {mensagem.ferramentas.length > 0 && (
                   <p className="agent-message__tools">
                     Consultas usadas: {mensagem.ferramentas.join(", ")}

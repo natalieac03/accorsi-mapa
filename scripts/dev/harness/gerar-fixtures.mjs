@@ -147,10 +147,10 @@ function pleitoEstadual(ano, votoBase) {
     };
   }
   return {
-    id: `${ano}-6-1`,
+    id: `${ano}-${ano === 2018 ? 7 : 6}-1`,
     electionYear: ano,
-    officeCode: 6,
-    officeName: "Deputada Federal",
+    officeCode: ano === 2018 ? 7 : 6,
+    officeName: ano === 2018 ? "Deputada Estadual" : "Deputada Federal",
     round: 1,
     candidatura: candidatura("ELEITA"),
     votosNoEstado: total,
@@ -165,6 +165,15 @@ function pleitoEstadual(ano, votoBase) {
     bairros: null,
   };
 }
+
+/* Bairros sintéticos de Goiânia: o suficiente para a visão Geral ter recorte
+   para comparar. "Setor Sul" some de 2020 DE PROPÓSITO — é o caso de ausência
+   (null), que a linha do gráfico precisa mostrar como buraco em vez de zero. */
+const BAIRROS_FIXTURE = {
+  2016: { "setor central": 4100, "setor bueno": 3050, "setor sul": 2600, "campinas": 1900 },
+  2020: { "setor central": 6300, "setor bueno": 5100, "campinas": 3050 },
+  2024: { "setor central": 9400, "setor bueno": 7600, "setor sul": 5200, "campinas": 4100 },
+};
 
 function pleitoMunicipal(ano, turno, votos) {
   const validos = Math.round(votos * 2.4);
@@ -195,7 +204,7 @@ function pleitoMunicipal(ano, turno, votos) {
       },
     },
     locais: null,
-    bairros: null,
+    bairros: BAIRROS_FIXTURE[ano] ? { "5208707": BAIRROS_FIXTURE[ano] } : null,
   };
 }
 
@@ -205,16 +214,17 @@ const dataset = {
     state: "GO",
     slug: "adriana-accorsi",
     nomeConsultado: "FIXTURE SINTÉTICA — apenas harness visual",
-    pleitos: 4,
-    anos: [2018, 2022, 2024],
-    cargos: ["Deputada Federal", "Prefeita"],
+    pleitos: 5,
+    anos: [2016, 2018, 2020, 2022, 2024],
+    cargos: ["Deputada Estadual", "Deputada Federal", "Prefeita"],
     source: "sintético",
   },
   contests: [
     pleitoEstadual(2018, 88000),
     pleitoEstadual(2022, 127000),
+    pleitoMunicipal(2016, 1, 46000),
+    pleitoMunicipal(2020, 1, 80000),
     pleitoMunicipal(2024, 1, 219000),
-    pleitoMunicipal(2024, 2, 305000),
   ],
 };
 

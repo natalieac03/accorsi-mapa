@@ -999,6 +999,9 @@ async function executarEspectroSubmunicipal(
       contestId: pleito.id,
       viewMode: unidade === "bairro" ? "neighborhoods" : "places",
       municipalityId: municipio.ibgeCode,
+      // A ferramenta reporta o índice ideológico, nunca o percentual de uma
+      // sigla: sem sigla escolhida o modelo não muda nada do que ela lê.
+      partyCode: null,
       activeBands: [...ALL_ANALYSIS_BANDS],
       sortDirection: direcaoDaOrdem(ordem),
     },

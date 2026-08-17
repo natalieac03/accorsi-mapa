@@ -41,13 +41,16 @@ const index = buildPartySpectrumIndex(registry);
 const PT_SCORE = 2.68;
 const PL_SCORE = 8.8;
 
+// Vereador: cargo em que o índice ideológico continua sendo a métrica da
+// camada (muitas siglas na urna). A onda de 2024 é a de 2022 no registro, então
+// as notas usadas à mão acima continuam valendo.
 const contest: SpectrumSourceContest = {
-  id: "elections:2022-1-1",
-  electionYear: 2022,
+  id: "parties:2024-13-1",
+  electionYear: 2024,
   round: 1,
-  officeCode: 1,
-  officeName: "Presidente",
-  origin: "candidates",
+  officeCode: 13,
+  officeName: "Vereador",
+  origin: "parties",
   waveYear: 2022,
   stateTotalVotes: 0,
   municipalities: {},
@@ -210,7 +213,7 @@ test("local sem voto com nota fica sem índice e fora do ranking", { skip: BASE_
   );
   // A bolha existe (o local tem coordenada), mas com a cor de "sem dado".
   const bubble = model.bubbles.find((item) => item.id === unscoredPlace.id)!;
-  assert.equal(bubble.index, null);
+  assert.equal(bubble.value, null);
   assert.equal(bubble.focused, false);
   assert.equal(bubble.color, "#788382");
 });
@@ -337,7 +340,7 @@ test("teto de bolhas tira do desenho as menores, nunca do índice", { skip: BASE
 });
 
 test("identificador do arquivo de votos vem do pleito do espectro", { skip: BASE_PENDENTE ? INSTRUCAO_GERAR : false }, () => {
-  assert.equal(getPollingContestId(contest), "2022-1-1");
+  assert.equal(getPollingContestId(contest), "2024-13-1");
   assert.equal(
     getPollingContestId({ ...contest, id: "parties:2024-11-1" }),
     "2024-11-1",
@@ -474,11 +477,11 @@ test("CSV traz uma linha por unidade em foco e índice vazio quando null", { ski
   assert.ok(!csv.includes("Ginásio Sem Nota"));
   assert.equal(
     getPollingCsvFilename(buildModel()),
-    "locais-votacao-rs-2022-1-1.csv",
+    "locais-votacao-rs-2024-13-1.csv",
   );
   assert.equal(
     getPollingCsvFilename(buildModel({ viewMode: "neighborhoods", municipalityId: "4314902" })),
-    "bairros-votacao-4314902-2022-1-1.csv",
+    "bairros-votacao-4314902-2024-13-1.csv",
   );
   const neighborhoodCsv = createPollingCsv(
     buildModel({ viewMode: "neighborhoods" }),

@@ -353,11 +353,11 @@ export function CampaignRegistrationsPanel({
       <div className={`registration-mode ${mode === "api" ? "registration-mode--api" : ""}`}>
         {mode === "api" ? <Database size={15} /> : <AlertTriangle size={15} />}
         <div>
-          <strong>{mode === "api" ? "Banco conectado" : "Demonstração sintética"}</strong>
+          <strong>{mode === "api" ? "Banco conectado" : "A preencher"}</strong>
           <span>
             {mode === "api"
               ? "Cadastros persistidos pela API protegida."
-              : "306 registros fictícios; não representam pessoas reais."}
+              : "Módulo pronto, à espera dos cadastros da campanha. Os números abaixo são de exemplo e serão substituídos conforme a demanda."}
           </span>
         </div>
         {mode === "api" && error && (

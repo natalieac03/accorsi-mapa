@@ -148,6 +148,39 @@ export function formatResultadoShort(resultado: string): string {
 }
 
 /**
+ * Resultados que a TELA não carimba. O dado continua inteiro no JSON, no CSV
+ * exportado e no backend — some só da vitrine.
+ *
+ * Derrota não é rótulo de interface: a plataforma é ferramenta de campanha, e
+ * escrever "não eleita" sob cada barra não acrescenta nada ao que o número de
+ * votos já diz. Resultado que o voto sozinho NÃO conta continua aparecendo —
+ * eleita, eleita por QP, suplente, foi ao 2º turno —, porque essa é
+ * informação de verdade e não sobra de formulário do TSE.
+ */
+const RESULTADOS_FORA_DA_VITRINE = new Set([
+  "",
+  "NAO ELEITO",
+  "NÃO ELEITO",
+  "NAO ELEITA",
+  "NÃO ELEITA",
+  "#NULO#",
+]);
+
+function foraDaVitrine(resultado: string): boolean {
+  return RESULTADOS_FORA_DA_VITRINE.has(resultado.trim().toUpperCase());
+}
+
+/** Rótulo de resultado para a tela; string vazia quando não se mostra. */
+export function formatResultadoVitrine(resultado: string): string {
+  return foraDaVitrine(resultado) ? "" : formatResultado(resultado);
+}
+
+/** Idem, na versão curta que cabe sob a barra do gráfico. */
+export function formatResultadoVitrineShort(resultado: string): string {
+  return foraDaVitrine(resultado) ? "" : formatResultadoShort(resultado);
+}
+
+/**
  * Cargos encurtados para caber sob as barras do gráfico de trajetória: com
  * 7 pleitos cada banda tem ~42px e "Dep. Estadual" (~54px) colidiria com o
  * vizinho. O nome completo do cargo fica no tooltip e no dropdown.
@@ -188,8 +221,10 @@ export function buildTrajectory(dataset: CandidateDataset): TrajectoryPoint[] {
       officeShort: getOfficeShort(contest.officeCode, contest.officeName),
       round: contest.round,
       resultado: contest.candidatura.resultado,
-      resultadoLabel: formatResultado(contest.candidatura.resultado),
-      resultadoShort: formatResultadoShort(contest.candidatura.resultado),
+      // Rótulos de VITRINE: o campo cru fica logo acima, intacto, para o CSV
+      // e para quem consultar o dado.
+      resultadoLabel: formatResultadoVitrine(contest.candidatura.resultado),
+      resultadoShort: formatResultadoVitrineShort(contest.candidatura.resultado),
       partido: contest.candidatura.partido,
       votos: contest.votosNoEstado,
     }));

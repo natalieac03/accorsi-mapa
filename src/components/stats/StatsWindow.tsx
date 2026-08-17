@@ -19,10 +19,13 @@ import type {
   CandidateContest,
   CandidateDataset,
   CandidateRankingMetricId,
+  GrowthGroupId,
   ElectorateSource,
   StatsIndicatorId,
   StatsIndicatorSource,
 } from "../../types/candidate";
+import { ContestCards } from "../ContestCards";
+import { GrowthView, MAX_RECORTES } from "./GrowthView";
 import { formatAnalysisMetricValue } from "../../utils/analysis";
 import { downloadTextFile } from "../../utils/browser";
 import {
@@ -41,15 +44,18 @@ import {
 } from "../../utils/candidate";
 import {
   buildCareerOverview,
+  buildGrowthModel,
   buildScatter,
   buildStatsProfiles,
+  getMunicipalScope,
+  createGrowthCsv,
   createScatterCsv,
   createTrajectoryCsv,
+  getGrowthCsvFilename,
   getScatterCsvFilename,
   getTrajectoryCsvFilename,
   groupContests,
   isMunicipalContest,
-  pctValidosNoEstado,
   PEARSON_MIN_N,
   STATS_INDICATORS,
 } from "../../utils/candidateStats";
@@ -119,6 +125,13 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     useState<CandidateRankingMetricId>("votos");
   const [indicatorId, setIndicatorId] = useState<StatsIndicatorId>("female");
   const [exportMessage, setExportMessage] = useState("");
+  /* Recortes comparados na visão Geral, guardados POR GRUPO: trocar de
+     municipal para federal e voltar não deve perder a seleção anterior — e os
+     ids de bairro e de município nem sequer são do mesmo universo. */
+  const [recortes, setRecortes] = useState<Record<GrowthGroupId, string[]>>({
+    municipais: [],
+    federaisEstaduais: [],
+  });
   const fecharRef = useRef<HTMLButtonElement | null>(null);
 
   // Esc fecha; o foco nasce no botão de fechar para o teclado ter porta de saída.
@@ -141,10 +154,36 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     [],
   );
 
+  const grupoGeral: GrowthGroupId | null =
+    view === "geral:municipais"
+      ? "municipais"
+      : view === "geral:federaisEstaduais"
+        ? "federaisEstaduais"
+        : null;
+
   const contest =
-    view === "overview"
+    view === "overview" || grupoGeral
       ? null
       : (dataset.contests.find((item) => item.id === view) ?? null);
+
+  const growth = useMemo(
+    () =>
+      grupoGeral ? buildGrowthModel(dataset, grupoGeral, recortes[grupoGeral]) : null,
+    [grupoGeral, recortes],
+  );
+
+  const alternarRecorte = (id: string) => {
+    if (!grupoGeral) return;
+    setRecortes((atual) => {
+      const lista = atual[grupoGeral];
+      const proxima = lista.includes(id)
+        ? lista.filter((item) => item !== id)
+        : lista.length >= MAX_RECORTES
+          ? lista
+          : [...lista, id];
+      return { ...atual, [grupoGeral]: proxima };
+    });
+  };
 
   const ranking = useMemo(
     () =>
@@ -237,6 +276,13 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
                     onSelect={setView}
                   />
                 ))}
+                {groups.municipais.length > 1 && (
+                  <NavGeral
+                    id="geral:municipais"
+                    active={view === "geral:municipais"}
+                    onSelect={setView}
+                  />
+                )}
               </>
             )}
             {groups.federaisEstaduais.length > 0 && (
@@ -255,12 +301,41 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
                     onSelect={setView}
                   />
                 ))}
+                {groups.federaisEstaduais.length > 1 && (
+                  <NavGeral
+                    id="geral:federaisEstaduais"
+                    active={view === "geral:federaisEstaduais"}
+                    onSelect={setView}
+                  />
+                )}
               </>
             )}
           </nav>
 
           <div className="stats-content">
-            {contest === null ? (
+            {grupoGeral && growth ? (
+              <GrowthView
+                model={growth}
+                selecionados={recortes[grupoGeral]}
+                onToggle={alternarRecorte}
+                onLimpar={() =>
+                  setRecortes((atual) => ({ ...atual, [grupoGeral]: [] }))
+                }
+                onExport={() => {
+                  downloadTextFile(
+                    createGrowthCsv(growth),
+                    getGrowthCsvFilename(dataset, grupoGeral),
+                    "text/csv;charset=utf-8",
+                  );
+                  anunciarExport(
+                    growth.series.reduce(
+                      (soma, serie) => soma + serie.points.length,
+                      0,
+                    ),
+                  );
+                }}
+              />
+            ) : contest === null ? (
               <OverviewView
                 overview={overview}
                 trajectory={trajectory}
@@ -341,6 +416,39 @@ function NavItem({
         {office}
         {round > 1 ? ` · ${round}º turno` : ""}
       </span>
+    </button>
+  );
+}
+
+/**
+ * Fecha cada grupo da navegação: a leitura que atravessa TODAS as eleições
+ * daquele universo, em vez de uma eleição por vez. Só aparece com dois pleitos
+ * ou mais — com um só não existe crescimento para comparar.
+ */
+function NavGeral({
+  id,
+  active,
+  onSelect,
+}: {
+  id: string;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={
+        active
+          ? "stats-nav__item stats-nav__item--geral stats-nav__item--active"
+          : "stats-nav__item stats-nav__item--geral"
+      }
+      aria-current={active ? "page" : undefined}
+      onClick={() => onSelect(id)}
+    >
+      <strong>
+        <TrendingUp size={13} aria-hidden /> Geral
+      </strong>
+      <span>crescimento entre as eleições</span>
     </button>
   );
 }
@@ -479,7 +587,8 @@ function OverviewView({
                 onClick={() => onSelectContest(point.id)}
               >
                 <title>
-                  {`${point.electionYear} · ${point.officeName}${turno} · ${formatInteger(point.votos)} votos · ${point.resultadoLabel} — clique para abrir o pleito`}
+                  {/* resultadoLabel vem vazio quando não é para carimbar. */}
+                  {`${point.electionYear} · ${point.officeName}${turno} · ${formatInteger(point.votos)} votos${point.resultadoLabel ? ` · ${point.resultadoLabel}` : ""} — clique para abrir o pleito`}
                 </title>
                 {/* alvo de clique maior que a marca */}
                 <rect
@@ -519,14 +628,16 @@ function OverviewView({
                   {point.officeShort}
                   {point.round > 1 ? ` · ${point.round}º t.` : ""}
                 </text>
-                <text
-                  x={center}
-                  y={TRAJ_TOP + plotH + 38}
-                  className="stats-chart-office"
-                  textAnchor="middle"
-                >
-                  {point.resultadoShort}
-                </text>
+                {point.resultadoShort && (
+                  <text
+                    x={center}
+                    y={TRAJ_TOP + plotH + 38}
+                    className="stats-chart-office"
+                    textAnchor="middle"
+                  >
+                    {point.resultadoShort}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -579,7 +690,7 @@ function ElectionView({
   onExportScatter: () => void;
 }) {
   const municipal = isMunicipalContest(contest);
-  const pctEstado = pctValidosNoEstado(contest);
+  const escopo = getMunicipalScope(contest);
   const metric = getCandidateRankingMetric(rankingMetric);
   const maxRanking = ranking.length > 0 ? ranking[0].value : 0;
 
@@ -588,52 +699,42 @@ function ElectionView({
       <p className="stats-lede">
         <strong>{getContestLabel(contest)}</strong> ·{" "}
         {contest.candidatura.nomeUrna} · {contest.candidatura.partido}{" "}
-        {contest.candidatura.numero} · {contest.candidatura.resultado || "—"}
+        {contest.candidatura.numero}
       </p>
 
       <p className="stats-note stats-note--intro">
-        Os cartões resumem o pleito: quantos votos ela fez, em que posição
-        terminou entre as candidaturas do cargo e quanto da votação veio das
-        maiores cidades.
+        {escopo
+          ? `Prefeitura se disputa dentro de uma cidade só, então os cartões abaixo são de ${escopo.nome}: quantos votos ela fez ali, em que posição terminou entre as candidaturas da cidade e quanto isso representa dos votos válidos.`
+          : "Os cartões resumem o pleito: quantos votos ela fez, em que posição terminou entre as candidaturas do cargo e quanto da votação veio das maiores cidades."}
       </p>
 
-      <div className="stats-cards">
-        <div className="stats-card">
-          <span>Votos no estado</span>
-          <strong>{formatInteger(contest.votosNoEstado)}</strong>
-          <small>
-            em {formatInteger(contest.municipiosComVoto)} municípios com voto
-          </small>
-        </div>
-        <div className="stats-card">
-          <span>Posição no pleito</span>
-          <strong>
-            {contest.posicaoNoEstado !== null
-              ? `${contest.posicaoNoEstado}º`
-              : "—"}
-          </strong>
-          <small>
-            de {formatInteger(contest.candidaturasNoPleito)} candidaturas do
-            cargo
-          </small>
-        </div>
-        {!municipal && (
-          <div className="stats-card">
-            <span>% dos válidos no estado</span>
-            <strong>{pctEstado !== null ? formatPercent(pctEstado) : "—"}</strong>
-            <small>sobre os válidos dos municípios onde teve voto</small>
-          </div>
-        )}
-        <div className="stats-card">
-          <span>Concentração top 5</span>
-          <strong>{formatPercent(contest.concentracaoPercentual.top5)}</strong>
-          <small>
-            top 10 {formatPercent(contest.concentracaoPercentual.top10)} · top
-            20 {formatPercent(contest.concentracaoPercentual.top20)}
-          </small>
-        </div>
-      </div>
+      <ContestCards
+        contest={contest}
+        className="stats-cards"
+        cardClassName="stats-card"
+      />
 
+      {/* Ranking de municípios num pleito de uma cidade só seria uma tabela de
+          UMA linha repetindo o cartão logo acima. Onde a disputa é municipal, o
+          recorte que informa alguma coisa é o de bairros. */}
+      {escopo ? (
+        <div className="stats-panel">
+          <div className="stats-panel__heading">
+            <span>
+              <ListOrdered size={14} aria-hidden /> Onde ela foi mais forte
+            </span>
+          </div>
+          <p className="stats-note">
+            Um ranking de municípios aqui teria uma linha só — {escopo.nome} —,
+            porque a disputa foi inteira dentro da cidade. O recorte que mostra
+            onde ela foi bem é o de <strong>bairros</strong>: veja em{" "}
+            <strong>Geral</strong>, no fim deste grupo, para comparar o
+            crescimento de cada bairro entre as eleições, ou na aba{" "}
+            <strong>Accorsi</strong> do painel do mapa, para o retrato deste
+            pleito.
+          </p>
+        </div>
+      ) : (
       <div className="stats-panel">
         <div className="stats-panel__heading">
           <span>
@@ -705,6 +806,7 @@ function ElectionView({
           )}
         </div>
       </div>
+      )}
 
       {/* Correlação entre municípios só faz sentido com cobertura estadual:
           um pleito de Prefeita de Goiânia tem UM município — não existe

@@ -4,7 +4,14 @@ import type {
   CareerBest,
   CareerOverview,
   ContestGroups,
+  GrowthArrow,
   GrowthComparison,
+  GrowthGroupId,
+  GrowthModel,
+  GrowthOption,
+  GrowthPoint,
+  GrowthSeries,
+  MunicipalScope,
   ScatterModel,
   ScatterPoint,
   StatsIndicator,
@@ -13,6 +20,7 @@ import type {
 } from "../types/candidate";
 import type { MunicipalityProfile } from "../types/electorate";
 import { getAnalysisMetric, getAnalysisMetricValue } from "./analysis.ts";
+import { getOfficeShort } from "./candidate.ts";
 import { createCsv, formatCsvDecimal, type CsvCell } from "./csv.ts";
 
 /**
@@ -153,6 +161,302 @@ export function pctValidosNoEstado(contest: CandidateContest): number | null {
   }
   if (validos <= 0) return null;
   return Math.round((contest.votosNoEstado / validos) * 100 * 100) / 100;
+}
+
+/**
+ * A cidade de um pleito municipal, quando o pleito de fato tem uma só.
+ *
+ * Prefeita e vereadora se disputam dentro de um município; ler esse pleito na
+ * régua do estado gera cartão sem conteúdo ("1 município com voto", "top 5 =
+ * 100%") e uma colocação que mistura candidaturas de cidades diferentes. Aqui
+ * devolvemos o recorte certo para a interface trocar a régua.
+ *
+ * Devolve null fora de pleito municipal e também quando o pleito traz mais de
+ * um município — nesse caso o dado contraria a premissa e o certo é a
+ * interface continuar na leitura estadual em vez de escolher uma cidade em
+ * silêncio.
+ */
+export function getMunicipalScope(
+  contest: CandidateContest,
+): MunicipalScope | null {
+  if (!isMunicipalContest(contest)) return null;
+  const entradas = Object.entries(contest.municipios);
+  if (entradas.length !== 1) return null;
+  const [ibgeCode, municipio] = entradas[0];
+  return {
+    ibgeCode,
+    nome: municipio.nome,
+    votos: municipio.votos,
+    validos: municipio.validos,
+    percentualValidos: municipio.percentualValidos,
+    posicaoNoMunicipio: municipio.posicaoNoMunicipio,
+    candidaturasComVoto: municipio.candidaturasComVoto,
+  };
+}
+
+/* -------------------------------------------------------------------------
+ * Visão "Geral": crescimento ao longo das eleições
+ * ------------------------------------------------------------------------- */
+
+/** Variação % de `de` para `para`, 1 casa. null sem base positiva. */
+function variacao(de: number | null, para: number | null): number | null {
+  if (de === null || para === null || de <= 0) return null;
+  return Math.round(((para - de) / de) * 1000) / 10;
+}
+
+function pontoDoPleito(contest: CandidateContest, votos: number | null): GrowthPoint {
+  return {
+    contestId: contest.id,
+    electionYear: contest.electionYear,
+    officeCode: contest.officeCode,
+    officeName: contest.officeName,
+    officeShort: getOfficeShort(contest.officeCode, contest.officeName),
+    round: contest.round,
+    votos,
+  };
+}
+
+/** Pleitos do grupo em ordem cronológica (o groupContests devolve invertido). */
+function pleitosDoGrupo(
+  dataset: CandidateDataset,
+  grupo: GrowthGroupId,
+): CandidateContest[] {
+  return [...groupContests(dataset)[grupo]].sort(
+    (a, b) =>
+      a.electionYear - b.electionYear ||
+      a.round - b.round ||
+      a.officeCode - b.officeCode,
+  );
+}
+
+/**
+ * Monta as setas de uma série a partir dos seus pontos consecutivos.
+ * Dois pleitos só são COMPARÁVEIS quando são do mesmo cargo e do mesmo turno.
+ * A variação entre cargos diferentes continua sendo calculada e exibida — é o
+ * crescimento que a campanha quer enxergar — mas sai marcada, para ninguém ler
+ * "cresceu 146%" achando que é a mesma disputa medida duas vezes.
+ */
+function construirSetas(points: GrowthPoint[]): GrowthArrow[] {
+  const arrows: GrowthArrow[] = [];
+  for (let i = 1; i < points.length; i += 1) {
+    const de = points[i - 1];
+    const para = points[i];
+    arrows.push({
+      deContestId: de.contestId,
+      paraContestId: para.contestId,
+      anoDe: de.electionYear,
+      anoPara: para.electionYear,
+      votosDe: de.votos,
+      votosPara: para.votos,
+      variacaoPct: variacao(de.votos, para.votos),
+      comparavel: de.officeCode === para.officeCode && de.round === para.round,
+    });
+  }
+  return arrows;
+}
+
+function construirSerie(
+  id: string,
+  label: string,
+  points: GrowthPoint[],
+): GrowthSeries {
+  const comVoto = points.filter((ponto) => ponto.votos !== null);
+  const primeiro = comVoto[0] ?? null;
+  const ultimo = comVoto.length > 1 ? comVoto[comVoto.length - 1] : null;
+  return {
+    id,
+    label,
+    points,
+    arrows: construirSetas(points),
+    variacaoTotalPct: ultimo ? variacao(primeiro?.votos ?? null, ultimo.votos) : null,
+    variacaoTotalComparavel:
+      !!primeiro &&
+      !!ultimo &&
+      primeiro.officeCode === ultimo.officeCode &&
+      primeiro.round === ultimo.round,
+  };
+}
+
+/**
+ * Recortes disponíveis para comparar dentro do grupo.
+ *
+ * Ordenados pelo voto no pleito MAIS RECENTE em que o recorte aparece — nunca
+ * pela soma entre eleições. Somar votos de 2016 com os de 2024 para ordenar uma
+ * lista pareceria inofensivo e é exatamente o tipo de total que não existe:
+ * são eleitorados e disputas diferentes.
+ */
+function construirOpcoes(
+  pleitos: CandidateContest[],
+  grupo: GrowthGroupId,
+  focoIbge: string | null,
+): GrowthOption[] {
+  const porId = new Map<string, GrowthOption>();
+  // Do mais recente para o mais antigo: o primeiro que define o rótulo e o
+  // valor de ordenação é justamente o pleito mais recente do recorte.
+  for (const contest of [...pleitos].reverse()) {
+    if (grupo === "municipais") {
+      const mapa = focoIbge ? contest.bairros?.[focoIbge] : null;
+      if (!mapa) continue;
+      for (const [chave, votos] of Object.entries(mapa)) {
+        const id = `bairro:${chave}`;
+        if (!porId.has(id)) {
+          porId.set(id, { id, label: chave, votosRecentes: votos });
+        }
+      }
+    } else {
+      for (const [ibge, municipio] of Object.entries(contest.municipios)) {
+        const id = `ibge:${ibge}`;
+        if (!porId.has(id)) {
+          porId.set(id, {
+            id,
+            label: municipio.nome,
+            votosRecentes: municipio.votos,
+          });
+        }
+      }
+    }
+  }
+  return [...porId.values()].sort(
+    (a, b) =>
+      b.votosRecentes - a.votosRecentes ||
+      a.label.localeCompare(b.label, "pt-BR"),
+  );
+}
+
+/** Voto de um recorte num pleito; null quando não há apuração para ele ali. */
+function votosDoRecorte(
+  contest: CandidateContest,
+  recorteId: string,
+  focoIbge: string | null,
+): number | null {
+  if (recorteId.startsWith("bairro:")) {
+    const chave = recorteId.slice("bairro:".length);
+    const mapa = focoIbge ? contest.bairros?.[focoIbge] : null;
+    if (!mapa) return null;
+    return mapa[chave] ?? null;
+  }
+  if (recorteId.startsWith("ibge:")) {
+    const ibge = recorteId.slice("ibge:".length);
+    return contest.municipios[ibge]?.votos ?? null;
+  }
+  return null;
+}
+
+/**
+ * A cidade em foco do grupo municipal: a única cidade dos pleitos municipais,
+ * quando todos correm na mesma. É dela que saem os bairros do seletor.
+ */
+function cidadeDoGrupoMunicipal(pleitos: CandidateContest[]): MunicipalScope | null {
+  let foco: MunicipalScope | null = null;
+  for (const contest of pleitos) {
+    const escopo = getMunicipalScope(contest);
+    if (!escopo) return null;
+    if (foco && foco.ibgeCode !== escopo.ibgeCode) return null;
+    foco = foco ?? escopo;
+  }
+  return foco;
+}
+
+/**
+ * Modelo da visão "Geral" de um grupo (municipais ou federais/estaduais).
+ *
+ * Devolve null quando o grupo tem menos de dois pleitos: com um pleito só não
+ * existe crescimento para mostrar, e uma tela de comparação vazia mente mais
+ * do que ajuda.
+ */
+export function buildGrowthModel(
+  dataset: CandidateDataset,
+  grupo: GrowthGroupId,
+  selecionados: readonly string[] = [],
+): GrowthModel | null {
+  const pleitos = pleitosDoGrupo(dataset, grupo);
+  if (pleitos.length < 2) return null;
+
+  const cidade = grupo === "municipais" ? cidadeDoGrupoMunicipal(pleitos) : null;
+  const focoIbge = cidade?.ibgeCode ?? null;
+
+  const totalPoints = pleitos.map((contest) =>
+    pontoDoPleito(contest, contest.votosNoEstado),
+  );
+  const totalLabel = cidade ? `Total em ${cidade.nome}` : "Total da candidatura";
+
+  const options = construirOpcoes(pleitos, grupo, focoIbge);
+  const rotulos = new Map(options.map((opcao) => [opcao.id, opcao.label]));
+
+  const series: GrowthSeries[] = [construirSerie("total", totalLabel, totalPoints)];
+  for (const id of selecionados) {
+    if (!rotulos.has(id)) continue;
+    series.push(
+      construirSerie(
+        id,
+        rotulos.get(id) as string,
+        pleitos.map((contest) =>
+          pontoDoPleito(contest, votosDoRecorte(contest, id, focoIbge)),
+        ),
+      ),
+    );
+  }
+
+  const cargos = new Set(pleitos.map((contest) => `${contest.officeCode}-${contest.round}`));
+
+  return {
+    grupo,
+    pleitos: totalPoints,
+    series,
+    breakdownLabel: cidade ? `Bairros de ${cidade.nome}` : "Municípios",
+    options,
+    temCargosDiferentes: cargos.size > 1,
+  };
+}
+
+/** CSV da visão "Geral": uma linha por série e pleito, com a variação da seta. */
+export function createGrowthCsv(model: GrowthModel): string {
+  const headers = [
+    "Recorte",
+    "Ano",
+    "Cargo",
+    "Turno",
+    "Votos",
+    "Variação % desde o pleito anterior",
+    "Comparável",
+  ];
+  const rows: CsvCell[][] = [];
+  for (const serie of model.series) {
+    const setaPorDestino = new Map(
+      serie.arrows.map((seta) => [seta.paraContestId, seta]),
+    );
+    for (const ponto of serie.points) {
+      const seta = setaPorDestino.get(ponto.contestId);
+      // Célula vazia = sem apuração. Escrever 0 aqui transformaria "o bairro
+      // não aparece neste pleito" em "o bairro deu zero voto", que é outra
+      // afirmação — e é a que a planilha somaria sem perguntar.
+      rows.push([
+        serie.label,
+        ponto.electionYear,
+        ponto.officeName,
+        ponto.round,
+        ponto.votos ?? "",
+        seta?.variacaoPct != null ? formatCsvDecimal(seta.variacaoPct) : "",
+        // A coluna só fala quando existe variação para qualificar: "sim" ao
+        // lado de uma variação vazia sugeriria que houve comparação e ela deu
+        // nada, quando o que houve foi ausência de apuração.
+        seta?.variacaoPct != null
+          ? seta.comparavel
+            ? "sim"
+            : "cargos diferentes"
+          : "",
+      ]);
+    }
+  }
+  return createCsv(headers, rows);
+}
+
+export function getGrowthCsvFilename(
+  dataset: CandidateDataset,
+  grupo: GrowthGroupId,
+): string {
+  const sufixo = grupo === "municipais" ? "municipais" : "federais-estaduais";
+  return `estatisticas-crescimento-${dataset.metadata.slug}-${sufixo}.csv`;
 }
 
 /* -------------------------------------------------------------------------

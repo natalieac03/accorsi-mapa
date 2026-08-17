@@ -125,6 +125,15 @@ export function usePollingPlaces(
     setState((current) => ({ ...current, viewMode }));
   }, []);
 
+  // A sigla escolhida é guardada como escolha do usuário e sobrevive à troca
+  // de pleito; quem decide se ela ainda vale é o modelo, que só aceita sigla
+  // com voto apurado no pleito atual.
+  const setPartyCode = useCallback((partyCode: string | null) => {
+    setState((current) =>
+      current.partyCode === partyCode ? current : { ...current, partyCode },
+    );
+  }, []);
+
   const setMunicipalityId = useCallback((municipalityId: string | null) => {
     setState((current) =>
       current.municipalityId === municipalityId
@@ -163,6 +172,7 @@ export function usePollingPlaces(
     votesStatus,
     setContestId,
     setViewMode,
+    setPartyCode,
     setMunicipalityId,
     setSortDirection,
     toggleBand,

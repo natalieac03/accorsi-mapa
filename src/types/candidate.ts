@@ -219,6 +219,107 @@ export type CareerOverview = {
   campanhas: number;
 };
 
+/**
+ * Recorte de um pleito MUNICIPAL: a única cidade onde a disputa aconteceu.
+ *
+ * Prefeita e vereadora se disputam dentro de um município só. Ler esse pleito
+ * com a régua estadual produz cartão degenerado — "1 município com voto",
+ * "concentração top 5: 100%" — e uma posição ("3ª de 627 candidaturas") que
+ * compara a candidata com gente que disputava OUTRA cidade. Aqui o pleito é
+ * lido na régua certa: a disputa daquela cidade.
+ */
+export type MunicipalScope = {
+  ibgeCode: string;
+  nome: string;
+  votos: number;
+  /** Votos válidos apurados na cidade; 0 quando o denominador não veio. */
+  validos: number;
+  /** % dos válidos da cidade; null sem denominador positivo. */
+  percentualValidos: number | null;
+  /** Colocação dela na disputa DAQUELA cidade; null quando não apurada. */
+  posicaoNoMunicipio: number | null;
+  /** Candidaturas com voto apurado na cidade — o "de N" da colocação. */
+  candidaturasComVoto: number;
+};
+
+/* -------------------------------------------------------------------------
+ * Visão "Geral": crescimento ao longo das eleições
+ *
+ * Uma série é uma linha do tempo de UM recorte (o total da candidatura, um
+ * bairro, um município) medida em vários pleitos. A regra que atravessa todos
+ * estes tipos: voto de eleição diferente nunca vira soma — o que se lê entre
+ * pleitos é variação, e só quando existe base para calculá-la.
+ * ------------------------------------------------------------------------- */
+
+export type GrowthPoint = {
+  contestId: string;
+  electionYear: number;
+  officeCode: number;
+  officeName: string;
+  officeShort: string;
+  round: number;
+  /** null = recorte sem voto apurado naquele pleito (ausente, jamais zero). */
+  votos: number | null;
+};
+
+/** Passagem de um pleito para o seguinte dentro da mesma série. */
+export type GrowthArrow = {
+  deContestId: string;
+  paraContestId: string;
+  anoDe: number;
+  anoPara: number;
+  votosDe: number | null;
+  votosPara: number | null;
+  /** Variação % (1 casa); null sem base positiva dos dois lados. */
+  variacaoPct: number | null;
+  /**
+   * false quando os dois pleitos são de cargos ou turnos diferentes. A
+   * variação continua visível — é o que a usuária pediu para enxergar — mas
+   * marcada, porque disputar a prefeitura e disputar uma cadeira na Assembleia
+   * não são a mesma corrida e a taxa entre elas não mede a mesma coisa.
+   */
+  comparavel: boolean;
+};
+
+export type GrowthSeries = {
+  /** "total", "bairro:<chave>" ou "ibge:<código>". */
+  id: string;
+  label: string;
+  /** Um ponto por pleito do grupo, do mais antigo ao mais recente. */
+  points: GrowthPoint[];
+  arrows: GrowthArrow[];
+  /** Variação da primeira à última medição com base; null quando não há par. */
+  variacaoTotalPct: number | null;
+  /** false quando a ponta inicial e a final são de cargos/turnos diferentes. */
+  variacaoTotalComparavel: boolean;
+};
+
+/**
+ * Recorte oferecido no seletor. `votosRecentes` é o voto no pleito MAIS
+ * RECENTE em que o recorte aparece — nunca a soma entre eleições, que
+ * misturaria universos de eleitores diferentes só para ordenar uma lista.
+ */
+export type GrowthOption = {
+  id: string;
+  label: string;
+  votosRecentes: number;
+};
+
+export type GrowthGroupId = "municipais" | "federaisEstaduais";
+
+export type GrowthModel = {
+  grupo: GrowthGroupId;
+  /** Pleitos do grupo, do mais antigo ao mais recente. */
+  pleitos: GrowthPoint[];
+  /** A série "total" sempre vem primeiro; depois os recortes escolhidos. */
+  series: GrowthSeries[];
+  /** "Bairros de Goiânia" ou "Municípios" — o que o seletor oferece. */
+  breakdownLabel: string;
+  options: GrowthOption[];
+  /** true quando o grupo mistura cargos: a interface explica as setas marcadas. */
+  temCargosDiferentes: boolean;
+};
+
 /** Indicadores municipais oferecidos no cruzamento (subconjunto da Análise). */
 export type StatsIndicatorId = Extract<
   AnalysisMetricId,

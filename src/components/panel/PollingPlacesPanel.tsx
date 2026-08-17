@@ -11,6 +11,7 @@ import {
   ShieldAlert,
   SlidersHorizontal,
   TriangleAlert,
+  Vote,
 } from "lucide-react";
 import { useState } from "react";
 import type { AnalysisBand, AnalysisSortDirection } from "../../types/analysis";
@@ -39,19 +40,23 @@ import {
 } from "../../utils/mapExport";
 import {
   createPollingCsv,
+  describePollingLayer,
   describePollingScope,
+  formatPollingValue,
+  getPollingBandLabel,
   getPollingCsvFilename,
+  getPollingMetricColors,
+  getPollingMetricShortLabel,
+  getPollingRangeLabel,
   getPollingUnitLabel,
+  getPollingValueRatio,
   POLLING_VIEW_MODES,
 } from "../../utils/pollingPlaces";
 import {
   describeSpectrumIndex,
-  getSpectrumBandLabel,
   getSpectrumContestLabel,
-  getSpectrumRangeLabel,
   SPECTRUM_BLOCK_LABELS,
   SPECTRUM_BLOCKS,
-  SPECTRUM_COLORS,
 } from "../../utils/spectrum";
 
 type PollingPlacesPanelProps = {
@@ -67,6 +72,7 @@ type PollingPlacesPanelProps = {
   selectedMunicipalityId: string | null;
   onContestChange: (contestId: string) => void;
   onViewModeChange: (viewMode: PollingViewMode) => void;
+  onPartyChange: (partyCode: string) => void;
   onMunicipalityChange: (municipalityId: string | null) => void;
   onToggleBand: (band: AnalysisBand) => void;
   onShowAllBands: () => void;
@@ -92,6 +98,7 @@ export function PollingPlacesPanel({
   selectedMunicipalityId,
   onContestChange,
   onViewModeChange,
+  onPartyChange,
   onMunicipalityChange,
   onToggleBand,
   onShowAllBands,
@@ -115,6 +122,14 @@ export function PollingPlacesPanel({
   const unitLabel = getPollingUnitLabel(model.viewMode);
   const viewMode = POLLING_VIEW_MODES.find((item) => item.id === model.viewMode);
   const scopeName = model.municipalityName ?? "Goiás";
+  // A métrica sai do cargo do pleito: Presidente e Governador nunca têm
+  // índice ideológico, Prefeito e Vereador nunca têm seletor de sigla.
+  const isPartyShare = model.metric === "votoPartido";
+  const metricShortLabel = getPollingMetricShortLabel(
+    model.metric,
+    model.partyCode,
+  );
+  const bandColors = getPollingMetricColors(model.metric);
 
   const handleExport = () => {
     if (model.filteredUnits.length === 0) return;
@@ -160,11 +175,7 @@ export function PollingPlacesPanel({
         </button>
       </div>
 
-      <p className="workspace-description">
-        Recorte submunicipal: o índice ideológico 0–10 calculado sobre os votos
-        apurados em cada local de votação, e a soma desses locais por bairro. É
-        a mesma régua da camada de espectro, aplicada abaixo do município.
-      </p>
+      <p className="workspace-description">{describePollingLayer(model)}</p>
 
       {loading && (
         <div className="registration-mode" role="status" aria-live="polite">
@@ -220,10 +231,43 @@ export function PollingPlacesPanel({
           ))}
         </select>
         <small>
-          Onda {model.waveYear} do survey · mesmas notas de partido da camada de
-          espectro.
+          {isPartyShare
+            ? `${model.officeName || "Cargo majoritário"}: poucos nomes na urna, então a camada mostra distribuição de voto, não índice ideológico.`
+            : `Onda ${model.waveYear} do survey · mesmas notas de partido da camada de espectro.`}
         </small>
       </label>
+
+      {isPartyShare && (
+        <label className="analysis-metric-control">
+          <span>
+            <Vote size={15} />
+            Sigla no mapa
+          </span>
+          <select
+            value={model.partyCode}
+            disabled={placesMissing || model.partyOptions.length === 0}
+            onChange={(event) => {
+              onPartyChange(event.target.value);
+              setShowAllRanking(false);
+            }}
+          >
+            {model.partyOptions.length === 0 ? (
+              <option value="">Nenhuma sigla com voto apurado</option>
+            ) : (
+              model.partyOptions.map((option) => (
+                <option value={option.code} key={option.code}>
+                  {option.code} — {formatPercent(option.sharePct)} do estado
+                </option>
+              ))
+            )}
+          </select>
+          <small>
+            {model.partyOptions.length === 0
+              ? "Sem votos apurados neste pleito, nenhuma sigla pode ser medida."
+              : `Siglas com voto apurado neste pleito, da mais votada para a menos votada. Cada bolha mostra o percentual do ${model.partyCode} sobre os votos apurados naquele ${model.viewMode === "neighborhoods" ? "bairro" : "local"}.`}
+          </small>
+        </label>
+      )}
 
       <div
         className="registration-filter-grid"
@@ -282,23 +326,51 @@ export function PollingPlacesPanel({
       </label>
 
       <section className="analysis-summary" aria-label="Resumo do recorte">
-        <div>
-          <span>Índice de {scopeName}</span>
-          <strong>
-            {model.summary.index === null
-              ? "Sem índice"
-              : formatDecimal(model.summary.index)}
-          </strong>
-          <small>escala de 0 a 10</small>
-        </div>
-        <div>
-          <span>Cobertura do índice</span>
-          <strong>{formatPercent(model.summary.coveragePct)}</strong>
-          <small>
-            {formatInteger(model.summary.scoredVotes)} de{" "}
-            {formatInteger(model.summary.totalVotes)} votos em partidos com nota
-          </small>
-        </div>
+        {isPartyShare ? (
+          <>
+            <div>
+              <span>
+                {model.partyCode ? `${model.partyCode} em` : "Sigla em"}{" "}
+                {scopeName}
+              </span>
+              <strong>
+                {formatPollingValue(model.metric, model.summary.partySharePct)}
+              </strong>
+              <small>sobre os votos apurados do recorte</small>
+            </div>
+            <div>
+              <span>
+                Votos {model.partyCode ? `do ${model.partyCode}` : "da sigla"}
+              </span>
+              <strong>{formatInteger(model.summary.partyVotes)}</strong>
+              <small>
+                de {formatInteger(model.summary.totalVotes)} votos apurados nos
+                locais do recorte
+              </small>
+            </div>
+          </>
+        ) : (
+          <>
+            <div>
+              <span>Índice de {scopeName}</span>
+              <strong>
+                {model.summary.index === null
+                  ? "Sem índice"
+                  : formatDecimal(model.summary.index)}
+              </strong>
+              <small>escala de 0 a 10</small>
+            </div>
+            <div>
+              <span>Cobertura do índice</span>
+              <strong>{formatPercent(model.summary.coveragePct)}</strong>
+              <small>
+                {formatInteger(model.summary.scoredVotes)} de{" "}
+                {formatInteger(model.summary.totalVotes)} votos em partidos com
+                nota
+              </small>
+            </div>
+          </>
+        )}
         <div>
           <span>Locais de votação</span>
           <strong>{formatInteger(model.summary.placeCount)}</strong>
@@ -313,7 +385,8 @@ export function PollingPlacesPanel({
         <p className="analysis-note">{describePollingScope(model)}</p>
       )}
 
-      {dataReady && model.summary.index !== null && (
+      {/* Blocos são leitura do espectro: não aparecem na tela de percentual. */}
+      {dataReady && !isPartyShare && model.summary.index !== null && (
         <section className="insight-section" aria-label="Blocos no recorte">
           <div className="section-heading-inline">
             <SlidersHorizontal size={14} />
@@ -359,12 +432,20 @@ export function PollingPlacesPanel({
               >
                 <span
                   className="analysis-band-swatch"
-                  style={{ backgroundColor: SPECTRUM_COLORS[band] }}
+                  style={{ backgroundColor: bandColors[band] }}
                 />
                 <span className="analysis-band-copy">
-                  <strong>{getSpectrumBandLabel(band)}</strong>
+                  <strong>
+                    {getPollingBandLabel(model.metric, model.thresholds, band)}
+                  </strong>
                   <small>
-                    {getSpectrumRangeLabel("index", model.thresholds, band)}
+                    {isPartyShare
+                      ? "do voto apurado"
+                      : getPollingRangeLabel(
+                          model.metric,
+                          model.thresholds,
+                          band,
+                        )}
                   </small>
                 </span>
                 <em>{model.bandCounts[band]}</em>
@@ -380,7 +461,9 @@ export function PollingPlacesPanel({
             <span>
               Ranking de {model.viewMode === "neighborhoods" ? "bairros" : "locais"}
             </span>
-            <small>índice 0–10 · {scopeName}</small>
+            <small>
+              {metricShortLabel} · {scopeName}
+            </small>
           </div>
           <div className="analysis-sort" aria-label="Ordem do ranking">
             <button
@@ -403,7 +486,7 @@ export function PollingPlacesPanel({
           <div className="analysis-ranking-empty">
             <span>
               {dataReady
-                ? `Nenhum ${model.viewMode === "neighborhoods" ? "bairro" : "local"} com índice no recorte atual.`
+                ? `Nenhum ${model.viewMode === "neighborhoods" ? "bairro" : "local"} com ${isPartyShare ? "voto apurado" : "índice"} no recorte atual.`
                 : "Sem dados carregados para esta camada."}
             </span>
             {dataReady && (
@@ -424,13 +507,13 @@ export function PollingPlacesPanel({
                 <span className="analysis-rank-main">
                   <span>
                     <strong>{unit.name}</strong>
-                    <em>{formatDecimal(unit.index ?? 0)}</em>
+                    <em>{formatPollingValue(model.metric, unit.value)}</em>
                   </span>
                   <span className="analysis-rank-track" aria-hidden="true">
                     <span
                       style={{
-                        width: `${Math.max(7, ((unit.index ?? 0) / 10) * 100)}%`,
-                        backgroundColor: SPECTRUM_COLORS[unit.band],
+                        width: `${Math.max(7, getPollingValueRatio(model.metric, unit.value) * 100)}%`,
+                        backgroundColor: bandColors[unit.band],
                       }}
                     />
                   </span>
@@ -473,7 +556,7 @@ export function PollingPlacesPanel({
         disabled={!canExportImage}
         title={
           canExportImage
-            ? "Gera um PNG com o índice agregado por município a partir dos locais"
+            ? `Gera um PNG com ${isPartyShare ? `o percentual do ${model.partyCode || "partido"}` : "o índice"} agregado por município a partir dos locais`
             : "A imagem depende da malha municipal carregada e dos dados desta camada"
         }
       >
@@ -512,7 +595,7 @@ export function PollingPlacesPanel({
             <strong>
               {formatInteger(model.placesWithoutCoordinateCount)} locais do
               recorte estão sem coordenada: ficam fora das bolhas do mapa, mas
-              contam no bairro, no índice e no CSV —{" "}
+              contam no bairro, no cálculo e no CSV —{" "}
               {formatInteger(model.electorateWithoutCoordinate)} eleitores.
             </strong>
           </div>
@@ -529,19 +612,31 @@ export function PollingPlacesPanel({
           )}
           <div>
             <strong>
-              {formatInteger(model.missingIndexCount)}{" "}
+              {formatInteger(model.missingValueCount)}{" "}
               {model.viewMode === "neighborhoods" ? "bairros" : "locais"} do
-              recorte não têm nenhum voto em partido com nota: ficam sem índice,
-              fora do ranking e das faixas, nunca contados como zero.
+              recorte{" "}
+              {isPartyShare
+                ? "não têm nenhum voto apurado: sem denominador não existe percentual, então ficam fora do ranking e das faixas, nunca como 0%."
+                : "não têm nenhum voto em partido com nota: ficam sem índice, fora do ranking e das faixas, nunca contados como zero."}
             </strong>
           </div>
+          {isPartyShare && (
+            <div>
+              <strong>
+                Onde houve apuração e o {model.partyCode || "partido"} não teve
+                voto, o valor é 0% de verdade — a unidade continua no ranking,
+                no fim da fila. Ausência de apuração e zero voto são coisas
+                diferentes e aparecem diferentes.
+              </strong>
+            </div>
+          )}
         </div>
       </section>
 
       <p className="comparison-note analysis-note">
-        O índice descreve como os votos já apurados em cada local se
-        distribuíram entre partidos com nota. Não é intenção de voto, projeção
-        nem pesquisa eleitoral, e não mede a posição de eleitores individuais.
+        {isPartyShare
+          ? `O percentual descreve como os votos já apurados em cada local se distribuíram entre as siglas${model.partyCode ? `, com o recorte do ${model.partyCode}` : ""}. Não é intenção de voto, projeção nem pesquisa eleitoral.`
+          : "O índice descreve como os votos já apurados em cada local se distribuíram entre partidos com nota. Não é intenção de voto, projeção nem pesquisa eleitoral, e não mede a posição de eleitores individuais."}
       </p>
     </div>
   );

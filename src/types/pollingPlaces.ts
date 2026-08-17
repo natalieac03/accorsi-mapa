@@ -64,6 +64,29 @@ export type PollingVotesDataset = {
 export type PollingViewMode = "places" | "neighborhoods";
 
 /**
+ * O que a camada mede em cada unidade.
+ *
+ * `indice` = índice ideológico 0–10, a régua do espectro aplicada abaixo do
+ * município. `votoPartido` = percentual de voto de UMA sigla sobre os votos
+ * apurados da unidade.
+ *
+ * A escolha NÃO é um botão: ela é derivada do cargo do pleito (ver
+ * `getPollingMetric`). Numa disputa majoritária de dois ou três candidatos a
+ * média ponderada das notas dos partidos não descreve nada — o que existe ali
+ * é distribuição de voto, não posição no espectro.
+ */
+export type PollingMetric = "indice" | "votoPartido";
+
+/** Sigla com voto apurado no pleito, para o seletor da métrica de partido. */
+export type PollingPartyOption = {
+  code: string;
+  /** votos apurados da sigla em TODOS os locais do pleito */
+  votes: number;
+  /** participação da sigla no total apurado do pleito */
+  sharePct: number;
+};
+
+/**
  * Estado de carregamento sob demanda dos arquivos da camada.
  * `missing` = o arquivo ainda não foi gerado pelo ETL (placeholder vazio ou
  * ausente): a camada fica desabilitada, com mensagem na tela, sem quebrar.
@@ -80,6 +103,12 @@ export type PollingState = {
   viewMode: PollingViewMode;
   /** filtro por município (código IBGE); null = todo o estado */
   municipalityId: string | null;
+  /**
+   * Sigla escolhida na métrica de voto por partido. `null` = ainda não houve
+   * escolha explícita e vale o padrão (a sigla mais votada do pleito). A
+   * escolha sobrevive à troca de pleito quando a sigla também tem voto lá.
+   */
+  partyCode: string | null;
   activeBands: AnalysisBand[];
   sortDirection: AnalysisSortDirection;
 };
@@ -119,9 +148,22 @@ export type PollingUnit = {
   blockSharePct: Record<SpectrumBlock, number>;
   leadingPartyCode: string;
   leadingPartyVotes: number;
-  /** faixa da paleta; só tem sentido quando `index` não é null */
+  /**
+   * Votos apurados da sigla escolhida nesta unidade. Zero aqui com
+   * `totalVotes` positivo é zero DE VERDADE: a urna apurou e a sigla não teve
+   * voto. Sem apuração nenhuma o que fica ausente é `partySharePct`.
+   */
+  partyVotes: number;
+  /**
+   * Percentual da sigla escolhida sobre os votos apurados da unidade. `null`
+   * quando não há denominador (nenhum voto apurado ali) — nunca 0%.
+   */
+  partySharePct: number | null;
+  /** valor da MÉTRICA ATIVA: índice 0–10 ou % da sigla. null = ausente. */
+  value: number | null;
+  /** faixa da paleta; só tem sentido quando `value` não é null */
   band: AnalysisBand;
-  /** posição no ranking do recorte; 0 quando a unidade não tem índice */
+  /** posição no ranking do recorte; 0 quando a unidade não tem valor */
   rank: number;
 };
 
@@ -138,7 +180,8 @@ export type PollingBubble = {
   /** raio em pixels, com área proporcional ao eleitorado (raiz quadrada) */
   radius: number;
   color: string;
-  index: number | null;
+  /** valor da métrica ativa da camada; null = sem dado, cor de ausência */
+  value: number | null;
   electorate: number;
   coveragePct: number;
   placeCount: number;
@@ -156,6 +199,10 @@ export type PollingMunicipalityAggregate = {
   totalVotes: number;
   scoredVotes: number;
   coveragePct: number;
+  partyVotes: number;
+  partySharePct: number | null;
+  /** valor da métrica ativa; é o que pinta o polígono do município */
+  value: number | null;
   band: AnalysisBand;
 };
 
@@ -168,6 +215,8 @@ export type PollingSummary = {
   unscoredVotes: number;
   coveragePct: number;
   blockSharePct: Record<SpectrumBlock, number>;
+  partyVotes: number;
+  partySharePct: number | null;
   placeCount: number;
   mappedPlaceCount: number;
   neighborhoodCount: number;
@@ -178,20 +227,34 @@ export type PollingModel = {
   contestId: string;
   contestLabel: string;
   waveYear: number;
+  /** cargo do pleito (TSE): é ele que decide a métrica da camada */
+  officeCode: number;
+  officeName: string;
+  metric: PollingMetric;
+  /** sigla em foco na métrica de voto por partido; "" quando não há sigla */
+  partyCode: string;
+  /** siglas com voto apurado no pleito, da mais votada para a menos votada */
+  partyOptions: PollingPartyOption[];
   viewMode: PollingViewMode;
   municipalityId: string | null;
   municipalityName: string | null;
   thresholds: number[];
   bandCounts: number[];
-  /** todas as unidades do recorte, com e sem índice */
+  /** todas as unidades do recorte, com e sem valor */
   units: PollingUnit[];
-  /** unidades com índice, dentro das faixas em foco, já ordenadas */
+  /** unidades com valor, dentro das faixas em foco, já ordenadas */
   filteredUnits: PollingUnit[];
   bubbles: PollingBubble[];
   /** unidades com coordenada que ficaram fora do mapa pelo teto de bolhas */
   hiddenBubbleCount: number;
-  /** unidades do recorte sem nenhum voto com nota */
+  /**
+   * Unidades do recorte sem nenhum voto com nota — SEMPRE sobre o índice
+   * ideológico, independente da métrica ativa. É o número que o agente de
+   * dados reporta; a interface da camada usa `missingValueCount`.
+   */
   missingIndexCount: number;
+  /** unidades do recorte sem valor na MÉTRICA ATIVA (fora do ranking) */
+  missingValueCount: number;
   /** locais sem coordenada no recorte: contam no bairro, não viram bolha */
   placesWithoutCoordinateCount: number;
   electorateWithoutCoordinate: number;

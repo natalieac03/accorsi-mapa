@@ -137,6 +137,15 @@ CDN="https://cdn.tse.jus.br/estatistica/sead/odsele"
 CANDIDATA_NOME="${CANDIDATA_NOME:-ADRIANA ACCORSI}"
 CANDIDATA_PARTIDO="${CANDIDATA_PARTIDO:-PT}"
 
+# Cada passo pesado só roda de novo se o JSON de saída ainda não existir ou
+# estiver "pendente". Isso resolve rodar o script de novo e ele reprocessar
+# tudo do zero (minutos por passo) só para pegar UM arquivo que faltou.
+# Depois de corrigir um bug num script de processamento, o JSON antigo ainda
+# "parece pronto" para esse cache — rode com FORCAR=1 para ignorá-lo:
+#
+#     FORCAR=1 bash gerar_dados.sh
+FORCAR="${FORCAR:-}"
+
 echo
 echo "=== PASSO 0 de 5: base territorial (eleitorado e indicadores do IBGE) ==="
 echo "  Este passo NÃO existia na versão do Rio Grande do Sul: lá esses"
@@ -207,13 +216,25 @@ baixar "$CDN/consulta_cand/consulta_cand_2022.zip" dados_tse/candidaturas/consul
 baixar "$CDN/consulta_cand/consulta_cand_2024.zip" dados_tse/candidaturas/consulta_cand_2024.zip
 
 echo
-echo "  Processando (pode levar vários minutos)..."
-$PYTHON scripts/process_tse_sections.py \
-  --sections-dir dados_tse/secoes \
-  --places-file 2022=dados_tse/eleitorado_local_votacao_2022.zip \
-  --places-file 2024=dados_tse/eleitorado_local_votacao_2024.zip \
-  --candidates-dir dados_tse/candidaturas \
-  --years 2022 2024
+PASSO1_PRONTO=1
+if [[ ! -s src/data/polling/places-go.json ]] || \
+   grep -q '"status": *"pendente"' src/data/polling/places-go.json; then
+  PASSO1_PRONTO=0
+fi
+ls src/data/polling/votes-2022-*.json >/dev/null 2>&1 || PASSO1_PRONTO=0
+ls src/data/polling/votes-2024-*.json >/dev/null 2>&1 || PASSO1_PRONTO=0
+
+if [[ "$PASSO1_PRONTO" == "1" && -z "$FORCAR" ]]; then
+  echo "  [ok] locais de votação e votos por seção (2022/2024) já gerados."
+else
+  echo "  Processando (pode levar vários minutos)..."
+  $PYTHON scripts/process_tse_sections.py \
+    --sections-dir dados_tse/secoes \
+    --places-file 2022=dados_tse/eleitorado_local_votacao_2022.zip \
+    --places-file 2024=dados_tse/eleitorado_local_votacao_2024.zip \
+    --candidates-dir dados_tse/candidaturas \
+    --years 2022 2024
+fi
 
 echo
 echo "=== PASSO 1b de 5: trajetória da candidatura em foco ====================="
@@ -235,15 +256,36 @@ for ano in 2014 2016 2018 2020 2022 2024; do
     || echo "  (sem cadastro de locais de ${ano}: esse ano sai só por município)"
 done
 
-# --partido desempata homônimos: sem isso o script se recusa a somar, de
-# propósito, porque duas pessoas de mesmo nome inflariam o total.
-$PYTHON scripts/process_candidato_foco.py \
-  --nome "$CANDIDATA_NOME" \
-  --partido "$CANDIDATA_PARTIDO" \
-  --sections-dir dados_tse/secoes \
-  --candidates-dir dados_tse/candidaturas \
-  --places-dir dados_tse/locais \
-  --anos 2014 2016 2018 2020 2022 2024
+candidato_foco_pronto() {
+  $PYTHON - <<'PY'
+import json, sys
+from pathlib import Path
+
+arquivos = [p for p in Path("src/data/candidato").glob("*.json") if p.name != "LEIAME.md"]
+for arquivo in arquivos:
+    try:
+        dados = json.loads(arquivo.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        continue
+    if dados.get("contests"):
+        sys.exit(0)
+sys.exit(1)
+PY
+}
+
+if [[ -z "$FORCAR" ]] && candidato_foco_pronto; then
+  echo "  [ok] trajetória da candidatura já gerada."
+else
+  # --partido desempata homônimos: sem isso o script se recusa a somar, de
+  # propósito, porque duas pessoas de mesmo nome inflariam o total.
+  $PYTHON scripts/process_candidato_foco.py \
+    --nome "$CANDIDATA_NOME" \
+    --partido "$CANDIDATA_PARTIDO" \
+    --sections-dir dados_tse/secoes \
+    --candidates-dir dados_tse/candidaturas \
+    --places-dir dados_tse/locais \
+    --anos 2014 2016 2018 2020 2022 2024
+fi
 
 echo
 echo "=== PASSO 1c de 5: histórico de Presidente e Governador (2018 e 2022) ===="
@@ -255,8 +297,10 @@ echo "  PASSO 1 baixa o nacional de 2022 e o PASSO 1b, os estaduais."
 baixar "$CDN/votacao_secao/votacao_secao_2018_BR.zip" \
   dados_tse/secoes/votacao_secao_2018_BR.zip
 
-if [[ ! -s src/data/election-history-go.json ]] || \
-   grep -q '"status": *"pendente"' src/data/election-history-go.json; then
+if [[ -z "$FORCAR" ]] && [[ -s src/data/election-history-go.json ]] && \
+   ! grep -q '"status": *"pendente"' src/data/election-history-go.json; then
+  echo "  [ok] histórico eleitoral já gerado."
+else
   echo "  Processando (pode levar vários minutos)..."
   $PYTHON scripts/process_tse_history.py \
     --section-2018 dados_tse/secoes/votacao_secao_2018_GO.zip \
@@ -265,8 +309,6 @@ if [[ ! -s src/data/election-history-go.json ]] || \
     --president-2022 dados_tse/secoes/votacao_secao_2022_BR.zip \
     --candidates-2018 dados_tse/candidaturas/consulta_cand_2018.zip \
     --candidates-2022 dados_tse/candidaturas/consulta_cand_2022.zip
-else
-  echo "  [ok] histórico eleitoral já gerado."
 fi
 
 echo
@@ -290,7 +332,7 @@ with zipfile.ZipFile(origem) as z:
     csvs = [n for n in z.namelist() if n.lower().endswith(".csv")]
     rs = [n for n in csvs if n.lower().endswith(f"_{ano}_go.csv".lower())]
     # ou um CSV por UF (pegamos o de Goiás), ou um único CSV nacional (renomeamos;
-    # o process_tse_municipal.py filtra as linhas por SG_UF == RS de toda forma)
+    # o process_tse_municipal.py filtra as linhas por SG_UF == GO de toda forma)
     alvo = rs[0] if rs else (csvs[0] if len(csvs) == 1 else None)
     if alvo is None:
         raise SystemExit(f"Não achei o CSV de Goiás dentro de {origem}: {csvs}")
@@ -303,12 +345,28 @@ PY
   fi
 done
 
-$PYTHON scripts/process_tse_municipal.py --input-dir dados_tse/munzona
+if [[ -z "$FORCAR" ]] && [[ -s src/data/party-votes-go.json ]] && \
+   ! grep -q '"status": *"pendente"' src/data/party-votes-go.json; then
+  echo "  [ok] eleições municipais 2020/2024 já geradas."
+else
+  $PYTHON scripts/process_tse_municipal.py --input-dir dados_tse/munzona
+fi
 
 echo
 echo "=== PASSO 3 de 5: estrutura etária e alfabetização do Censo 2022 (IBGE) =="
-$PYTHON scripts/process_ibge_age.py --cache-dir dados_tse/cache_ibge
-$PYTHON scripts/process_ibge_literacy.py --cache-dir dados_tse/cache_ibge_alfabetizacao
+if [[ -z "$FORCAR" ]] && [[ -s src/data/age-structure-go.json ]] && \
+   ! grep -q '"status": *"pendente"' src/data/age-structure-go.json; then
+  echo "  [ok] estrutura etária já gerada."
+else
+  $PYTHON scripts/process_ibge_age.py --cache-dir dados_tse/cache_ibge
+fi
+
+if [[ -z "$FORCAR" ]] && [[ -s src/data/literacy-go.json ]] && \
+   ! grep -q '"status": *"pendente"' src/data/literacy-go.json; then
+  echo "  [ok] alfabetização já gerada."
+else
+  $PYTHON scripts/process_ibge_literacy.py --cache-dir dados_tse/cache_ibge_alfabetizacao
+fi
 
 echo
 echo "=== PASSO 4 de 5: verificação e cópia para o backend ====================="

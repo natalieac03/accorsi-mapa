@@ -60,7 +60,9 @@ import {
 } from "../utils/electorate";
 import {
   buildPollingModel,
-  formatPollingIndex,
+  formatPollingValue,
+  getPollingMetricColors,
+  getPollingMetricShortLabel,
 } from "../utils/pollingPlaces";
 import {
   BASE_MUNICIPALITY_STYLE_FLAGS,
@@ -86,7 +88,6 @@ import {
   buildSpectrumModel,
   formatSpectrumValue,
   getSpectrumMetricColors,
-  SPECTRUM_COLORS,
   type PartyVotesDataset,
 } from "../utils/spectrum";
 import { ElectorateLegend } from "./ElectorateLegend";
@@ -918,7 +919,7 @@ export function MunicipalityLayer() {
           : activeLayer === "spectrum"
             ? spectrumItem?.value ?? null
           : activeLayer === "polling"
-            ? pollingItem?.index ?? null
+            ? pollingItem?.value ?? null
           : metrics
             ? getAnalysisMetricValue(metrics, analysis.state.metricId)
             : null;
@@ -934,7 +935,7 @@ export function MunicipalityLayer() {
               ? spectrumItem.band
               : null
           : activeLayer === "polling"
-            ? pollingItem && pollingItem.index !== null
+            ? pollingItem && pollingItem.value !== null
               ? pollingItem.band
               : null
           : value === null
@@ -958,7 +959,7 @@ export function MunicipalityLayer() {
             : activeLayer === "spectrum"
               ? getSpectrumMetricColors(spectrumModel.metricId)[band]
             : activeLayer === "polling"
-              ? SPECTRUM_COLORS[band]
+              ? getPollingMetricColors(pollingModel.metric)[band]
               : ELECTORATE_COLORS[band],
         isFocused: band !== null && activeBands.includes(band),
         isInTerritorialSelection: territorialSelectionSet.has(featureId),
@@ -978,6 +979,7 @@ export function MunicipalityLayer() {
       spectrumModel.metricId,
       polling.state.activeBands,
       pollingItemById,
+      pollingModel.metric,
       territorialSelectionSet,
     ],
   );
@@ -1045,9 +1047,20 @@ export function MunicipalityLayer() {
 
   const formatPollingHoverValue = (municipalityId: string) => {
     const item = pollingItemById.get(municipalityId);
-    if (!item || item.index === null) return "Sem índice por local neste pleito";
-    return `${formatPollingIndex(item.index)} · ${item.placeCount} locais`;
+    if (!item || item.value === null) {
+      return pollingModel.metric === "votoPartido"
+        ? "Sem voto apurado por local neste pleito"
+        : "Sem índice por local neste pleito";
+    }
+    return `${formatPollingValue(pollingModel.metric, item.value)} · ${item.placeCount} locais`;
   };
+
+  // Rótulo curto da métrica ativa, usado no title, no aria-label e no tooltip
+  // das bolhas: numa tela de percentual não sobra a palavra "índice".
+  const pollingMetricLabel = getPollingMetricShortLabel(
+    pollingModel.metric,
+    pollingModel.partyCode,
+  );
 
   const hoveredBubble =
     activeLayer === "polling" && hoveredPollingId
@@ -1140,7 +1153,7 @@ export function MunicipalityLayer() {
           <AdvancedMarker
             key={bubble.id}
             position={{ lat: bubble.latitude, lng: bubble.longitude }}
-            title={`${bubble.name} — índice ${formatPollingIndex(bubble.index)} · ${bubble.electorate} eleitores`}
+            title={`${bubble.name} — ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value)} · ${bubble.electorate} eleitores`}
             zIndex={bubble.focused ? 9 : 6}
           >
             <button
@@ -1151,7 +1164,7 @@ export function MunicipalityLayer() {
                 height: `${bubble.radius * 2}px`,
                 backgroundColor: bubble.color,
               }}
-              aria-label={`${bubble.name}, ${bubble.municipalityName}: índice ${formatPollingIndex(bubble.index)}, ${bubble.electorate} eleitores`}
+              aria-label={`${bubble.name}, ${bubble.municipalityName}: ${pollingMetricLabel} ${formatPollingValue(pollingModel.metric, bubble.value)}, ${bubble.electorate} eleitores`}
               onMouseEnter={() => setHoveredPollingId(bubble.id)}
               onMouseLeave={() =>
                 setHoveredPollingId((current) =>
@@ -1182,9 +1195,12 @@ export function MunicipalityLayer() {
         <div className="municipality-tooltip polling-tooltip" aria-live="polite">
           <strong>{hoveredBubble.name}</strong>
           <span>
-            Índice {formatPollingIndex(hoveredBubble.index)} ·{" "}
-            {hoveredBubble.electorate.toLocaleString("pt-BR")} eleitores ·
-            cobertura {hoveredBubble.coveragePct.toFixed(1)}%
+            {pollingMetricLabel}{" "}
+            {formatPollingValue(pollingModel.metric, hoveredBubble.value)} ·{" "}
+            {hoveredBubble.electorate.toLocaleString("pt-BR")} eleitores
+            {pollingModel.metric === "indice"
+              ? ` · cobertura ${hoveredBubble.coveragePct.toFixed(1)}%`
+              : ""}
           </span>
           <span>
             {hoveredBubble.kind === "neighborhood"
@@ -1235,7 +1251,7 @@ export function MunicipalityLayer() {
               : activeLayer === "spectrum"
                 ? `Espectro · ${spectrumModel.metricShortLabel}`
               : activeLayer === "polling"
-                ? `Locais · ${pollingModel.viewMode === "neighborhoods" ? "bairros" : "locais de votação"}`
+                ? `Locais · ${pollingMetricLabel}`
               : analysisModel.metric.shortLabel}
           </strong>
           {activeLayer === "election" && electionModel ? (
@@ -1357,7 +1373,9 @@ export function MunicipalityLayer() {
           viewMode={pollingModel.viewMode}
           thresholds={pollingModel.thresholds}
           bandCounts={pollingModel.bandCounts}
-          missingIndexCount={pollingModel.missingIndexCount}
+          metric={pollingModel.metric}
+          partyCode={pollingModel.partyCode}
+          missingValueCount={pollingModel.missingValueCount}
           placesWithoutCoordinateCount={pollingModel.placesWithoutCoordinateCount}
           activeBands={polling.state.activeBands}
           waveYear={pollingModel.waveYear}
@@ -1469,6 +1487,7 @@ export function MunicipalityLayer() {
         onSpectrumReset={spectrumAnalysis.reset}
         onPollingContestChange={polling.setContestId}
         onPollingViewModeChange={polling.setViewMode}
+        onPollingPartyChange={polling.setPartyCode}
         onPollingMunicipalityChange={polling.setMunicipalityId}
         onPollingBandToggle={polling.toggleBand}
         onPollingShowAllBands={polling.showAllBands}
