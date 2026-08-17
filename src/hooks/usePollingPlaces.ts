@@ -20,6 +20,7 @@ import {
   sanitizePollingState,
   togglePollingBand,
 } from "../utils/pollingPlaces";
+import { STATE_UF } from "../utils/state";
 
 const POLLING_STORAGE_KEY = "acqr:polling:v1";
 
@@ -83,7 +84,7 @@ export function usePollingPlaces(
 
   useEffect(() => {
     if (!active) return;
-    return runPollingLoad(placesStatusRef, () => loadPollingPlaces("rs"), {
+    return runPollingLoad(placesStatusRef, () => loadPollingPlaces(STATE_UF), {
       publish: setPlacesStatus,
       receive: (dataset) => {
         setPlacesMetadata(dataset?.metadata ?? null);

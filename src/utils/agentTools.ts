@@ -80,6 +80,7 @@ import {
   buildSpectrumModel,
   type PartyVotesDataset,
 } from "./spectrum.ts";
+import { STATE_UF } from "./state.ts";
 
 /**
  * MOTOR DE CONSULTAS DO AGENTE DE PERGUNTAS.
@@ -906,9 +907,9 @@ const AVISO_LOCAIS_PENDENTES =
  */
 async function obterLocais(contexto: ContextoAgente) {
   try {
-    if (contexto.carregarLocais) return await contexto.carregarLocais("rs");
+    if (contexto.carregarLocais) return await contexto.carregarLocais(STATE_UF);
     const modulo = await import("./pollingData.ts");
-    return await modulo.loadPollingPlaces("rs");
+    return await modulo.loadPollingPlaces(STATE_UF);
   } catch {
     return null;
   }

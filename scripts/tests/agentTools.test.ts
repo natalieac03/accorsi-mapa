@@ -500,7 +500,7 @@ test("o limiar de privacidade nunca cai abaixo de cinco, mesmo pedido pela base"
 // ---------------------------------------------------------------------------
 
 const LOCAIS_FIXTURE: PollingPlacesDataset = {
-  metadata: { schemaVersion: 1, state: "rs", placeCount: 3 },
+  metadata: { schemaVersion: 1, state: "GO", placeCount: 3 },
   places: [
     {
       id: "88013-1-1015",

@@ -6,6 +6,7 @@ import {
   parsePollingPlacesDataset,
   parsePollingVotesDataset,
 } from "./pollingPlaces.ts";
+import { STATE_UF } from "./state.ts";
 
 /**
  * CARREGAMENTO SOB DEMANDA dos arquivos da camada submunicipal.
@@ -54,7 +55,7 @@ const votesCache = new Map<string, PollingVotesDataset | null>();
 const placesRequests = new Map<string, Promise<PollingPlacesDataset | null>>();
 const votesRequests = new Map<string, Promise<PollingVotesDataset | null>>();
 
-export function getCachedPollingPlaces(state = "rs") {
+export function getCachedPollingPlaces(state = STATE_UF) {
   return placesCache.get(state) ?? null;
 }
 
@@ -63,7 +64,7 @@ export function getCachedPollingVotes(contestId: string) {
 }
 
 export async function loadPollingPlaces(
-  state = "rs",
+  state = STATE_UF,
 ): Promise<PollingPlacesDataset | null> {
   if (placesCache.has(state)) return placesCache.get(state) ?? null;
   const pending = placesRequests.get(state);

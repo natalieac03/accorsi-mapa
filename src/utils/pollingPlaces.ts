@@ -41,6 +41,7 @@ import {
   SPECTRUM_COLORS,
   type PartySpectrumIndex,
 } from "./spectrum.ts";
+import { STATE_UF } from "./state.ts";
 
 /**
  * Camada SUBMUNICIPAL: votação por LOCAL DE VOTAÇÃO.
@@ -1148,7 +1149,7 @@ export function createPollingCsv(model: PollingModel) {
 }
 
 export function getPollingCsvFilename(model: PollingModel) {
-  const scope = model.municipalityId ?? "rs";
+  const scope = model.municipalityId ?? STATE_UF;
   const mode = model.viewMode === "neighborhoods" ? "bairros" : "locais";
   // O nome do arquivo diz qual é a medida: dois downloads do mesmo pleito com
   // siglas diferentes não podem cair um por cima do outro.

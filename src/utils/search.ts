@@ -1,4 +1,5 @@
 import type { MunicipalitySearchOption } from "../types/search";
+import { STATE_NAME_NORMALIZED, STATE_UF } from "./state.ts";
 
 export type AddressComponentLike = {
   longText: string | null;
@@ -189,7 +190,11 @@ export function isRioGrandeDoSulAddress(
     .filter((value): value is string => Boolean(value))
     .map(normalizeSearchText);
 
-  return stateNames.includes("rs") || stateNames.includes("rio grande do sul");
+  // Sem isto, endereço do estado certo era descartado pela busca.
+  return (
+    stateNames.includes(STATE_UF) ||
+    stateNames.includes(STATE_NAME_NORMALIZED)
+  );
 }
 
 export function resolveMunicipalityFromAddress(

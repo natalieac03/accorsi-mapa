@@ -476,12 +476,12 @@ test("CSV e PNG saem coerentes com a métrica ativa", () => {
   assert.ok(csv.includes('"PT"'));
   assert.equal(
     getPollingCsvFilename(model),
-    "locais-voto-pt-rs-2022-1-1.csv",
+    "locais-voto-pt-go-2022-1-1.csv",
   );
   // Sem sigla, o arquivo é o de sempre — em pleito municipal…
   assert.equal(
     getPollingCsvFilename(buildModel(vereador)),
-    "locais-votacao-rs-2024-13-1.csv",
+    "locais-votacao-go-2024-13-1.csv",
   );
   // …e também em Presidente, que voltou a ter índice: o CSV traz de novo as
   // colunas de espectro que o cargo tinha perdido.
@@ -492,7 +492,7 @@ test("CSV e PNG saem coerentes com a métrica ativa", () => {
   assert.ok(!cabecalhoIndice.includes("percentual_da_sigla"));
   assert.equal(
     getPollingCsvFilename(buildModel(presidente)),
-    "locais-votacao-rs-2022-1-1.csv",
+    "locais-votacao-go-2022-1-1.csv",
   );
 
   const png = buildPollingMapExport(model);
