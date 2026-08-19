@@ -6052,3 +6052,607 @@ select:focus-visible {
     flex: 1 1 0;
   }
 }
+/* ==========================================================================
+   Janela Oportunidades — dois painéis
+   --------------------------------------------------------------------------
+   Reaproveita o chrome, o rail e a área de conteúdo do .stats-window: mesma
+   janela cheia, mesmo rail de 232px, mesmo fundo #fbf9f8 à direita. O que é
+   próprio daqui está abaixo, e nada disto redefine as classes .stats-* (só
+   acrescenta, via classe extra no mesmo elemento) — sobrescrever o rail de
+   Estatísticas a partir de Oportunidades foi o tipo de acoplamento que esta
+   janela existe para evitar.
+
+   A versão anterior desta janela era uma coluna de 980px centralizada, com
+   grade de cards que sumia ao abrir um tipo. Duas coisas mudaram por decisão,
+   não por gosto: os tipos ficam SEMPRE visíveis no rail (com barra de
+   proporção, para a forma da carteira inteira continuar legível enquanto se lê
+   um tipo só), e o lift ganhou calha própria à esquerda de cada território,
+   porque é o número que decide e precisa ser escaneável de cima a baixo.
+   ========================================================================== */
+
+.opportunities-nav {
+  padding-bottom: 32px;
+}
+
+.opportunities-nav__item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+}
+
+.opportunities-nav__item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.opportunities-nav__item:disabled:hover {
+  background: transparent;
+}
+
+.opportunities-nav__linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.opportunities-nav__rotulo {
+  min-width: 0;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.opportunities-nav__total {
+  flex-shrink: 0;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Barra de proporção: comprimento relativo ao tipo mais numeroso. Não é
+   decoração — é a única leitura da distribuição entre tipos que sobrou quando
+   a grade de cards saiu. */
+.opportunities-nav__barra {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(32, 26, 25, 0.09);
+  overflow: hidden;
+}
+
+.opportunities-nav__barra > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: rgba(32, 26, 25, 0.3);
+  transition: width 160ms ease-out;
+}
+
+.stats-nav__item--active .opportunities-nav__barra {
+  background: rgba(193, 18, 31, 0.18);
+}
+
+.stats-nav__item--active .opportunities-nav__barra > span {
+  background: var(--marca-primaria);
+}
+
+/* --- filtros no pé do rail ------------------------------------------------
+   Ficam aqui, e não no conteúdo, porque agem sobre TODOS os tipos: eles mudam
+   as contagens da lista acima, então precisam ser vistos junto dela. */
+
+.opportunities-filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 10px 0;
+}
+
+.opportunities-filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #6e6560;
+  font-size: 11px;
+}
+
+.opportunities-filtros label > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.opportunities-filtros label strong {
+  color: #201b1a;
+  font-variant-numeric: tabular-nums;
+}
+
+.opportunities-filtros input[type="range"] {
+  width: 100%;
+  accent-color: var(--marca-primaria);
+}
+
+.opportunities-filtros__checkbox {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 7px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.opportunities-filtros__checkbox input {
+  margin-top: 1px;
+  accent-color: var(--marca-primaria);
+}
+
+.opportunities-filtros__limpar {
+  padding: 6px 9px;
+  border: 1px solid rgba(193, 18, 31, 0.35);
+  border-radius: 8px;
+  background: rgba(193, 18, 31, 0.07);
+  color: var(--marca-primaria);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.opportunities-filtros__limpar:hover {
+  background: rgba(193, 18, 31, 0.13);
+}
+
+/* Bolinha de status do gate no rail: o sinal fica sempre à vista; o detalhe
+   mora no painel da direita, que tem largura para medido × exigido. */
+.opportunities-chip {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  align-self: center;
+  border-radius: 50%;
+}
+
+.opportunities-chip.is-ok {
+  background: #2e7d32;
+}
+
+.opportunities-chip.is-fail {
+  background: var(--marca-primaria);
+}
+
+/* --- conteúdo ------------------------------------------------------------ */
+
+.opportunities-titulo {
+  margin: 0 0 6px;
+  color: #201b1a;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.opportunities-metodo p {
+  max-width: 62ch;
+  margin: 0 0 12px;
+  color: #554e4c;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.opportunity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 16px 0 0;
+  list-style: none;
+}
+
+.opportunity-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(32, 26, 25, 0.1);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+/* Calha do lift: largura fixa para os números alinharem entre linhas. Tabular
+   nums porque a lista é para ser lida na vertical, comparando. */
+.opportunity-item__lift {
+  width: 92px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 16px;
+  border-right: 1px solid rgba(32, 26, 25, 0.08);
+}
+
+.opportunity-item__lift strong {
+  color: #201b1a;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.opportunity-item__lift small {
+  color: #6e6560;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+/* Barra ancorada em 1,00: cresce do centro para o lado que o desempenho ficou.
+   Uma barra que crescesse da esquerda faria 0,90 e 1,10 parecerem iguais. */
+.lift-bar {
+  position: relative;
+  height: 7px;
+  margin: 3px 0 2px;
+  border-radius: 4px;
+  background: rgba(32, 26, 25, 0.09);
+}
+
+.lift-bar--vazia {
+  background: rgba(32, 26, 25, 0.04);
+}
+
+.lift-bar__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 4px;
+}
+
+.lift-bar__fill.is-acima {
+  background: var(--marca-primaria);
+}
+
+.lift-bar__fill.is-abaixo {
+  background: #8a8380;
+}
+
+.lift-bar__centro {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  width: 1px;
+  background: rgba(32, 26, 25, 0.45);
+}
+
+.opportunity-item__corpo {
+  min-width: 0;
+  flex: 1;
+}
+
+.opportunity-item__nome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: #201b1a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.opportunity-item__nome svg {
+  flex-shrink: 0;
+  color: var(--marca-primaria);
+}
+
+.opportunity-explanation {
+  margin: 5px 0 0;
+  max-width: 68ch;
+  color: #554e4c;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.opportunity-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 22px;
+  margin: 10px 0 0;
+}
+
+.opportunity-metrics > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.opportunity-metrics dt {
+  color: #6e6560;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.opportunity-metrics dd {
+  margin: 0;
+  color: #201b1a;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.opportunity-warnings {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #6e6560;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.opportunity-warnings li {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.opportunity-warnings svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.opportunity-item__toggle {
+  margin-top: 10px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: none;
+  color: var(--marca-primaria-forte);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.opportunity-item__toggle svg {
+  transition: transform 140ms ease-out;
+}
+
+.opportunity-item__toggle svg.is-aberto {
+  transform: rotate(180deg);
+}
+
+.opportunity-similars {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(32, 26, 25, 0.14);
+}
+
+.opportunity-similars ul {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opportunity-similars__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  color: #6e6560;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.opportunity-similars__nome {
+  color: #201b1a;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.opportunity-similars small {
+  display: block;
+  margin-top: 2px;
+  max-width: 68ch;
+  color: #6e6560;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.panel-empty {
+  margin: 16px 0 0;
+  max-width: 52ch;
+  color: #6e6560;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* Telas estreitas.
+   --------------------------------------------------------------------------
+   A casa já tem uma regra em 720px que transforma o .stats-nav numa FILEIRA
+   rolável na horizontal. Ela serve para Estatísticas, cujo rail é só uma lista
+   de itens — mas não serve aqui: o bloco de filtros é um formulário largo, e
+   dentro de uma faixa que rola para o lado ele fica fora da tela, sem nada
+   indicando que existe. Então este rail QUEBRA em linhas em vez de rolar, e
+   tudo continua alcançável sem gesto lateral.
+
+   Mesmo breakpoint da regra da casa, de propósito: dois limiares diferentes
+   criariam uma faixa de larguras com metade de cada comportamento. */
+@media (max-width: 720px) {
+  .opportunities-nav {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    overflow-x: visible;
+  }
+
+  .opportunities-nav .stats-nav__group {
+    flex-basis: 100%;
+    margin: 6px 4px 0;
+  }
+
+  .opportunities-nav__item {
+    flex: 1 1 150px;
+    min-width: 150px;
+  }
+
+  .opportunities-filtros {
+    flex-basis: 100%;
+    padding: 0 4px;
+  }
+
+  .opportunity-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* A calha do lift deita: número, barra e rótulo na mesma linha. */
+  .opportunity-item__lift {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding-right: 0;
+    padding-bottom: 10px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(32, 26, 25, 0.08);
+  }
+
+  .lift-bar {
+    flex: 1;
+    max-width: 180px;
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opportunities-nav__barra > span,
+  .opportunity-item__toggle svg {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tipo sem insumo
+   --------------------------------------------------------------------------
+   Um tipo que não pôde ser calculado NÃO é um tipo vazio, e a tela precisa
+   dizer a diferença sem depender de o usuário ler o texto: o item do rail
+   perde a barra de proporção (não há proporção de nada) e o número vira
+   palavra. O item continua clicável de propósito — o painel da direita é
+   onde mora a única informação que o tipo ainda tem para dar, que é o que
+   está faltando e o que precisaria existir.
+   -------------------------------------------------------------------------- */
+
+.opportunities-nav__item--sem-insumo .opportunities-nav__rotulo {
+  color: #7a726f;
+}
+
+.opportunities-nav__item--sem-insumo .opportunities-nav__total {
+  color: #9a908c;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+.opportunities-nav__item--sem-insumo .opportunities-nav__barra {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(32, 26, 25, 0.09) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+.opportunities-sem-insumo {
+  max-width: 62ch;
+  padding: 14px 16px;
+  margin: 16px 0 0;
+  border: 1px solid rgba(32, 26, 25, 0.12);
+  border-left: 3px solid #b8862b;
+  border-radius: 6px;
+  background: #fdfbf7;
+}
+
+.opportunities-sem-insumo p {
+  margin: 0 0 10px;
+  color: #554e4c;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.opportunities-sem-insumo p:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #6b4f14;
+}
+
+.opportunities-sem-insumo p:last-child {
+  margin-bottom: 0;
+}
+
+.opportunities-sem-insumo__nota {
+  padding-top: 10px;
+  border-top: 1px solid rgba(32, 26, 25, 0.08);
+  color: #7a726f;
+  font-style: italic;
+}
+
+.opportunities-metodo__ressalva {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #fdf6e9;
+  color: #6b4f14 !important;
+}
+
+.opportunities-metodo__ressalva svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Limiares com poder de separação à vista. Um corte que aprova 245 de 246
+   não é critério, é cenário — e a linha precisa dizer isso sem depender de
+   quem lê fazer a divisão de cabeça. */
+.opportunities-limiares {
+  max-width: 62ch;
+  padding: 0;
+  margin: 0 0 12px;
+  list-style: none;
+  border: 1px solid rgba(32, 26, 25, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.opportunities-limiares li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 4px 14px;
+  align-items: baseline;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(32, 26, 25, 0.07);
+  font-size: 12.5px;
+  color: #554e4c;
+}
+
+.opportunities-limiares li:last-child {
+  border-bottom: none;
+}
+
+.opportunities-limiares strong {
+  color: #201b1a;
+  font-weight: 600;
+}
+
+.opportunities-limiares span {
+  font-variant-numeric: tabular-nums;
+}
+
+.opportunities-limiares small {
+  grid-column: 1 / -1;
+  color: #8a5b13;
+  font-size: 11.5px;
+  font-style: italic;
+}
+
+.opportunities-limiares li.is-pouco-seletivo {
+  background: #fdf6e9;
+}

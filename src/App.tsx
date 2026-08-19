@@ -1,5 +1,5 @@
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
-import { BarChart3, History, LoaderCircle, Menu } from "lucide-react";
+import { BarChart3, Compass, History, LoaderCircle, Menu } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useAuth } from "./auth/context";
 import { LoginScreen } from "./components/auth/LoginScreen";
@@ -25,10 +25,23 @@ const StatsWindow = lazy(() =>
   })),
 );
 
+/**
+ * Overlay "Oportunidades". Lazy com mais razão ainda que os anteriores: além
+ * dos mesmos snapshots, esta janela arrasta os motores de similaridade,
+ * clusterização e validação cruzada. Nada disso pode entrar no bundle da tela
+ * de login.
+ */
+const OpportunitiesWindow = lazy(() =>
+  import("./components/opportunities/OpportunitiesWindow").then((module) => ({
+    default: module.OpportunitiesWindow,
+  })),
+);
+
 export default function App() {
   const auth = useAuth();
   // Cobre o app inteiro, então o estado mora aqui (as abas do painel vão pelo uiBus).
   const [estatisticasAbertas, setEstatisticasAbertas] = useState(false);
+  const [oportunidadesAbertas, setOportunidadesAbertas] = useState(false);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID";
 
@@ -59,6 +72,7 @@ export default function App() {
             {/* Áreas que não cabem na fileira de abas do painel. */}
             <HeaderMenu
               onAbrirEstatisticas={() => setEstatisticasAbertas(true)}
+              onAbrirOportunidades={() => setOportunidadesAbertas(true)}
             />
             <div>
               <strong>ACCORSI</strong>
@@ -118,6 +132,25 @@ export default function App() {
             <StatsWindow onClose={() => setEstatisticasAbertas(false)} />
           </Suspense>
         )}
+
+        {oportunidadesAbertas && (
+          <Suspense
+            fallback={
+              <div
+                className="stats-window stats-window--loading"
+                role="status"
+                aria-live="polite"
+              >
+                <LoaderCircle className="spin" size={18} />
+                Carregando oportunidades…
+              </div>
+            }
+          >
+            <OpportunitiesWindow
+              onClose={() => setOportunidadesAbertas(false)}
+            />
+          </Suspense>
+        )}
       </div>
     </APIProvider>
   );
@@ -129,8 +162,10 @@ export default function App() {
  */
 function HeaderMenu({
   onAbrirEstatisticas,
+  onAbrirOportunidades,
 }: {
   onAbrirEstatisticas: () => void;
+  onAbrirOportunidades: () => void;
 }) {
   const [aberto, setAberto] = useState(false);
   const raiz = useRef<HTMLDivElement | null>(null);
@@ -196,6 +231,18 @@ function HeaderMenu({
             <BarChart3 size={15} aria-hidden />
             <span>Estatísticas</span>
             <small>campanhas da Dra. Adriana Accorsi</small>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setAberto(false);
+              onAbrirOportunidades();
+            }}
+          >
+            <Compass size={15} aria-hidden />
+            <span>Oportunidades</span>
+            <small>onde investir, por tipo de território</small>
           </button>
         </div>
       )}
