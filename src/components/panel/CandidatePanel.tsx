@@ -40,14 +40,10 @@ import { formatInteger } from "../../utils/electorate";
 /**
  * Aba "Accorsi": a trajetória nominal da candidata em foco, pleito a pleito.
  *
- * O painel importa os DADOS direto (em vez de recebê-los por props) para não
- * atravessar o App e o MunicipalityLayer com um dataset que só esta aba usa —
- * o mesmo motivo do uiBus: menos acoplamento com o carregamento do mapa.
- *
- * O ESTADO (pleito em detalhe e métrica), ao contrário, vem por props: é o
- * mesmo par que pinta a camada "candidato" do mapa. Um par de controles só,
- * dois lugares lendo — e a escolha sobrevive a sair e voltar da aba, que
- * desmonta este componente.
+ * Os DADOS entram por import direto, para não atravessar App e MunicipalityLayer
+ * com um dataset que só esta aba usa. O ESTADO (pleito em detalhe e métrica) vem
+ * por props: é o mesmo par que pinta a camada "candidato" do mapa e precisa
+ * sobreviver à desmontagem da aba.
  */
 
 type CandidatePanelProps = {
@@ -72,10 +68,7 @@ const PLOT_RIGHT = 6;
 const PLOT_TOP = 18;
 const PLOT_BOTTOM = 40;
 
-/**
- * Barra de coluna com topo arredondado (4px) e base reta, como manda a spec
- * de marcas: o dado termina suave, a linha de base continua sendo uma régua.
- */
+/** Barra de coluna com topo arredondado (4px) e base reta. */
 function columnPath(x: number, y: number, width: number, height: number) {
   const r = Math.min(4, height, width / 2);
   const base = y + height;
@@ -117,8 +110,8 @@ export function CandidatePanel({
         : [],
     [contest, metricId, electorateIndex],
   );
-  /* A seção de bairros segue o pleito selecionado: a comparação só junta
-     eleições do MESMO cargo (regra no motor, em buildBairroComparisonScope). */
+  /* A comparação só junta eleições do MESMO cargo (regra em
+     buildBairroComparisonScope). */
   const bairroScope = useMemo(
     () => (contest ? buildBairroComparisonScope(dataset, contest) : null),
     [contest],
@@ -163,15 +156,14 @@ export function CandidatePanel({
 
   const maxRankingValue = ranking.length > 0 ? ranking[0].value : 0;
 
-  /* Num pleito de uma cidade só, o ranking de municípios teria UMA linha
-     repetindo o cartão de cima; quem informa ali embaixo é o de bairros. */
+  /* Em pleito de uma cidade só, o ranking de municípios teria UMA linha
+     repetindo o cartão de cima; ali embaixo informa o de bairros. */
   const escopo = getMunicipalScope(contest);
   const bairrosAtuais = getBairros(contest)?.slice(0, BAIRROS_SIZE) ?? null;
   const comparacao = bairroScope?.comparacao ?? null;
   const cargoComparado = bairroScope?.officeLabel ?? getOfficeLabel(contest);
-  /* Um pleito só daquele cargo com recorte: não há comparação possível, e a
-     seção precisa dizer isso — sumir sem explicação deixaria a impressão de
-     que a leitura por bairro não existe para o cargo selecionado. */
+  /* Um pleito só daquele cargo: sem comparação possível, a seção precisa
+     dizer isso em vez de sumir. */
   const pleitoUnicoComBairros =
     bairroScope?.pleitos.length === 1 ? bairroScope.pleitos[0] : null;
   const comparacaoBairros = comparacao?.rows.slice(0, BAIRROS_SIZE) ?? null;
@@ -213,9 +205,8 @@ export function CandidatePanel({
         publica o cadastro de locais do ano.
       </p>
 
-      {/* Gráfico central: colunas por pleito. Série única, então a cor não
-          precisa distinguir nada — o vermelho cheio marca o pleito selecionado
-          e o resto recua (forma "ênfase"); clicar numa barra troca o pleito. */}
+      {/* Colunas por pleito, série única: o vermelho cheio marca o selecionado
+          e o resto recua. Clicar numa barra troca o pleito. */}
       <section className="candidate-chart" aria-label="Votos por eleição">
         <div className="analysis-section-heading">
           <span>
@@ -335,10 +326,9 @@ export function CandidatePanel({
         </small>
       </label>
 
-      {/* O que o MAPA está mostrando agora. A frase existe porque a camada
-          segue este painel: sem ela, um mapa quase todo cinza (o caso do
-          pleito municipal) pareceria defeito, e "por 1.000" sem denominador
-          escrito convidaria a supor "por 1.000 habitantes". */}
+      {/* O que o MAPA mostra agora: sem a frase, um mapa quase todo cinza (o
+          caso do pleito municipal) pareceria defeito e "por 1.000" seria lido
+          como "por 1.000 habitantes". */}
       {layerModel && (
         <p className="candidate-metric-note">
           {escopo ? (
@@ -465,8 +455,7 @@ export function CandidatePanel({
 
           {bairrosAtuais && (
             <div className="candidate-bairro-list">
-              {/* Mesmo rótulo de cargo da comparação abaixo: dentro de uma
-                  seção só, o pleito não pode ter dois nomes. */}
+              {/* Mesmo rótulo de cargo da comparação abaixo. */}
               <p className="candidate-bairro-caption">
                 Top {bairrosAtuais.length} bairros no pleito selecionado (
                 {contest.electionYear} · {cargoComparado}).
@@ -497,9 +486,8 @@ export function CandidatePanel({
             </p>
           )}
 
-          {/* Cargo com um pleito só de recorte: a frase substitui a comparação
-              — dizer "não há com o que comparar" é honesto; comparar com outro
-              cargo seria mostrar uma variação que não mede nada. */}
+          {/* Cargo com um pleito só: a frase substitui a comparação, porque
+              comparar com outro cargo mostraria variação que não mede nada. */}
           {pleitoUnicoComBairros && (
             <p className="candidate-bairro-caption">
               Só há um pleito de {cargoComparado} com recorte por bairro (
@@ -518,9 +506,8 @@ export function CandidatePanel({
                 {comparacao.recente.electionYear}, variação sobre{" "}
                 {comparacao.anterior.electionYear}.
               </p>
-              {/* Duas séries do MESMO tom (antes claro, depois cheio): é um
-                  antes/depois por bairro, não duas identidades — validado como
-                  rampa ordinal de 2 passos sobre a superfície branca. */}
+              {/* Duas séries do MESMO tom (antes claro, depois cheio): rampa
+                  ordinal de 2 passos, não duas identidades. */}
               <div className="candidate-bairro-legend" aria-hidden="true">
                 <span>
                   <i className="candidate-swatch candidate-swatch--anterior" />

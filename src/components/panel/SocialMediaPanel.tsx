@@ -1,13 +1,9 @@
 import { PlugZap, Share2, TriangleAlert } from "lucide-react";
 
 /**
- * Aba "Redes": espaço reservado para o módulo de redes sociais — engajamento
- * por lugar, ou seja, onde o público da campanha está mais ativo.
- *
- * Como a aba de anúncios, o painel ainda não recebe props: não existe fonte de
- * dado conectada. Ele só descreve o que vai mostrar e o que falta chegar, sem
- * nenhum número, gráfico ou barra de exemplo — inventar dado aqui seria dar à
- * campanha uma leitura de território que ninguém mediu.
+ * Aba "Redes": espaço reservado para o módulo de redes sociais (engajamento por
+ * lugar). Como a aba de anúncios, ainda sem props: não há fonte de dado
+ * conectada, e nenhum número ou gráfico de exemplo é inventado aqui.
  */
 export function SocialMediaPanel() {
   return (

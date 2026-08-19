@@ -1,23 +1,13 @@
 /**
- * MODELO DE RELATÓRIO — a camada intermediária entre os motores de dados e as
- * duas bibliotecas de saída (exceljs e jsPDF).
+ * MODELO DE RELATÓRIO: camada entre os motores de dados e as bibliotecas de
+ * saída (exceljs e jsPDF). Descreve a ESTRUTURA do documento, sem DOM e sem
+ * dependência externa.
  *
- * Por que existe uma camada no meio, em vez de cada painel falar direto com a
- * biblioteca: o que precisa ser verificado neste projeto não é "o exceljs
- * escreveu um arquivo", é "a célula do município sem apuração saiu VAZIA e não
- * zero", "o percentual declarou 1 casa", "o conjunto pendente não virou aba".
- * Essas afirmações são sobre a ESTRUTURA do documento, e a estrutura mora
- * aqui — pura, sem DOM e sem dependência externa, testável com payload
- * sintético inline como o resto dos utils.
- *
- * Disciplinas herdadas do projeto e reforçadas aqui:
- *
- * - `null` é ausência: vira célula VAZIA no Excel e travessão no PDF. Nunca 0.
- *   Numa planilha isso é ainda mais grave que na tela, porque a coluna soma;
+ * Regras:
+ * - `null` é ausência: célula VAZIA no Excel e travessão no PDF, nunca 0;
  * - conjunto pendente (`metadata.status === "pendente"`) não vira aba nem
- *   seção: entra na lista de omissões, declarado com o motivo;
- * - toda tabela carrega a sua procedência (fonte, pleito, ano) — a capa
- *   reúne todas para o número exportado continuar rastreável fora da tela.
+ *   seção: entra na lista de omissões, com o motivo;
+ * - toda tabela carrega a procedência (fonte, pleito, ano); a capa reúne todas.
  */
 
 import type { AnalysisMetricDefinition } from "../types/analysis";
@@ -27,17 +17,15 @@ import type { AnalysisMetricDefinition } from "../types/analysis";
  * ------------------------------------------------------------------------- */
 
 /**
- * Formato da coluna: decide o formato numérico do Excel, o alinhamento e o
- * texto do PDF. "decimal" e "percentual" declaram as casas em `decimals`.
+ * Formato da coluna: decide formato numérico do Excel, alinhamento e texto do
+ * PDF. "decimal" e "percentual" declaram as casas em `decimals`.
  */
 export type ReportColumnFormat =
   | "texto"
   /** Contagem com separador de milhar: 1.234.567 */
   | "inteiro"
   /**
-   * Número sem separador de milhar: ano (2024, jamais "2.024"), turno,
-   * posição, código. Agrupar milhar num ano é o tipo de detalhe que faz uma
-   * planilha parecer gerada às pressas.
+   * Sem separador de milhar: ano (2024, não "2.024"), turno, posição, código.
    */
   | "numero"
   | "decimal"
@@ -49,10 +37,8 @@ export type ReportColumn = {
   /** Casas decimais de decimal/percentual (padrão 1). Sempre declarado. */
   decimals?: number;
   /**
-   * true para colunas que só fazem sentido na planilha (códigos IBGE/TSE,
-   * denominadores). O PDF é documento de leitura: 20 colunas numa página A4
-   * viram uma tabela ilegível, então essas ficam fora dele — e não fora do
-   * Excel, que é justamente o formato de quem vai cruzar com outra base.
+   * true para colunas só da planilha (códigos IBGE/TSE, denominadores). Ficam
+   * fora do PDF, onde 20 colunas numa página A4 viram tabela ilegível.
    */
   pdfHidden?: boolean;
 };
@@ -60,7 +46,7 @@ export type ReportColumn = {
 /** `null` = dado ausente. Jamais substituído por 0 em nenhuma saída. */
 export type ReportCell = string | number | null;
 
-/** Procedência de um conjunto — o que torna o número rastreável fora da tela. */
+/** Procedência de um conjunto: torna o número rastreável fora da tela. */
 export type ReportSource = {
   /** "TSE · Resultados por município" */
   label: string;
@@ -81,10 +67,10 @@ export type ReportTable = {
   source: ReportSource;
 };
 
-/** Cartão de destaque — os mesmos números que a tela mostra, já formatados. */
+/** Cartão de destaque: os mesmos números da tela, já formatados. */
 export type ReportHighlight = {
   label: string;
-  /** Já formatado; "—" quando o dado não existe. */
+  /** Já formatado; vira REPORT_MISSING_TEXT quando o dado não existe. */
   value: string;
   note?: string;
 };
@@ -102,22 +88,13 @@ export type ReportImage = {
 };
 
 /* -------------------------------------------------------------------------
- * Documento analítico do PDF — seções, blocos e gráficos
+ * Documento analítico do PDF: seções, blocos e gráficos
  *
- * A pasta de trabalho continua sendo uma lista de TABELAS: é o formato de quem
- * vai cruzar os números. O PDF é outro documento — um relatório de leitura, com
- * capa, capítulos, gráficos e página de metodologia —, e descrevê-lo como
- * "tabelas + imagens" era o que produzia um arquivo com cara de despejo.
- *
- * Por isso o modelo ganha uma segunda projeção, `sections`, que só o PDF
- * consome. Ela é DECLARATIVA e sem DOM: os testes verificam que a seção de
- * cada indicador existe, que o título não muda com o filtro da tela e que a
- * ausência virou travessão, sem abrir um PDF.
- *
- * Os gráficos são ESPECIFICAÇÕES, não imagens. O renderizador os desenha em
- * vetor no jsPDF — o texto do relatório continua pesquisável e selecionável, e
- * a página não vira um PNG de 2 MB. Todo gráfico carrega `description`: o
- * gráfico nunca é a única forma de ler o dado.
+ * A pasta de trabalho é uma lista de TABELAS; o PDF consome a projeção
+ * `sections`, declarativa e sem DOM (testável sem abrir um PDF). Os gráficos
+ * são ESPECIFICAÇÕES desenhadas em vetor no jsPDF, e não imagens: o texto
+ * segue pesquisável e a página não vira um PNG de 2 MB. Todo gráfico traz
+ * `description`, porque o gráfico nunca é a única forma de ler o dado.
  * ------------------------------------------------------------------------- */
 
 /** Um eixo declarado: rótulo, unidade, escala. Nada de eixo mudo. */
@@ -164,7 +141,7 @@ export type ReportBoxSeries = {
   step?: number;
 };
 
-/** Uma célula da matriz de quadrantes. O nome é o do corte — nunca um juízo. */
+/** Uma célula da matriz de quadrantes. O nome é o do corte, nunca um juízo. */
 export type ReportQuadrantCell = {
   label: string;
   count: number;
@@ -209,7 +186,7 @@ export type ReportPanel = {
   subtitle?: string;
   /** Municípios sem dado neste painel: cinza no desenho e número declarado. */
   semDado?: number;
-  /** Leitura textual do painel — some do gráfico e continua no texto. */
+  /** Leitura textual do painel: o conteúdo existe também fora do desenho. */
   note?: string;
   spec: ReportPanelSpec;
 };
@@ -254,13 +231,12 @@ export type ReportChartLegendItem = {
 export type ReportChart = {
   id: string;
   title: string;
-  /** Escala, ano de referência, recorte — o que a leitura precisa saber. */
+  /** Escala, ano de referência, recorte: o que a leitura precisa saber. */
   subtitle?: string;
   legend: ReportChartLegendItem[];
   /**
-   * A leitura do gráfico em palavras. OBRIGATÓRIA: quem imprime em preto e
-   * branco, quem usa leitor de tela e quem só lê o texto precisa do mesmo
-   * conteúdo. Nenhum gráfico deste relatório é a única forma de ler o dado.
+   * A leitura do gráfico em palavras. OBRIGATÓRIA: impressão em preto e branco
+   * e leitor de tela precisam do mesmo conteúdo.
    */
   description: string;
   /** Municípios sem dado: desenhados em cinza, contados e declarados. */
@@ -275,14 +251,14 @@ export type ReportChart = {
 export type ReportField = { label: string; value: string };
 
 export type ReportBlock =
-  /** Divisão interna de uma seção — "Resumo da análise", "Convenções". */
+  /** Divisão interna de uma seção: "Resumo da análise", "Convenções". */
   | { kind: "subtitulo"; text: string }
   | { kind: "paragrafo"; text: string; tone?: "normal" | "suave" }
   | { kind: "lista"; items: string[] }
   | { kind: "cartoes"; items: ReportHighlight[]; colunas?: 2 | 3 }
   | { kind: "campos"; items: ReportField[]; colunas?: 2 | 3 }
   | { kind: "grafico"; chart: ReportChart }
-  /** Imagem rasterizada — só o mapa, que é captura de tela e não gráfico. */
+  /** Imagem rasterizada: só o mapa, que é captura de tela e não gráfico. */
   | { kind: "imagem"; image: ReportImage }
   | { kind: "tabela"; table: ReportTable; maxRows?: number }
   /** Aviso emoldurado: compatibilidade temporal, limitação metodológica. */
@@ -305,24 +281,19 @@ export type ReportSection = {
 export type ReportPdfOptions = {
   /**
    * Anexa a tabela municipal completa depois do relatório analítico.
-   * Desligada por padrão: a base completa é do Excel/CSV, e um anexo de
-   * centenas de linhas some com o relatório que a pessoa abriu para ler.
+   * Desligada por padrão: a base completa é do Excel/CSV.
    */
   incluirAnexoMunicipal?: boolean;
 };
 
 /**
- * As duas versões do relatório em PDF.
+ * As duas versões do relatório em PDF. "completo": um capítulo por indicador
+ * com dado, os quatro recortes do território, os três rankings e a metodologia.
+ * "resumido": as leituras principais, capítulos escolhidos por régua declarada
+ * e a tabela com TODOS os indicadores.
  *
- * "completo" é o documento inteiro: um capítulo por indicador com dado, os
- * quatro recortes do território, os três rankings e a metodologia completa.
- * "resumido" é o mesmo dado com menos página: as leituras principais, um
- * punhado de capítulos escolhidos por régua declarada e a tabela com TODOS os
- * indicadores — para levar a uma reunião, não para substituir o completo.
- *
- * A variante muda o QUE ENTRA no papel. Não muda nenhuma conta: as duas
- * versões saem da mesma `ReportAnalysis`, e um número que aparece nas duas
- * aparece igual.
+ * A variante muda só o QUE ENTRA no papel. As duas saem da mesma
+ * `ReportAnalysis` e nenhum número muda entre elas.
  */
 export type ReportVariant = "completo" | "resumido";
 
@@ -332,14 +303,13 @@ export type ReportDocument = {
   title: string;
   subtitle: string;
   /**
-   * Qual versão este documento imprime. Ausente nos relatórios que ainda não
-   * têm variante (trajetória, crescimento): eles são o que são.
+   * Qual versão este documento imprime. Ausente nos relatórios sem variante
+   * (trajetória, crescimento).
    */
   variant?: ReportVariant;
   /**
-   * A marca da versão impressa na CAPA, à direita do nome da candidatura.
-   * Existe para que duas impressões do mesmo recorte não se confundam em cima
-   * da mesa — e para que a resumida nunca passe por completa.
+   * Marca da versão impressa na CAPA, à direita do nome da candidatura, para
+   * que a resumida nunca passe por completa.
    */
   versionBadge?: string;
   /** O recorte visível: "Deputada Federal 2022 · 1º turno", "Goiás"… */
@@ -353,15 +323,13 @@ export type ReportDocument = {
   images: ReportImage[];
   attribution: string;
   /**
-   * O relatório analítico do PDF. Vazio nos documentos que ainda são só
-   * tabelas — o renderizador então monta as seções padrão a partir dos
-   * cartões, das fontes e das tabelas, e nenhum documento fica sem PDF.
+   * O relatório analítico do PDF. Vazio nos documentos só de tabelas: o
+   * renderizador monta seções padrão a partir de cartões, fontes e tabelas.
    */
   sections?: ReportSection[];
   /**
-   * A tabela municipal completa do anexo OPCIONAL do PDF. Ela também está em
-   * `tables` (é de lá que o Excel a lê); aqui ela é apontada para o anexo
-   * saber qual imprimir quando — e só quando — a opção for ligada.
+   * A tabela municipal do anexo OPCIONAL do PDF. Também está em `tables` (é de
+   * lá que o Excel lê); aqui só é apontada para o anexo saber qual imprimir.
    */
   annexTable?: ReportTable;
 };
@@ -396,8 +364,7 @@ export function getColumnDecimals(column: ReportColumn) {
 
 /**
  * Texto de uma célula para o PDF (e para o cálculo de largura das colunas).
- * Ausência vira travessão — nunca "0", nunca string vazia, que se confundiria
- * com um dado que existe e é vazio.
+ * Ausência vira travessão: nunca "0", nunca string vazia.
  */
 export function formatReportCell(value: ReportCell, column: ReportColumn) {
   if (value === null || value === undefined) return REPORT_MISSING_TEXT;
@@ -416,29 +383,23 @@ export function formatReportCell(value: ReportCell, column: ReportColumn) {
 }
 
 /**
- * Marcação de idioma do OOXML para o português do Brasil (LCID 0x416).
- *
- * O código de formato é sempre gravado no dialeto canônico — vírgula para
- * milhar, ponto para decimal — e cada aplicativo o RENDERIZA no idioma do
- * usuário. Sem o `[$-416]`, um coordenador com o Excel em inglês abriria a
- * planilha e leria "41,250 votos", que em pt-BR se lê como quarenta e um
- * inteiros. Com a marcação, o arquivo mostra 41.250 em qualquer máquina —
- * e é um arquivo que circula por e-mail e grupo de mensagem.
+ * Marcação de idioma do OOXML para pt-BR (LCID 0x416). O código de formato é
+ * gravado no dialeto canônico (vírgula de milhar, ponto decimal) e cada
+ * aplicativo o RENDERIZA no idioma do usuário. Sem o `[$-416]`, um Excel em
+ * inglês exibiria "41,250 votos" onde o arquivo quer dizer 41.250.
  */
 const IDIOMA_PT_BR = "[$-416]";
 
 /**
- * Código de formato numérico do Excel para a coluna.
- *
- * Percentual: o projeto guarda percentuais já em pontos (25,4 = 25,4%), então
- * o "%" entra como literal no formato, e não como o operador `%` do Excel,
- * que dividiria o valor por 100 na exibição.
+ * Código de formato numérico do Excel para a coluna. Percentual: o projeto
+ * guarda percentuais já em pontos (25,4 = 25,4%), então o "%" entra como
+ * literal, e não como o operador `%` do Excel, que dividiria o valor por 100.
  */
 export function getExcelNumberFormat(column: ReportColumn): string | null {
   const decimals = getColumnDecimals(column);
   const casas = decimals > 0 ? `.${"0".repeat(decimals)}` : "";
-  // Ano e código não levam separador nem marcação: "2024" é igual em todo
-  // idioma, e o `[$-416]` só serviria para inchar o arquivo.
+  // Ano e código não levam separador nem marcação de idioma: "2024" é igual
+  // em qualquer Excel.
   if (column.format === "numero") return "0";
   if (column.format === "inteiro") return `${IDIOMA_PT_BR}#,##0`;
   if (column.format === "decimal") return `${IDIOMA_PT_BR}#,##0${casas}`;
@@ -453,16 +414,8 @@ export function isNumericColumn(column: ReportColumn) {
 }
 
 /**
- * Traduz o formato de um indicador da aba Análise para o formato de coluna do
- * relatório — a mesma definição que decide como o número aparece na tela
- * decide como ele aparece na planilha, sem uma segunda tabela de regras.
- * Moeda vira decimal com 2 casas: R$ por extenso em cada célula atrapalharia
- * a leitura de uma coluna inteira, e o cabeçalho já diz a unidade.
- */
-/**
- * Cabeçalho de coluna com a unidade — sem repeti-la quando o próprio rótulo do
- * indicador já a carrega. Sem isto sai "Alfabetização 15+ (%) (% da população
- * 15+)", que ocupa duas linhas para dizer a mesma coisa duas vezes.
+ * Cabeçalho de coluna com a unidade, sem repeti-la quando o rótulo do indicador
+ * já a carrega (evita "Alfabetização 15+ (%) (% da população 15+)").
  */
 export function columnHeaderWithUnit(label: string, unit: string) {
   if (!unit.trim()) return label;
@@ -470,6 +423,11 @@ export function columnHeaderWithUnit(label: string, unit: string) {
   return `${label} (${unit})`;
 }
 
+/**
+ * Traduz o formato do indicador da aba Análise para o formato de coluna do
+ * relatório: a mesma definição vale para a tela e para a planilha. Moeda vira
+ * decimal de 2 casas, com a unidade declarada no cabeçalho.
+ */
 export function columnFormatFromMetric(
   valueFormat: AnalysisMetricDefinition["valueFormat"],
 ): Pick<ReportColumn, "format" | "decimals"> {
@@ -485,8 +443,7 @@ export function columnFormatFromMetric(
 
 /**
  * O Excel rejeita `: \ / ? * [ ]` no nome da aba e corta em 31 caracteres.
- * Sanitizamos preservando acentuação (o Excel aceita) — "Trajetória" continua
- * "Trajetória", não vira "Trajetoria".
+ * Sanitiza preservando acentuação, que o Excel aceita.
  */
 export function sanitizeSheetName(name: string) {
   const limpo = name
@@ -498,9 +455,9 @@ export function sanitizeSheetName(name: string) {
 }
 
 /**
- * Nomes de aba únicos: o Excel se recusa a abrir uma pasta com duas abas de
- * mesmo nome, e dois pleitos do mesmo cargo produzem títulos parecidos que o
- * corte em 31 caracteres pode igualar. O sufixo entra dentro do limite.
+ * Nomes de aba únicos: o Excel não abre pasta com duas abas de mesmo nome, e o
+ * corte em 31 caracteres pode igualar títulos parecidos. O sufixo entra dentro
+ * do limite.
  */
 export function resolveSheetNames(titles: string[]) {
   const usados = new Set<string>();
@@ -531,7 +488,7 @@ export function slugifyReport(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-/** aaaa-mm-dd no fuso de Brasília — o arquivo é datado para a reunião. */
+/** aaaa-mm-dd no fuso de Brasília. */
 export function formatFileDate(date: Date) {
   const partes = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
@@ -543,9 +500,8 @@ export function formatFileDate(date: Date) {
 }
 
 /**
- * Nome final do arquivo. A data entra no nome porque estes arquivos circulam
- * por e-mail e grupo de mensagem: dois envios do mesmo recorte em dias
- * diferentes não podem se confundir na pasta de quem recebe.
+ * Nome final do arquivo. A data entra no nome para que dois envios do mesmo
+ * recorte em dias diferentes não se confundam na pasta de quem recebe.
  */
 export function buildReportFilename(
   doc: ReportDocument,
@@ -580,9 +536,8 @@ const LARGURA_MINIMA = 11;
 const LARGURA_MAXIMA = 46;
 
 /**
- * Largura em caracteres calculada pelo CONTEÚDO já formatado (é o que o leitor
- * vê: "1.234.567" ocupa 9, não 7). Cabeçalho conta com folga porque vai em
- * negrito, que é mais largo que o corpo na mesma fonte.
+ * Largura em caracteres calculada pelo CONTEÚDO já formatado ("1.234.567" ocupa
+ * 9, não 7). O cabeçalho conta com folga porque vai em negrito.
  */
 export function computeColumnWidths(table: ReportTable) {
   return table.columns.map((column, indice) => {
@@ -608,9 +563,8 @@ export type CoverBlock =
   | { kind: "nota"; text: string };
 
 /**
- * A capa da pasta de trabalho. É a aba que responde "de onde veio este
- * número": título, candidatura, estado, data/hora da geração, a fonte de CADA
- * aba e — explicitamente — o que NÃO foi gerado.
+ * A capa da pasta de trabalho: título, candidatura, estado, data/hora da
+ * geração, a fonte de CADA aba e, explicitamente, o que NÃO foi gerado.
  */
 export function buildCoverBlocks(doc: ReportDocument): CoverBlock[] {
   const sheetNames = resolveSheetNames(doc.tables.map((table) => table.title));
@@ -653,9 +607,9 @@ export function buildCoverBlocks(doc: ReportDocument): CoverBlock[] {
     ]),
   });
 
-  // A ausência é declarada, nunca preenchida com exemplo: quem abrir a pasta
-  // precisa saber que aquele conjunto não existe nesta instalação — e não
-  // concluir que a candidata não teve voto ali.
+  // A ausência é declarada, nunca preenchida com exemplo: quem abrir precisa
+  // saber que o conjunto não existe nesta instalação, e não concluir que a
+  // candidata não teve voto ali.
   if (doc.omitted.length > 0) {
     blocks.push({ kind: "secao", text: "Conjuntos não gerados" });
     blocks.push({
@@ -698,8 +652,8 @@ export type WorkbookPlan = {
 export const COVER_SHEET_NAME = "Capa e fontes";
 
 /**
- * Plano completo da pasta: é ESTE objeto que os testes verificam. O renderer
- * de exceljs só traduz o plano para chamadas da biblioteca, sem decidir nada.
+ * Plano completo da pasta: é ESTE objeto que os testes verificam. O renderer de
+ * exceljs só o traduz para chamadas da biblioteca, sem decidir nada.
  */
 export function buildWorkbookPlan(doc: ReportDocument): WorkbookPlan {
   const nomes = resolveSheetNames(doc.tables.map((table) => table.title));
@@ -751,9 +705,8 @@ export function highlightValue(
 }
 
 /**
- * Um documento sem nenhuma tabela não deve virar arquivo: um .xlsx só com capa
- * ou um PDF só com rosto passariam a impressão de que "os dados estão aí" para
- * quem abrir no celular e não rolar até o fim.
+ * Documento sem nenhuma tabela não vira arquivo: um .xlsx só com capa passaria
+ * a impressão de que "os dados estão aí".
  */
 export function hasExportableContent(doc: ReportDocument) {
   return doc.tables.some((table) => table.rows.length > 0);

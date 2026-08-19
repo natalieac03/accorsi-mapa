@@ -99,9 +99,8 @@ export function AnalysisPanel({
     );
   };
 
-  /* O mesmo desenho do PNG do mapa, reaproveitado como figura do relatório —
-     sem o mapa, o PDF perderia justamente o que se olha primeiro na reunião.
-     Só o PDF embute imagem; a planilha é para trabalhar os números. */
+  /* Reaproveita o desenho do PNG do mapa como figura do relatório. Só o PDF
+     embute imagem: a planilha é para trabalhar os números. */
   const imagensDoMapa = (formato: ReportFormat) => {
     if (formato !== "pdf" || !mapShapes || mapShapes.length === 0) return [];
     const exportData = buildAnalysisMapExport(model);

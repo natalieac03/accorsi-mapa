@@ -3,12 +3,11 @@ import type { PollingDataStatus } from "../types/pollingPlaces";
 /**
  * MÁQUINA DE ESTADOS DO CARREGAMENTO SOB DEMANDA (locais e votos).
  *
- * Vive fora do React de propósito: o efeito que baixa os dados NÃO pode
- * depender do próprio status, senão a troca "idle" → "loading" muda as
- * dependências, React roda o cleanup do efeito anterior, o `cancelled` da
- * promessa em voo vira `true` e o status fica preso em "loading" para sempre
- * (spinner eterno). Mantendo o status em uma referência e a transição aqui,
- * o efeito depende só de `active` e a promessa sempre chega ao fim.
+ * Vive fora do React: o efeito que baixa os dados não pode depender do próprio
+ * status, senão a troca "idle" → "loading" muda as dependências, o cleanup
+ * roda, o `cancelled` da promessa em voo vira `true` e o status fica preso em
+ * "loading" (spinner eterno). Com o status numa referência, o efeito depende
+ * só de `active`.
  */
 export type PollingLoadEvent =
   | { type: "start" }
@@ -34,7 +33,7 @@ export function reducePollingLoadStatus(
     case "fail":
       return status === "loading" ? "error" : status;
     // Cancelar só desfaz um pedido EM VOO. Um resultado já obtido sobrevive a
-    // desligar e religar a camada — nada é baixado de novo.
+    // desligar e religar a camada, sem novo download.
     case "cancel":
       return status === "loading" ? "idle" : status;
   }
@@ -53,7 +52,7 @@ export type PollingLoadHandlers<T> = {
 
 /**
  * Dispara um carregamento no máximo uma vez por status "idle" e devolve o
- * cancelamento que o efeito usa no cleanup (desmontagem ou camada desligada).
+ * cancelamento usado no cleanup do efeito (desmontagem ou camada desligada).
  */
 export function runPollingLoad<T>(
   statusRef: PollingLoadStatusRef,
@@ -91,8 +90,8 @@ export function runPollingLoad<T>(
 }
 
 /**
- * Devolve o status inicial de um pedido cuja chave mudou (outro pleito):
- * volta para "idle" para que o próximo `runPollingLoad` busque os dados novos.
+ * Devolve o status inicial de um pedido cuja chave mudou (outro pleito): volta
+ * para "idle" para o próximo `runPollingLoad` buscar os dados novos.
  */
 export function resetPollingLoadKey(
   statusRef: PollingLoadStatusRef,

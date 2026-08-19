@@ -16,12 +16,10 @@ type CandidateLegendProps = {
 };
 
 /**
- * Legenda da camada do desempenho dela.
- *
- * Duas leituras, decididas pelo dado e não pelo cargo: com distribuição, as
- * cinco faixas por quintil; com um valor só — o pleito municipal, disputado
- * numa cidade — uma faixa só, e a frase que explica o mapa cinza. Sem essa
- * frase, um mapa quase todo cinza parece defeito da plataforma.
+ * Legenda da camada do desempenho dela. Duas leituras, decididas pelo dado e
+ * não pelo cargo: com distribuição, cinco faixas por quintil; com um valor só
+ * (caso do pleito municipal), uma faixa e a frase que explica o mapa cinza,
+ * sem a qual ele parece defeito.
  */
 export function CandidateLegend({
   model,
@@ -31,10 +29,8 @@ export function CandidateLegend({
   const allBandsActive =
     model.activeBands.length === ALL_ANALYSIS_BANDS.length;
   const cidade = model.escopoMunicipal;
-  /* Sem escala por quantil existe no máximo UM município com valor — quase
-     sempre a cidade de um pleito municipal, mas a regra é do dado, não do
-     cargo: um pleito estadual em que só um município tem denominador cai
-     aqui do mesmo jeito. */
+  /* Sem escala por quantil existe no máximo UM município com valor. A regra é
+     do dado, não do cargo: pleito estadual com um só denominador cai aqui. */
   const unicoItem = model.escalaPorQuantil
     ? null
     : model.allItems.find((item) => item.value !== null) ?? null;
@@ -89,8 +85,7 @@ export function CandidateLegend({
               );
             })
           : unicoItem && (
-              /* Um valor só: faixa por quintil não se aplica e a legenda
-                 mostra o município medido, sem inventar uma escala. */
+              /* Um valor só: sem faixa por quintil, mostra o município medido. */
               <div className="legend-item legend-item--active">
                 <span
                   className="legend-swatch"

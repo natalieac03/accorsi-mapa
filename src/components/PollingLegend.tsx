@@ -83,9 +83,8 @@ export function PollingLegend({
       <div className="legend-scale">
         {ALL_ANALYSIS_BANDS.map((band) => {
           const active = activeBands.includes(band);
-          // No índice o nome do bloco vem antes do intervalo; no percentual e
-          // no voto da candidata o rótulo JÁ é o intervalo e repeti-lo só faria
-          // ruído.
+          // No índice o nome do bloco vem antes do intervalo; no percentual e no
+          // voto da candidata o rótulo JÁ é o intervalo.
           const label =
             isPartyShare || isCandidate
               ? getPollingRangeLabel(metric, thresholds, band, labelOptions)
@@ -141,7 +140,7 @@ export function PollingLegend({
           ? ` · ${formatInteger(placesWithoutCoordinateCount)} locais sem coordenada ficam fora do mapa e contam no bairro`
           : ""}
         {/* O TSE renumera locais entre eleições: o que não casou com o cadastro
-            é declarado aqui, porque é a medida de confiança deste recorte. */}
+            é declarado aqui como medida de confiança do recorte. */}
         {isCandidate && candidateUnmatchedPlaceCount > 0
           ? ` · ${formatInteger(candidateUnmatchedPlaceCount)} locais com voto dela não existem no cadastro (${formatInteger(candidateUnmatchedVotes)} votos fora do mapa)`
           : ""}

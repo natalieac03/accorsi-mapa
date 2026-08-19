@@ -15,19 +15,17 @@ import type {
 import { createCsv, formatCsvDecimal, type CsvCell } from "./csv.ts";
 
 /**
- * Motor da aba "Accorsi" (trajetória de uma candidatura em foco).
+ * Motor da aba "Accorsi" (trajetória de uma candidatura em foco). Puro e sem
+ * React. Disciplina de cálculo:
  *
- * Tudo aqui é puro e sem React, para os testes cobrirem a aritmética sem
- * montar componente. Disciplina de cálculo, herdada do resto do projeto:
- *
- * - nunca média de médias — percentuais sempre saem de somas ou vêm prontos
- *   do processamento por seção;
+ * - nunca média de médias: percentuais saem de somas ou vêm prontos do
+ *   processamento por seção;
  * - percentual/taxa só existe com denominador > 0; sem denominador o valor é
- *   null e a linha fica FORA do ranking (não vira 0, que seria mentira);
+ *   null e a linha fica FORA do ranking (não vira 0);
  * - arredondamentos são declarados na função que os faz.
  */
 
-/** Goiânia — único município com recorte de bairros relevante para a aba. */
+/** Goiânia: único município com recorte de bairros relevante para a aba. */
 export const GOIANIA_IBGE = "5208707";
 
 export const CANDIDATE_RANKING_METRICS: CandidateRankingMetric[] = [
@@ -84,10 +82,9 @@ export function isCandidatePendente(dataset: CandidateDataset): boolean {
 }
 
 /**
- * ibge -> eleitorado. Devolve null quando o snapshot do eleitorado ainda é
- * placeholder: a métrica "por 1.000 eleitores" precisa saber a diferença entre
- * "sem arquivo" (desabilita a métrica inteira) e "município sem dado" (só a
- * linha fica de fora).
+ * ibge -> eleitorado. null quando o snapshot ainda é placeholder: a métrica
+ * "por 1.000 eleitores" precisa distinguir "sem arquivo" (desabilita a métrica
+ * inteira) de "município sem dado" (só a linha fica de fora).
  */
 export function buildElectorateIndex(source: ElectorateSource): ElectorateIndex {
   const entries = Object.entries(source.municipalities);
@@ -102,7 +99,7 @@ export function buildElectorateIndex(source: ElectorateSource): ElectorateIndex 
 
 /**
  * Votos por 1.000 eleitores, arredondado (declarado) a 2 casas.
- * Sem eleitorado positivo não há taxa — null, nunca 0.
+ * Sem eleitorado positivo não há taxa: null, nunca 0.
  */
 export function votosPorMilEleitores(
   votos: number,
@@ -132,9 +129,9 @@ export function formatResultado(resultado: string): string {
 }
 
 /**
- * Rótulos ainda mais curtos para o pé das barras do gráfico: com 6–7 pleitos
- * a faixa de cada barra tem ~45px e um rótulo longo colidiria com o vizinho.
- * O rótulo completo continua no tooltip e no dropdown.
+ * Rótulos ainda mais curtos para o pé das barras: com 6 a 7 pleitos a faixa de
+ * cada barra tem ~45px e um rótulo longo colidiria com o vizinho. O rótulo
+ * completo continua no tooltip e no dropdown.
  */
 const RESULTADO_SHORT: Record<string, string> = {
   "Eleita por QP": "Eleita QP",
@@ -149,14 +146,10 @@ export function formatResultadoShort(resultado: string): string {
 }
 
 /**
- * Resultados que a TELA não carimba. O dado continua inteiro no JSON, no CSV
- * exportado e no backend — some só da vitrine.
- *
- * Derrota não é rótulo de interface: a plataforma é ferramenta de campanha, e
- * escrever "não eleita" sob cada barra não acrescenta nada ao que o número de
- * votos já diz. Resultado que o voto sozinho NÃO conta continua aparecendo —
- * eleita, eleita por QP, suplente, foi ao 2º turno —, porque essa é
- * informação de verdade e não sobra de formulário do TSE.
+ * Resultados que a TELA não carimba: o dado continua inteiro no JSON, no CSV
+ * exportado e no backend, some só da vitrine. Derrota não é rótulo de
+ * interface. Resultado que o voto sozinho NÃO conta (eleita, eleita por QP,
+ * suplente, foi ao 2º turno) continua aparecendo.
  */
 const RESULTADOS_FORA_DA_VITRINE = new Set([
   "",
@@ -182,9 +175,9 @@ export function formatResultadoVitrineShort(resultado: string): string {
 }
 
 /**
- * Cargos encurtados para caber sob as barras do gráfico de trajetória: com
- * 7 pleitos cada banda tem ~42px e "Dep. Estadual" (~54px) colidiria com o
- * vizinho. O nome completo do cargo fica no tooltip e no dropdown.
+ * Cargos encurtados para caber sob as barras: com 7 pleitos cada banda tem
+ * ~42px e "Dep. Estadual" (~54px) colidiria com o vizinho. O nome completo
+ * fica no tooltip e no dropdown.
  */
 const OFFICE_SHORT: Record<number, string> = {
   1: "Pres.",
@@ -202,12 +195,9 @@ export function getOfficeShort(officeCode: number, officeName: string): string {
 }
 
 /**
- * Cargo por extenso no feminino, para a prosa da interface.
- *
- * O TSE grava o cargo no masculino genérico ("Deputado Federal") enquanto a
- * vitrine já fala dela no feminino ("Eleita", "Prefeita" sob a barra); numa
- * frase corrida o masculino soaria como se falasse de outra pessoa. Cargo fora
- * do mapa cai no nome cru do TSE: repetir o dado é melhor que inventar flexão.
+ * Cargo por extenso no feminino, para a prosa da interface: o TSE grava no
+ * masculino genérico ("Deputado Federal"). Cargo fora do mapa cai no nome cru
+ * do TSE, porque repetir o dado é melhor que inventar flexão.
  */
 const OFFICE_FEMININO: Record<number, string> = {
   1: "Presidente",
@@ -222,8 +212,8 @@ const OFFICE_FEMININO: Record<number, string> = {
 
 /**
  * Nome do que está sendo comparado: o cargo disputado, com o turno anexado só
- * quando ele existe (> 1). O turno entra no rótulo porque 2º turno é outra
- * disputa — dois nomes na urna, outro eleitorado efetivo.
+ * quando ele existe (> 1). 2º turno é outra disputa: dois nomes na urna, outro
+ * eleitorado efetivo.
  */
 export function getOfficeLabel(
   contest: Pick<CandidateContest, "officeCode" | "officeName" | "round">,
@@ -233,9 +223,8 @@ export function getOfficeLabel(
 }
 
 /**
- * Série do gráfico central: uma barra por pleito, em ordem cronológica.
- * A ordem visual é sempre ascendente por ano (2014 -> 2024), mesmo que o JSON
- * venha do mais recente para o mais antigo.
+ * Série do gráfico central: uma barra por pleito, sempre ascendente por ano
+ * (2014 -> 2024), mesmo que o JSON venha do mais recente para o mais antigo.
  */
 export function buildTrajectory(dataset: CandidateDataset): TrajectoryPoint[] {
   return [...dataset.contests]
@@ -253,8 +242,7 @@ export function buildTrajectory(dataset: CandidateDataset): TrajectoryPoint[] {
       officeShort: getOfficeShort(contest.officeCode, contest.officeName),
       round: contest.round,
       resultado: contest.candidatura.resultado,
-      // Rótulos de VITRINE: o campo cru fica logo acima, intacto, para o CSV
-      // e para quem consultar o dado.
+      // Rótulos de VITRINE: o campo cru fica logo acima, intacto, para o CSV.
       resultadoLabel: formatResultadoVitrine(contest.candidatura.resultado),
       resultadoShort: formatResultadoVitrineShort(contest.candidatura.resultado),
       partido: contest.candidatura.partido,
@@ -264,8 +252,7 @@ export function buildTrajectory(dataset: CandidateDataset): TrajectoryPoint[] {
 
 /**
  * Valor da métrica para um município. Percentuais chegam prontos do
- * processamento por seção (calculados sobre somas, nunca média de médias);
- * aqui só se decide o que é null.
+ * processamento por seção (sobre somas, nunca média de médias).
  */
 export function getRankingMetricValue(
   municipio: CandidateMunicipio,
@@ -285,10 +272,9 @@ export function getRankingMetricValue(
 }
 
 /**
- * Ranking municipal da eleição selecionada. Linhas sem valor (denominador
- * ausente) ficam fora — um município sem eleitorado apurado não pode ocupar
- * posição num ranking de taxa. Empates desempatam por votos e depois por nome,
- * para a ordem ser estável entre renderizações.
+ * Ranking municipal da eleição selecionada. Linha sem valor (denominador
+ * ausente) fica fora. Empates desempatam por votos e depois por nome, para a
+ * ordem ser estável entre renderizações.
  */
 export function buildMunicipioRanking(
   contest: CandidateContest,
@@ -348,13 +334,10 @@ export function listContestsComBairros(
 }
 
 /**
- * Comparação bairro a bairro entre dois pleitos com recorte submunicipal —
- * a leitura mais valiosa da aba: onde a votação cresceu dentro da capital.
- *
+ * Comparação bairro a bairro entre dois pleitos com recorte submunicipal.
  * Bairro ausente num pleito fica null (o cadastro daquele ano não apurou voto
- * ali — não é zero). A variação % (arredondada, declarado, a 1 casa) só existe
- * quando os dois lados têm valor e a base é positiva; "bairro novo" não tem
- * taxa de crescimento, tem estreia.
+ * ali, não é zero). A variação % (arredondada, declarado, a 1 casa) só existe
+ * quando os dois lados têm valor e a base é positiva.
  */
 export function compareBairros(
   anterior: CandidateContest,
@@ -386,15 +369,10 @@ export function compareBairros(
 
 /**
  * Pleitos COMPARÁVEIS ao selecionado no recorte de bairro: mesmo cargo e mesmo
- * turno, em ordem cronológica.
- *
- * Comparar cargos diferentes é proibido nesta base (o motivo está em
- * `buildMunicipalGrowth`, em candidateStats.ts): disputar a prefeitura e
- * disputar uma cadeira legislativa são corridas diferentes — outros
- * adversários, outras regras, outro eleitorado efetivo — e a variação entre
- * elas não mede crescimento de nada. O turno entra pela mesma razão: no 2º
- * turno restam dois nomes na urna, e o voto de um bairro muda de natureza,
- * não de tamanho.
+ * turno, em ordem cronológica. Comparar cargos diferentes é proibido nesta
+ * base (motivo em `buildMunicipalGrowth`, candidateStats.ts): são corridas
+ * diferentes, com outros adversários, regras e eleitorado efetivo. O turno
+ * entra pela mesma razão: no 2º turno restam dois nomes na urna.
  */
 export function listContestsComparaveisComBairros(
   dataset: CandidateDataset,
@@ -410,12 +388,10 @@ export function listContestsComparaveisComBairros(
 /**
  * O que a seção de bairros pode mostrar para o pleito selecionado: os pleitos
  * comparáveis com recorte e, quando são pelo menos dois, a comparação entre o
- * mais antigo e o mais recente DAQUELE cargo.
- *
- * Com menos de dois, `comparacao` é null — a interface avisa que não há com o
- * que comparar em vez de cair no cargo vizinho. O pleito selecionado não
- * precisa ter recorte próprio: um ano sem cadastro de locais do TSE continua
- * sendo daquele cargo e continua tendo direito à leitura dos anos que têm.
+ * mais antigo e o mais recente DAQUELE cargo. Com menos de dois, `comparacao`
+ * é null, em vez de cair no cargo vizinho. O pleito selecionado não precisa
+ * ter recorte próprio: um ano sem cadastro de locais do TSE continua sendo
+ * daquele cargo e tem direito à leitura dos anos que têm.
  */
 export function buildBairroComparisonScope(
   dataset: CandidateDataset,
@@ -439,8 +415,8 @@ export function buildBairroComparisonScope(
 
 /**
  * Ticks "limpos" do eixo Y do gráfico de trajetória (0, 50 mil, 100 mil…).
- * O topo do eixo pode ficar abaixo do máximo da série — o rótulo direto no
- * topo da barra carrega o valor exato, então o eixo só dá a régua.
+ * O topo do eixo pode ficar abaixo do máximo da série: o valor exato está no
+ * rótulo da barra, o eixo só dá a régua.
  */
 export function buildAxisTicks(maxValue: number, tickCount = 3): number[] {
   if (maxValue <= 0) return [0];
@@ -465,8 +441,7 @@ const decimalPt = new Intl.NumberFormat("pt-BR", {
 
 /**
  * Número compacto pt-BR para rótulos de gráfico ("127,5 mil", "1,2 mi").
- * Arredondamento declarado: 1 casa nos compactos; o valor exato continua no
- * tooltip e no CSV.
+ * Arredondamento declarado: 1 casa; o valor exato fica no tooltip e no CSV.
  */
 export function formatCompactPt(value: number): string {
   const abs = Math.abs(value);
@@ -492,9 +467,9 @@ export function getContestLabel(contest: CandidateContest): string {
 }
 
 /**
- * CSV do ranking exibido, no dialeto do projeto (createCsv já põe BOM e
- * ponto e vírgula). Decimais com vírgula via formatCsvDecimal, para abrir
- * direto no Excel/LibreOffice em pt-BR.
+ * CSV do ranking exibido (createCsv já põe BOM e ponto e vírgula). Decimais
+ * com vírgula via formatCsvDecimal, para abrir direto no Excel/LibreOffice em
+ * pt-BR.
  */
 export function createCandidateRankingCsv(
   metricId: CandidateRankingMetricId,

@@ -28,8 +28,7 @@ function readStoredState(dataset: ElectionDataset) {
 
 /**
  * Estado da camada de eleições. Tolera snapshot pendente (`contests: []`): o
- * estado nasce neutro e todos os setters viram no-op em vez de quebrar — a
- * camada some da tela, o resto do aplicativo continua inteiro.
+ * estado nasce neutro e os setters viram no-op, a camada some e o resto segue.
  */
 export function useElectionHistory(dataset: ElectionDataset) {
   const [state, setState] = useState<ElectionState>(() => readStoredState(dataset));

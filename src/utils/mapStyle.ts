@@ -1,11 +1,8 @@
 /**
- * ESTILO DE UM POLÍGONO MUNICIPAL, isolado do Google Maps de propósito.
- *
+ * Estilo de um polígono municipal, isolado do Google Maps de propósito.
  * `map.data.setStyle` reavalia o callback para TODOS os 246 municípios a cada
- * chamada. Passar hover e seleção por ali significava ~1.000 reavaliações por
- * município percorrido com o mouse. Separando a parte que depende só da camada
- * (cor e destaque de faixa) da parte que depende do ponteiro (hover/seleção),
- * o hover passa a pintar uma única feature com `overrideStyle`.
+ * chamada, então aqui fica só o que depende da camada (cor e destaque de
+ * faixa); hover e seleção pintam uma única feature com `overrideStyle`.
  */
 export type MunicipalityStyleInputs = {
   /** Cor da faixa (ou a cor de ausência de dado). */

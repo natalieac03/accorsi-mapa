@@ -8,37 +8,42 @@ from app.database import SessionLocal
 from app.models import CampaignRegistration, Municipality, User
 
 
+# Cadastro é a única rota que valida CEP e coordenada contra o estado, então
+# aqui o município precisa ser de Goiás de verdade: CEP começando em 7 e
+# coordenada dentro da caixa de GO. Código do IBGE é real; código do TSE e
+# eleitorado são só valores de teste (nenhuma checagem confere contra a lista
+# oficial, o TSE só precisa ser único).
 def seed_municipalities() -> None:
     with SessionLocal() as db:
         db.add_all(
             [
                 Municipality(
-                    ibge_code="4314902",
-                    tse_code="88013",
-                    name="Porto Alegre",
+                    ibge_code="5208707",
+                    tse_code="90000",
+                    name="Goiânia",
                     uf="GO",
-                    electorate_2026=1_061_485,
+                    electorate_2026=1_100_000,
                 ),
                 Municipality(
-                    ibge_code="4304606",
-                    tse_code="85873",
-                    name="Canoas",
+                    ibge_code="5201108",
+                    tse_code="90001",
+                    name="Anápolis",
                     uf="GO",
-                    electorate_2026=252_875,
+                    electorate_2026=280_000,
                 ),
             ]
         )
         db.commit()
 
 
-def payload(reference: str, *, neighborhood: str = "Centro Histórico") -> dict:
+def payload(reference: str, *, neighborhood: str = "Setor Central") -> dict:
     return {
         "external_reference": reference,
-        "municipality_ibge_code": "4314902",
-        "cep": "90010-000",
+        "municipality_ibge_code": "5208707",
+        "cep": "74003-010",
         "neighborhood": neighborhood,
-        "latitude": -30.0304,
-        "longitude": -51.2297,
+        "latitude": -16.6869,
+        "longitude": -49.2648,
         "geocode_precision": "cep_centroid",
         "source": "field",
         "follow_up_status": "pending",
@@ -65,10 +70,11 @@ def test_registration_crud_minimizes_location_and_revokes_consent(
         )
         assert response.status_code == 201
         body = response.json()
-        assert body["cep_prefix"] == "90010"
+        assert body["cep_prefix"] == "74003"
         assert "cep" not in body
         assert "external_reference" not in body
-        assert body["latitude"] == -30.03
+        # Minimização de localização: a coordenada é arredondada para 3 casas.
+        assert body["latitude"] == -16.687
         created_ids.append(body["id"])
 
     duplicate = client.post(
@@ -122,11 +128,11 @@ def test_registration_import_is_atomic_and_audited(
     second = payload("IMPORT-2")
     second.update(
         {
-            "municipality_ibge_code": "4304606",
-            "cep": "92010-000",
+            "municipality_ibge_code": "5201108",
+            "cep": "75024-020",
             "neighborhood": "Centro",
-            "latitude": -29.918,
-            "longitude": -51.184,
+            "latitude": -16.3267,
+            "longitude": -48.9528,
             "source": "event",
         }
     )

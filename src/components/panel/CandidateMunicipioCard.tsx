@@ -6,20 +6,15 @@ import { getMunicipioDestaques } from "../../utils/candidateStats";
 import { formatInteger, formatPercent } from "../../utils/electorate";
 
 /**
- * O desempenho da Dra. Adriana no município selecionado, logo abaixo do
- * cartão de eleitorado.
+ * Desempenho da Dra. Adriana no município selecionado, abaixo do cartão de
+ * eleitorado. Importa o snapshot direto, como a aba "Accorsi".
  *
- * Importa o snapshot direto, como a aba "Accorsi" faz, para não atravessar o
- * App e o MunicipalityPanel com um dado que só este cartão usa.
+ * Um cartão por universo de disputa, no máximo dois: em quase todo município
+ * sai um (última eleição estadual ou federal) e em Goiânia saem dois, por conta
+ * da prefeitura. Os números NÃO se somam nem se comparam entre universos.
  *
- * Um cartão por universo de disputa, no máximo dois. Em quase todo município
- * sai um — a última eleição estadual ou federal. Em Goiânia saem dois, porque
- * lá ela disputou também a prefeitura, e os dois números NÃO se somam nem se
- * comparam: são eleições de regras, adversários e eleitorados diferentes.
- *
- * Município onde ela não teve voto apurado não ganha cartão de zero: o
- * componente simplesmente não renderiza, porque "não apurado" e "zero voto"
- * são afirmações diferentes e a segunda seria mentira.
+ * Sem voto apurado não há cartão de zero: o componente não renderiza, porque
+ * "não apurado" e "zero voto" são afirmações diferentes.
  */
 
 const dataset = candidatoJson as unknown as CandidateDataset;

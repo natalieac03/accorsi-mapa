@@ -11,21 +11,12 @@ import {
 } from "./reportModel.ts";
 
 /**
- * Pasta de trabalho .xlsx — tradução do plano (reportModel) em chamadas do
- * exceljs. Nenhuma decisão de conteúdo mora aqui: se algo precisa ser
- * verificado ("a célula ausente ficou vazia", "o percentual tem 1 casa"), o
- * teste olha o PLANO, não este arquivo.
+ * Pasta de trabalho .xlsx: traduz o plano (reportModel) em chamadas do exceljs.
+ * Nenhuma decisão de conteúdo mora aqui; teste de conteúdo olha o PLANO.
  *
- * Por que exceljs e não SheetJS: a versão comunitária do SheetJS não escreve
- * estilo de célula (o `cellStyles` é do build pago). Sem estilo o entregável
- * vira exatamente o que a usuária recusou — uma grade crua. O exceljs escreve
- * largura de coluna, congelamento de painel, autofiltro, fonte, preenchimento
- * e formato numérico, que é o conjunto mínimo para a planilha ter cara de
- * documento de trabalho.
- *
- * A biblioteca é carregada por IMPORT DINÂMICO: são ~940 kB minificados, e
- * quem nunca clica em "Excel" não baixa um byte disso — mesmo padrão do
- * carregamento sob demanda dos JSONs de locais de votação.
+ * exceljs e não SheetJS porque a versão comunitária do SheetJS não escreve
+ * estilo de célula (`cellStyles` é do build pago). A biblioteca é carregada por
+ * IMPORT DINÂMICO: são ~940 kB minificados, baixados só ao clicar em "Excel".
  */
 
 const XLSX_MIME =
@@ -44,8 +35,7 @@ type ExcelModule = { Workbook: new () => Workbook };
 
 /**
  * Resolve o namespace do exceljs nos dois ambientes: no navegador o Vite
- * entrega o build UMD sob `default`; no Node (usado pelos testes e pelo script
- * de exemplos) o interop de CJS expõe os dois caminhos.
+ * entrega o build UMD sob `default`; no Node o interop de CJS expõe os dois.
  */
 async function loadExcel(): Promise<ExcelModule> {
   const mod = (await import("exceljs")) as unknown as {
@@ -55,10 +45,9 @@ async function loadExcel(): Promise<ExcelModule> {
 }
 
 function aplicarCapa(sheet: Worksheet, blocks: CoverBlock[]) {
-  /* A capa tem cinco colunas largas (fonte, recorte, endereço). Sem ajustar à
-     largura, imprimi-la joga as três últimas colunas para páginas soltas — e
-     é justamente a coluna do endereço da fonte que ficaria sozinha numa folha
-     em branco. Paisagem + ajuste à largura resolve. */
+  /* A capa tem cinco colunas largas (fonte, recorte, endereço): sem paisagem
+     com ajuste à largura, a impressão joga as três últimas para páginas
+     soltas. */
   sheet.pageSetup = {
     orientation: "landscape",
     fitToPage: true,
@@ -137,7 +126,7 @@ function aplicarCapa(sheet: Worksheet, blocks: CoverBlock[]) {
         row.forEach((valor, indice) => {
           const cell = sheet.getCell(linha, indice + 1);
           // String vazia continua vazia: na capa, "sem endereço publicado" não
-          // deve virar um traço que pareça um dado.
+          // pode virar um traço que pareça dado.
           cell.value = valor === "" ? null : valor;
           cell.font = { name: "Calibri", size: 10, color: { argb: TINTA } };
           cell.alignment = { vertical: "top", wrapText: true };
@@ -188,8 +177,8 @@ function aplicarDados(
     table.columns.forEach((column, indiceColuna) => {
       const valor = row[indiceColuna] ?? null;
       const cell = excelRow.getCell(indiceColuna + 1);
-      // AUSÊNCIA É CÉLULA VAZIA. Esta é a linha mais importante do arquivo:
-      // `null` aqui vira zero e a coluna soma a mentira sem avisar ninguém.
+      // AUSÊNCIA É CÉLULA VAZIA: `null` aqui viraria zero e a coluna somaria a
+      // mentira sem avisar ninguém.
       cell.value = valor === null || valor === "" ? null : valor;
       const formato = numberFormats[indiceColuna];
       if (formato && typeof valor === "number") cell.numFmt = formato;
@@ -198,9 +187,7 @@ function aplicarDados(
         vertical: "middle",
         horizontal: isNumericColumn(column) ? "right" : "left",
       };
-      // Zebra discreta: linhas pares recebem a superfície secundária da
-      // paleta, o suficiente para o olho seguir a linha sem competir com o
-      // conteúdo.
+      // Zebra discreta: linhas pares recebem a superfície secundária da paleta.
       if (indiceLinha % 2 === 1) {
         cell.fill = {
           type: "pattern",
@@ -211,8 +198,6 @@ function aplicarDados(
     });
   });
 
-  // Congelar o cabeçalho e ligar o autofiltro: é o que separa uma planilha de
-  // trabalho de um despejo de linhas.
   sheet.views = [{ state: "frozen", ySplit: 1 }];
   if (table.columns.length > 0) {
     sheet.autoFilter = {
@@ -221,8 +206,6 @@ function aplicarDados(
     };
   }
 
-  // Impressão: paisagem, ajustada à largura, com o cabeçalho da tabela
-  // repetido em toda página e a procedência no rodapé impresso.
   sheet.pageSetup = {
     orientation: "landscape",
     fitToPage: true,
@@ -276,7 +259,7 @@ export async function renderWorkbook(plan: WorkbookPlan): Promise<Workbook> {
   return workbook;
 }
 
-/** Bytes do .xlsx — usado pelos testes e pelo gerador de exemplos. */
+/** Bytes do .xlsx, usado pelos testes e pelo gerador de exemplos. */
 export async function buildWorkbookBuffer(
   doc: ReportDocument,
 ): Promise<ArrayBuffer> {
@@ -286,7 +269,7 @@ export async function buildWorkbookBuffer(
 
 /**
  * Gera e baixa a pasta de trabalho. Resolve `false` quando o documento não tem
- * nenhuma linha para exportar — arquivo vazio é pior que nenhum arquivo.
+ * nenhuma linha para exportar: arquivo vazio é pior que nenhum arquivo.
  */
 export async function exportReportAsExcel(doc: ReportDocument): Promise<boolean> {
   const plan = buildWorkbookPlan(doc);

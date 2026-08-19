@@ -677,12 +677,8 @@ select:focus-visible {
   font-size: 12px;
 }
 
-/* A dica mora na BARRA SUPERIOR, no vão vazio entre a marca e o menu.
-   Ela já esteve solta no canto do mapa (viraia mais um cartão no meio do
-   dado) e depois acima da barra de pesquisa — mas isso empurrava a busca
-   para baixo, e a busca passou a cobrir o rótulo do município e o balão de
-   valor do mapa. No cabeçalho ela não disputa espaço com nada: o meio da
-   barra estava vazio, e a busca volta para o topo do mapa. */
+/* A dica mora na BARRA SUPERIOR, no vão vazio entre a marca e o menu: ali não
+   disputa espaço com a busca, o rótulo do município nem o balão do mapa. */
 .map-instructions {
   position: fixed;
   top: 21px;
@@ -705,8 +701,7 @@ select:focus-visible {
   pointer-events: none;
 }
 
-/* Telas estreitas: não há vão no cabeçalho, então a dica sai de cena em vez
-   de espremer a marca ou o menu. */
+/* Telas estreitas: sem vão no cabeçalho, a dica sai de cena. */
 @media (max-width: 900px) {
   .map-instructions {
     display: none;
@@ -936,11 +931,9 @@ select:focus-visible {
   background: rgba(255, 255, 255, 0.93);
 }
 
-/* Onze abas em duas fileiras: seis em cima, cinco embaixo. As sete colunas do
-   desenho de quando eram nove abas davam 41px por botão, e "Cadastros" (46px),
-   "Comparar" (44px) e "Anúncios" (43px) já transbordavam o próprio botão.
-   Seis colunas dão 48px, cabem todos os rótulos inteiros e continuam sendo
-   duas fileiras — a barra não cresce em altura. */
+/* Onze abas em duas fileiras: seis em cima, cinco embaixo. Seis colunas dão
+   48px por botão e cabem os rótulos inteiros; com sete colunas sobravam 41px e
+   "Cadastros" (46px), "Comparar" (44px) e "Anúncios" (43px) transbordavam. */
 .sidebar-tabs {
   min-width: 0;
   flex: 1;
@@ -1381,9 +1374,8 @@ select:focus-visible {
   font-weight: 600;
 }
 
-/* Lista dos módulos que ainda não têm dado (abas Anúncios e Redes). É só
-   texto de propósito: qualquer número, barra ou reticência de gráfico aqui
-   seria lido como medição, e não há nada medido nesses dois painéis. */
+/* Lista dos módulos sem dado (abas Anúncios e Redes). Só texto: número ou
+   barra aqui seria lido como medição, e nada foi medido nesses painéis. */
 .pending-module-list {
   margin: 11px 0 0;
   padding: 0;
@@ -1614,8 +1606,8 @@ select:focus-visible {
   background: rgba(143, 17, 22, 0.07);
 }
 
-/* Aviso transitório de limite atingido na comparação (tom âmbar discreto,
-   sem competir com os tons de erro em vermelho usados em ações destrutivas). */
+/* Aviso transitório de limite na comparação: âmbar, para não competir com o
+   vermelho de erro das ações destrutivas. */
 .comparison-limit-notice {
   margin: 12px 0 0;
   padding: 9px 11px;
@@ -3326,9 +3318,9 @@ select:focus-visible {
   transform: scale(1.08);
 }
 
-/* Bolha da camada submunicipal: uma por local de votação ou por bairro
-   agregado. O diâmetro vem do modelo (raio ∝ √eleitorado), então a ÁREA é
-   proporcional ao eleitorado — nunca o raio. */
+/* Bolha da camada submunicipal, uma por local de votação ou bairro agregado.
+   Diâmetro vindo do modelo (raio ∝ √eleitorado): a ÁREA é proporcional ao
+   eleitorado, nunca o raio. */
 .polling-map-bubble {
   padding: 0;
   border: 1.5px solid rgba(255, 255, 255, 0.82);
@@ -4092,11 +4084,8 @@ select:focus-visible {
 
 /* ==========================================================================
    Agente de dados: botão flutuante + painel de conversa.
-   O botão fica na borda ESQUERDA do mapa (pedido da dona do produto),
-   verticalmente centrado — longe dos controles do Google Maps, que ficam no
-   canto inferior direito — e o painel abre para a DIREITA a partir dele.
-   Mesma linguagem clara do resto do app: superfície branca, acento vermelho
-   PT, texto em tinta escura.
+   Botão na borda ESQUERDA do mapa, verticalmente centrado (longe dos controles
+   do Google Maps, no canto inferior direito); o painel abre para a DIREITA.
    ========================================================================== */
 
 .agent-fab {
@@ -4253,10 +4242,9 @@ select:focus-visible {
 }
 
 /*
- * A resposta vem em blocos (parágrafo, título curto, lista) montados em
- * src/utils/agentText.ts. Sem `white-space: pre-wrap` aqui: a quebra agora é
- * estrutural, e preservar o espaço em branco original abriria buracos entre os
- * blocos.
+ * A resposta vem em blocos montados em src/utils/agentText.ts. Sem
+ * `white-space: pre-wrap`: a quebra é estrutural e preservar o espaço em branco
+ * original abriria buracos entre os blocos.
  */
 .agent-message__text {
   margin: 0;
@@ -4292,9 +4280,8 @@ select:focus-visible {
   color: #c1121f;
 }
 
-/* O rodapé ".agent-message__tools" ("Consultas usadas: ...") foi removido a
-   pedido de quem usa: o nome interno das ferramentas não diz nada a quem lê, e
-   a procedência de verdade (fonte, pleito e ano) vem no texto da resposta. */
+/* Sem rodapé de "Consultas usadas": a procedência (fonte, pleito e ano) vem no
+   texto da resposta. */
 
 .agent-thinking {
   display: flex;
@@ -4398,9 +4385,8 @@ select:focus-visible {
 }
 
 /* ==========================================================================
-   Menu "três linhas" do cabeçalho, ao lado da marca. Substitui o botão que
-   antes ficava espremido na fileira de abas do painel — a fileira voltou a
-   ter uma linha só, e as áreas "extras" ganharam um lugar fixo e previsível.
+   Menu "três linhas" do cabeçalho, ao lado da marca: lugar fixo das áreas que
+   não ficam na fileira de abas do painel.
    ========================================================================== */
 
 .header-left {
@@ -4502,13 +4488,12 @@ select:focus-visible {
 
 /* ==========================================================================
    Aba Trajetória ("Accorsi"): trajetória nominal da candidata em foco.
-   Segue a paleta clara da interface (superfície branca, acento vermelho PT).
-   Cores de dado validadas contra o BRANCO com o validador da skill de
-   dataviz: série única em #f0433b (3,8:1, marca ≥ 3:1) e, na comparação de
-   bairros (antes/depois), rampa ordinal de 2 passos do MESMO tom —
-   #ec8d85 (pleito antigo) -> #c1121f (recente), monotônica e com extremidade
-   clara a 2,4:1 —, nunca duas identidades; texto sempre em tokens de texto,
-   nunca na cor da série.
+   Cores de dado validadas contra o BRANCO com o validador da skill de dataviz:
+   série única em #f0433b (3,8:1, marca >= 3:1) e, na comparação de bairros
+   (antes/depois), rampa ordinal de 2 passos do MESMO tom, #ec8d85 (pleito
+   antigo) -> #c1121f (recente), monotônica e com extremidade clara a 2,4:1,
+   nunca duas identidades. Texto sempre em tokens de texto, nunca na cor da
+   série.
    ========================================================================== */
 
 .candidate-view .panel-eyebrow {
@@ -4571,8 +4556,8 @@ select:focus-visible {
   cursor: pointer;
 }
 
-/* Ênfase, não identidade: o pleito selecionado fica no vermelho cheio e os
-   demais recuam — a série é uma só, então opacidade não muda o significado. */
+/* Ênfase, não identidade: série única, o pleito selecionado no vermelho cheio
+   e os demais recuados. */
 .candidate-traj-fill {
   fill: #f0433b;
   opacity: 0.42;
@@ -4905,11 +4890,10 @@ select:focus-visible {
 }
 
 /* ==========================================================================
-   Janela Estatísticas (overlay de tela inteira aberto pelo menu do cabeçalho)
-   Superfície branca — as cores de série dos gráficos desta janela foram
-   validadas contra ELA com o validador da skill de dataviz: municipal
-   #2a78d6 × federal/estadual #c1121f, CVD ΔE 26,9 e visão normal 33,7,
-   ambas ≥ 3:1 de contraste sobre o branco.
+   Janela Estatísticas (overlay de tela inteira aberto pelo menu do cabeçalho).
+   Cores de série validadas contra a superfície BRANCA com o validador da skill
+   de dataviz: municipal #2a78d6 x federal/estadual #c1121f, CVD ΔE 26,9 e
+   visão normal 33,7, ambas >= 3:1 de contraste sobre o branco.
    ========================================================================== */
 
 .stats-window {
@@ -5156,11 +5140,10 @@ select:focus-visible {
   background: #ffffff;
 }
 
-/* CAUSA RAIZ dos "ícones gigantes": a regra antiga `.stats-panel svg`
-   aplicava width:100% a TODO svg descendente do painel — inclusive os ícones
-   lucide de 14px dos títulos (Σ, urna…), cujo atributo width era atropelado
-   pelo CSS e esticava até a largura do painel. A regra agora mira SÓ o svg
-   do gráfico (classe .stats-chart), e os ícones ganham teto explícito. */
+/* CAUSA RAIZ dos "ícones gigantes": `.stats-panel svg` aplicava width:100% a
+   TODO svg do painel, inclusive os ícones lucide de 14px dos títulos, que
+   esticavam até a largura do painel. A regra mira SÓ .stats-chart, e os ícones
+   ganham teto explícito. */
 .stats-panel svg.stats-chart {
   width: 100%;
   height: auto;
@@ -5168,8 +5151,7 @@ select:focus-visible {
   display: block;
 }
 
-/* Cinto e suspensório: qualquer ícone lucide dentro da janela fica no
-   tamanho declarado no atributo, nunca maior que 18px. */
+/* Qualquer ícone lucide da janela fica no tamanho do atributo, no máximo 18px. */
 .stats-panel__heading svg:not(.stats-chart),
 .stats-indicator-control svg,
 .stats-pearson svg,
@@ -5182,8 +5164,7 @@ select:focus-visible {
   flex-shrink: 0;
 }
 
-/* Legenda de gráfico: a contagem de municípios mora AQUI, alinhada ao
-   gráfico, não num bloco solto. */
+/* Legenda de gráfico: a contagem de municípios fica alinhada ao gráfico. */
 .stats-chart-caption {
   margin: 8px 0 0;
   color: #6e6560;
@@ -5458,7 +5439,7 @@ select:focus-visible {
 }
 
 /* Ponto do scatter: série única em vermelho, com anel da cor da superfície
-   para os pontos sobrepostos continuarem contáveis. */
+   para pontos sobrepostos continuarem contáveis. */
 .stats-scatter-mark {
   fill: #c1121f;
   fill-opacity: 0.8;
@@ -5528,8 +5509,8 @@ select:focus-visible {
    Visão "Geral" das Estatísticas: crescimento ao longo das eleições
    ========================================================================= */
 
-/* O item que fecha cada grupo da navegação. Recuado e com o rótulo em cima do
-   ícone para não se confundir com os anos logo acima dele. */
+/* Item que fecha cada grupo da navegação: recuado e com o rótulo sobre o
+   ícone, para não se confundir com os anos acima. */
 .stats-nav__item--geral {
   margin-top: 2px;
   align-items: center;
@@ -5570,8 +5551,7 @@ select:focus-visible {
   }
 }
 
-/* Rótulo direto na ponta da linha: a identidade da série nunca depende só
-   da cor (a legenda da régua de setas repete o nome por extenso). */
+/* Rótulo na ponta da linha: a identidade da série nunca depende só da cor. */
 .growth-series-label {
   font-size: 10.5px;
   font-weight: 600;
@@ -5678,8 +5658,7 @@ select:focus-visible {
   color: #8a817c;
 }
 
-/* Cargos diferentes: o número continua, o tracejado avisa que a comparação
-   não é entre iguais. */
+/* Cargos diferentes: o tracejado avisa que a comparação não é entre iguais. */
 .growth-arrow--incomparavel {
   border-bottom: 1px dashed rgba(32, 26, 25, 0.3);
 }
@@ -5820,9 +5799,7 @@ select:focus-visible {
   stroke-dasharray: 2 3;
 }
 
-/* Cabeçalho do agente sem título: sobraram só os botões, então ele encolhe e
-   encosta as ações à direita, em vez de reservar altura para um texto que não
-   existe mais. */
+/* Cabeçalho do agente sem título: encolhe e encosta as ações à direita. */
 .agent-panel__header--enxuto {
   justify-content: flex-end;
   padding: 8px 10px 6px;
@@ -5923,13 +5900,9 @@ select:focus-visible {
 /* -------------------------------------------------------------------------
  * Exportação em Excel e PDF
  *
- * Só a paleta que já existe: vermelho #c1121f / #f0433b, superfícies #ffffff /
- * #f6f3f2 e as três tintas (#201b1a, #554e4c, #6e6560). Nenhuma cor nova foi
- * criada aqui, então não há paleta nova para validar.
- *
- * A hierarquia é deliberada: o Excel é o botão cheio (é o formato que a
- * coordenação mais usa), PDF e CSV são contornados. Os três convivem porque
- * atendem públicos diferentes — nenhum substitui o outro.
+ * Só a paleta existente: vermelho #c1121f / #f0433b, superfícies #ffffff /
+ * #f6f3f2 e as tintas #201b1a, #554e4c, #6e6560. Nenhuma cor nova, nada a
+ * validar. Hierarquia: Excel é o botão cheio, PDF e CSV são contornados.
  * ------------------------------------------------------------------------- */
 
 .stats-report-bar {
@@ -5940,29 +5913,10 @@ select:focus-visible {
   background: #f6f3f2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* Só os botões moram aqui, alinhados à direita. */
+  justify-content: flex-end;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.stats-report-bar p {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 240px;
-  flex: 1 1 320px;
-}
-
-.stats-report-bar strong {
-  color: #201b1a;
-  font-size: 12.5px;
-}
-
-.stats-report-bar span {
-  color: #6e6560;
-  font-size: 11px;
-  line-height: 1.5;
 }
 
 .stats-report-bar__actions {
@@ -5970,16 +5924,14 @@ select:focus-visible {
   gap: 8px;
   flex-shrink: 0;
   align-items: center;
-  /* Três botões — Excel, PDF resumido e PDF completo — mais a opção do anexo.
-     Sem a quebra, numa janela estreita o último botão saía para fora da
-     barra. */
+  /* Três botões (Excel, PDF resumido, PDF completo) mais a opção do anexo. Sem
+     a quebra, em janela estreita o último botão saía para fora da barra. */
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
-/* Opção do anexo municipal do PDF. Fica ao lado dos botões, desmarcada por
-   padrão: quem quiser a base inteira impressa liga aqui, e quem só quer o
-   relatório de leitura não precisa saber que a opção existe. */
+/* Opção do anexo municipal do PDF, ao lado dos botões e desmarcada por
+   padrão. */
 .stats-report-option {
   display: flex;
   align-items: flex-start;
@@ -6079,8 +6031,8 @@ select:focus-visible {
   gap: 6px;
 }
 
-/* O botão do PNG do mapa herda o estilo largo já usado nos painéis; aqui só
-   encostamos a margem, porque o grupo acima já dá o respiro. */
+/* O botão do PNG do mapa herda o estilo largo dos painéis; só ajusta a margem,
+   porque o grupo acima já dá o respiro. */
 .panel-export .analysis-export-button {
   margin-top: 2px;
 }

@@ -22,53 +22,40 @@ import {
 import type { ReportOmission } from "./reportModel.ts";
 
 /**
- * UNIVERSO DO RELATÓRIO — o conjunto completo que o PDF analisa, reconstruído
- * do zero a partir do pleito e dos snapshots territoriais.
+ * UNIVERSO DO RELATÓRIO: o conjunto completo que o PDF analisa, reconstruído do
+ * zero a partir do pleito e dos snapshots territoriais.
  *
- * Este arquivo existe por causa de um defeito concreto: o relatório era
- * montado a partir do `scatter` da TELA, que só existe para o indicador
- * selecionado no seletor. Com o filtro "Mulheres" ativo, o PDF saía com um
- * único cruzamento — o do percentual feminino — e com cara de relatório
- * completo. O mesmo valia para o ranking, que herdava a métrica escolhida na
- * interface e, pior, deixava de fora os municípios sem denominador para
- * aquela métrica: o universo mudava em silêncio conforme o clique.
+ * Existe por um defeito concreto: o relatório era montado do `scatter` da TELA,
+ * que só cobre o indicador selecionado, e o universo mudava em silêncio
+ * conforme o clique (o ranking chegava a excluir municípios sem denominador
+ * para a métrica escolhida na interface).
  *
- * A regra que este módulo materializa, e que nenhuma função daqui pode violar:
+ * Regra que nenhuma função daqui pode violar: O FILTRO DA TELA NÃO LIMITA O
+ * RELATÓRIO. Ele ordena e destaca; não exclui indicador, não limita consulta,
+ * não produz PDF parcial e não muda o universo de municípios. Daí a separação:
  *
- *   O FILTRO DA TELA NÃO LIMITA O RELATÓRIO. Ele ordena e destaca. Não exclui
- *   indicador, não limita consulta, não produz PDF parcial e não muda o
- *   universo de municípios.
+ *   - `activeViewFilter`: a seleção da interface. Entra em UMA função,
+ *     `orderIndicators`, e em nenhuma outra;
+ *   - `reportDataset`: o conjunto COMPLETO, montado aqui, sem consultar a tela;
+ *   - `featuredIndicator`: o que recebe destaque, e destaque é tudo o que o
+ *     filtro pode fazer;
+ *   - `availableIndicators`: os indicadores com dado suficiente. Quem não tem
+ *     dado é DECLARADO como omitido, com o motivo, nunca escondido.
  *
- * Daí a separação de conceitos que atravessa o motor inteiro:
+ * Duas disciplinas valem aqui com força extra:
  *
- *   - `activeViewFilter` — o que está selecionado na interface. Entra em UMA
- *     única função: `orderIndicators`. Em nenhuma outra;
- *   - `reportDataset` — o conjunto COMPLETO, montado aqui, sem consultar o
- *     que a tela mostra;
- *   - `featuredIndicator` — o que recebe destaque (vem do filtro, e destaque
- *     é tudo o que ele pode fazer);
- *   - `availableIndicators` — todos os indicadores com dado suficiente para
- *     aquele universo. Quem não tem dado é DECLARADO como omitido, com o
- *     motivo — nunca escondido.
- *
- * Duas disciplinas herdadas do projeto valem aqui com força extra:
- *
- *   1. null nunca vira zero. Município sem denominador fica FORA da análise e
- *      entra na lista de exclusões, com motivo. Município sem valor de um
- *      indicador não é município com valor 0;
- *   2. nada é fixado: nem candidatura, nem partido, nem cargo, nem ano, nem
- *      UF, nem indicador. A lista de indicadores é derivada do catálogo
- *      (`reportIndicators.ts`), e o universo territorial, do próprio pleito.
+ *   1. null nunca vira zero: município sem denominador fica FORA da análise e
+ *      entra nas exclusões, com motivo;
+ *   2. nada é fixado (candidatura, partido, cargo, ano, UF, indicador). Os
+ *      indicadores vêm do catálogo (`reportIndicators.ts`) e o universo
+ *      territorial, do próprio pleito.
  */
 
 /* -------------------------------------------------------------------------
- * Tipos — contrato público para quem renderiza o relatório
+ * Tipos: contrato público para quem renderiza o relatório
  * ------------------------------------------------------------------------- */
 
-/**
- * Um município do recorte, com a métrica eleitoral principal e o valor de
- * CADA indicador do catálogo.
- */
+/** Um município do recorte, com a métrica principal e cada indicador. */
 export type ReportMunicipio = {
   ibgeCode: string;
   nome: string;
@@ -77,20 +64,19 @@ export type ReportMunicipio = {
   /** Votos válidos apurados do cargo no município (denominador). */
   validos: number;
   /**
-   * MÉTRICA ELEITORAL PRINCIPAL do relatório: % dos votos válidos do
-   * município que foram da candidatura. `null` quando o total de válidos não
-   * foi apurado — e null é ausência, jamais 0%.
+   * MÉTRICA ELEITORAL PRINCIPAL: % dos votos válidos do município que foram da
+   * candidatura. `null` quando o total de válidos não foi apurado, jamais 0%.
    */
   percentualValidos: number | null;
   /** % dos votos do partido no município; null quando não apurado. */
   percentualDoPartido: number | null;
   /** Colocação da candidatura naquele município; null quando não apurada. */
   posicaoNoMunicipio: number | null;
-  /** Candidaturas com voto apurado no município — o "de N" da colocação. */
+  /** Candidaturas com voto apurado no município: o "de N" da colocação. */
   candidaturasComVoto: number;
   /**
-   * Participação do município no total de votos da candidatura no pleito, em
-   * %. null quando o pleito não tem voto apurado (sem base para a divisão).
+   * Participação do município no total de votos da candidatura no pleito, em %.
+   * null quando o pleito não tem voto apurado (sem base para a divisão).
    */
   participacaoNosVotos: number | null;
   /** Eleitorado do município no snapshot; null sem snapshot utilizável. */
@@ -99,7 +85,7 @@ export type ReportMunicipio = {
   votosPorMilEleitores: number | null;
   /**
    * Valor de cada indicador do catálogo neste município. Todas as chaves
-   * existem sempre; `null` significa "sem dado nesta instalação".
+   * existem sempre; `null` = "sem dado nesta instalação".
    */
   indicadores: Record<AnalysisMetricId, number | null>;
 };
@@ -131,13 +117,8 @@ export type IndicatorAvailability = {
 };
 
 /**
- * O universo COMPLETO do relatório. Sai idêntico para qualquer estado da
- * interface: nada aqui é parametrizado pelo que está selecionado na tela.
- */
-/**
- * Identificação da candidatura no pleito, lida do próprio arquivo do TSE.
- * Nenhum nome, partido ou número está fixado no código: trocar o JSON da
- * candidatura troca o relatório inteiro.
+ * Identificação da candidatura no pleito, lida do arquivo do TSE. Nada fixado
+ * no código: trocar o JSON da candidatura troca o relatório inteiro.
  */
 export type ReportCandidatura = {
   nomeUrna: string;
@@ -147,6 +128,10 @@ export type ReportCandidatura = {
   resultado: string;
 };
 
+/**
+ * O universo COMPLETO do relatório. Sai idêntico para qualquer estado da
+ * interface: nada aqui é parametrizado pelo que está selecionado na tela.
+ */
 export type ReportDataset = {
   contestId: string;
   /** A candidatura do pleito, como o TSE publica. */
@@ -155,14 +140,13 @@ export type ReportDataset = {
   officeCode: number;
   officeName: string;
   round: number;
-  /** true em pleito de prefeita/vereadora — disputa dentro de uma cidade. */
+  /** true em pleito de prefeita/vereadora: disputa dentro de uma cidade. */
   municipal: boolean;
   /** TODOS os municípios com voto apurado no pleito, do mais votado ao menos. */
   municipios: ReportMunicipio[];
   /**
-   * Subconjunto com a métrica eleitoral principal apurada — a base de toda
-   * correlação, comparação de grupos e quadrante. As referências são as
-   * mesmas de `municipios`, não cópias.
+   * Subconjunto com a métrica eleitoral principal apurada: base de correlação,
+   * comparação de grupos e quadrante. Mesmas referências de `municipios`.
    */
   analiticos: ReportMunicipio[];
   /** Municípios do recorte que ficaram fora do universo analítico, com motivo. */
@@ -184,8 +168,8 @@ export type ReportDataset = {
 };
 
 /**
- * O QUE ESTÁ SELECIONADO NA TELA. Existe para ser passado adiante sem virar
- * filtro: quem consome só pode usá-lo para ordenar e destacar.
+ * O QUE ESTÁ SELECIONADO NA TELA. Quem consome só pode usá-lo para ordenar e
+ * destacar, nunca para filtrar.
  */
 export type ReportViewFilter = {
   /** Indicador selecionado no seletor da janela; null quando não há seleção. */
@@ -197,10 +181,9 @@ export type ReportViewFilter = {
  * ------------------------------------------------------------------------- */
 
 /**
- * Indicadores que dependem de um campo BRUTO do snapshot do eleitorado que
- * pode não vir. Sem este mapa, um insumo sem biometria produziria "0%" em
- * todos os municípios — um valor sintético, com variância zero, que entraria
- * em correlação como se fosse apuração.
+ * Indicadores que dependem de um campo BRUTO do snapshot do eleitorado que pode
+ * não vir. Sem o mapa, um insumo sem biometria produziria "0%" em todos os
+ * municípios: valor sintético que entraria em correlação como apuração.
  */
 const CAMPO_BRUTO_EXIGIDO: Partial<
   Record<AnalysisMetricId, StatsElectorateField>
@@ -212,11 +195,9 @@ const CAMPO_BRUTO_EXIGIDO: Partial<
 };
 
 /**
- * Valor de um indicador para um município, ou null.
- *
- * O cálculo é REUSADO de `getAnalysisMetricValue` — a mesma conta da aba
- * Análise, nunca uma segunda implementação que possa divergir. O que se
- * acrescenta é a guarda do campo bruto ausente descrita acima.
+ * Valor de um indicador para um município, ou null. O cálculo é REUSADO de
+ * `getAnalysisMetricValue` (mesma conta da aba Análise, nunca uma segunda
+ * implementação), acrescido da guarda do campo bruto ausente acima.
  */
 function valorDoIndicador(
   profile: MunicipalityProfile | undefined,
@@ -237,13 +218,10 @@ function votosPorMil(votos: number, eleitorado: number | null): number | null {
 }
 
 /**
- * Monta o universo completo do relatório para um pleito.
- *
- * Repare no que a assinatura NÃO tem: nenhum `indicatorId`, nenhum
- * `rankingMetric`, nenhum estado de interface. Não é omissão — é o contrato.
- * O que a tela mostra não pode alterar uma linha deste conjunto, e o teste
- * `o mesmo reportDataset sai idêntico com activeViewFilter diferente` existe
- * para travar isso.
+ * Monta o universo completo do relatório para um pleito. A assinatura não tem
+ * `indicatorId`, `rankingMetric` nem estado de interface: é o contrato, travado
+ * pelo teste `o mesmo reportDataset sai idêntico com activeViewFilter
+ * diferente`.
  */
 export function buildReportDataset(input: {
   contest: CandidateContest;
@@ -295,10 +273,9 @@ export function buildReportDataset(input: {
     municipios.push(linha);
 
     // Sem denominador não há métrica eleitoral principal: o município sai da
-    // ANÁLISE (correlação, grupos, quadrantes) e entra declarado na lista de
-    // exclusões. Ele continua no universo de votos — a concentração e o
-    // ranking de votos absolutos seguem contando com ele —, porque tirá-lo
-    // dali seria mudar o total apurado da candidatura em silêncio.
+    // ANÁLISE (correlação, grupos, quadrantes) e entra declarado nas exclusões.
+    // Continua no universo de votos (concentração e ranking de absolutos),
+    // senão o total apurado da candidatura mudaria em silêncio.
     if (linha.percentualValidos === null) {
       exclusoes.push({
         ibgeCode: ibge,
@@ -357,10 +334,9 @@ export function buildReportDataset(input: {
 }
 
 /**
- * Situação de um indicador: quantos municípios do universo analítico têm
- * valor e, quando não dá para analisar, POR QUÊ — em uma frase que o
- * relatório publica. Indicador sem dado nunca some da lista; ele aparece
- * declarado.
+ * Situação de um indicador: quantos municípios do universo analítico têm valor
+ * e, quando não dá para analisar, POR QUÊ, em frase que o relatório publica.
+ * Indicador sem dado nunca some da lista.
  */
 function avaliarIndicador(
   indicator: IndicatorMetadata,
@@ -421,10 +397,8 @@ function motivoIndisponibilidade(
  * ------------------------------------------------------------------------- */
 
 /**
- * Todo indicador com pelo menos `minimoMunicipios` municípios com valor.
- *
- * A pergunta que decide o que entra no relatório é "existe dado?", nunca "o
- * que está selecionado na tela?". Ordem do catálogo.
+ * Todo indicador com pelo menos `minimoMunicipios` municípios com valor. O que
+ * decide é "existe dado?", nunca a seleção da tela. Ordem do catálogo.
  */
 export function getAvailableIndicators(
   dataset: ReportDataset,
@@ -440,9 +414,8 @@ export function getUnavailableIndicators(
 }
 
 /**
- * As omissões declaradas do relatório: um item por indicador sem dado
- * suficiente. Esconder o indicador daria a impressão de que ele não existe;
- * declará-lo diz que ele existe e que o dado não veio.
+ * As omissões declaradas: um item por indicador sem dado suficiente. Esconder o
+ * indicador daria a impressão de que ele não existe.
  */
 export function buildIndicatorOmissions(
   dataset: ReportDataset,
@@ -454,12 +427,9 @@ export function buildIndicatorOmissions(
 }
 
 /**
- * A ÚNICA função do motor em que o filtro da tela pode influir.
- *
- * O indicador em destaque vai para a frente; o resto segue a ordem do
- * catálogo. Nada entra, nada sai — trocar o destaque reordena a lista e não
- * muda o seu conteúdo, o que é exatamente o que se exige do filtro: ordenar e
- * destacar, nunca limitar.
+ * A ÚNICA função do motor em que o filtro da tela pode influir. O indicador em
+ * destaque vai para a frente e o resto segue a ordem do catálogo: nada entra e
+ * nada sai, trocar o destaque só reordena.
  */
 export function orderIndicators<T extends { id: AnalysisMetricId }>(
   available: readonly T[],
@@ -480,11 +450,9 @@ export function orderIndicators<T extends { id: AnalysisMetricId }>(
 }
 
 /**
- * O indicador em destaque, quando ele está entre os disponíveis.
- *
- * Devolve null quando o que está selecionado na tela não tem dado no recorte:
- * o relatório continua completo, apenas sem destaque — o filtro não pode nem
- * limitar o conjunto nem forçar um capítulo sem apuração.
+ * O indicador em destaque, quando está entre os disponíveis. Devolve null
+ * quando a seleção da tela não tem dado no recorte: o relatório continua
+ * completo, só sem destaque, e nunca ganha capítulo sem apuração.
  */
 export function getFeaturedIndicator(
   dataset: ReportDataset,

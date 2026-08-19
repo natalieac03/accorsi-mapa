@@ -6,29 +6,17 @@ import { formatInteger } from "../../utils/electorate";
 
 /**
  * Visão "Geral" de um grupo: o crescimento da votação ao longo das eleições.
+ * Gráfico de linhas (formato da curva) e régua de setas (número de cada passagem).
  *
- * Duas leituras da MESMA série, porque respondem a perguntas diferentes:
- * o gráfico de linhas mostra o formato da curva (subiu sempre? estagnou?), e
- * a régua de setas embaixo dá o número exato de cada passagem — que é o que
- * se leva para uma reunião.
- *
- * O que este componente se recusa a fazer: ligar a linha por cima de um pleito
- * sem apuração. Um bairro que não aparece num ano tem o segmento INTERROMPIDO,
- * não interpolado — a linha atravessando o buraco afirmaria uma votação que
- * ninguém apurou.
+ * Invariante: pleito sem apuração INTERROMPE o segmento, nunca é interpolado.
  */
 
 /*
- * Cores das séries, em ordem fixa (nunca cicladas: acima de 6 recortes a
- * interface para de aceitar em vez de repetir cor). Validadas com o validador
- * da skill de dataviz sobre a superfície clara da janela:
- *   faixa de luminosidade  6/6 dentro de L 0,43–0,77
- *   piso de croma          6/6 >= 0,1
- *   separação CVD          pior par adjacente ΔE 11,0 (deuteranopia)
- *   visão normal           pior par adjacente ΔE 18,2
- *   contraste na superfície 6/6 >= 3:1
- * A identidade nunca é só cor: cada série é rotulada por extenso na sua régua
- * de setas e na legenda, e a primeira cor é o vermelho do total.
+ * Cores das séries em ordem fixa, nunca cicladas (acima de 6 recortes a
+ * interface recusa em vez de repetir cor). Validadas sobre a superfície clara:
+ * L 0,43–0,77, croma >= 0,1, ΔE do pior par adjacente 11,0 (deuteranopia) e
+ * 18,2 (visão normal), contraste >= 3:1. Cor nunca é a única identidade: cada
+ * série é rotulada por extenso, e a primeira cor é o vermelho do total.
  */
 const CORES_SERIE = [
   "#c1121f",
@@ -39,7 +27,7 @@ const CORES_SERIE = [
   "#0891b2",
 ];
 
-/** Teto de recortes comparados ao mesmo tempo — acima disso a leitura embola. */
+/** Teto de recortes comparados ao mesmo tempo: acima disso a leitura embola. */
 export const MAX_RECORTES = CORES_SERIE.length - 1;
 
 const CHART_W = 720;
@@ -140,12 +128,9 @@ function ReguaDeSetas({ serie, cor }: { serie: GrowthSeries; cor: string }) {
 /**
  * Valor plotado de um ponto conforme o modo do eixo.
  *
- * No modo "base 100" cada série é dividida pela sua PRÓPRIA primeira medição.
- * É o jeito de comparar crescimento entre coisas de tamanho muito diferente
- * sem recorrer a dois eixos: um bairro de 4 mil votos e um total de 219 mil
- * passam a ser lidos pela mesma régua — o quanto cada um andou desde onde
- * começou. Com dois eixos as duas curvas ficariam bonitas e a comparação
- * seria falsa, porque a inclinação dependeria da escala escolhida.
+ * No modo "base 100" cada série é dividida pela sua PRÓPRIA primeira medição,
+ * o que compara crescimento entre tamanhos díspares sem usar dois eixos (com
+ * dois eixos a inclinação dependeria da escala e a comparação seria falsa).
  */
 function valorNoEixo(
   serie: GrowthSeries,
@@ -185,10 +170,8 @@ export function GrowthView({
     ...valores.flat().map((valor) => valor ?? 0),
   );
 
-  /* Quando a maior série é ordens de grandeza acima da menor, as pequenas
-     encostam na linha de base e o gráfico deixa de responder à pergunta.
-     Em vez de esconder o problema com um segundo eixo, avisamos e apontamos
-     o modo que resolve. */
+  /* Razão >= 8 entre a maior e a menor série achata as pequenas na base: em
+     vez de um segundo eixo, avisamos e apontamos o modo base 100. */
   const positivos = valores
     .map((serie) => Math.max(...serie.map((valor) => valor ?? 0)))
     .filter((valor) => valor > 0);
@@ -215,12 +198,8 @@ export function GrowthView({
 
   const cheio = selecionados.length >= MAX_RECORTES;
 
-  /* Rótulos de ponta afastados um do outro.
-     Duas séries que terminam com valores próximos escrevem o nome em cima do
-     nome da outra — foi exatamente o que apareceu no primeiro screenshot desta
-     tela, com "setor central" e "setor sul" sobrepostos. Aqui os rótulos são
-     empurrados para manter um vão mínimo, preservando a ordem vertical (o
-     rótulo de cima continua sendo o da linha de cima). */
+  /* Séries que terminam com valores próximos sobrepõem os rótulos de ponta.
+     Empurra cada um para manter o vão mínimo, preservando a ordem vertical. */
   const alturasRotulo = (() => {
     const alvos = model.series.map((serie, indice) => {
       const ultimo = [...serie.points]
@@ -361,8 +340,7 @@ export function GrowthView({
                 </g>
               ))}
 
-              {/* No modo base 100 o que importa é estar acima ou abaixo de
-                  onde a série começou — a régua precisa estar desenhada. */}
+              {/* No modo base 100 a régua do 100 precisa estar desenhada. */}
               {modo === "indice" && maxVotos > 100 && (
                 <g>
                   <line
@@ -421,11 +399,8 @@ export function GrowthView({
                 });
                 if (atual.length) segmentos.push(atual);
 
-                /* Ponte tracejada por cima do buraco.
-                   Sem ela, uma série que falta num pleito vira dois pontos
-                   soltos e ninguém percebe que são a mesma coisa. O tracejado
-                   liga a IDENTIDADE, não a medição: fica visivelmente
-                   diferente da linha cheia, que é onde há voto apurado. */
+                /* Ponte tracejada sobre o buraco: liga a IDENTIDADE da série,
+                   não a medição, por isso não usa a linha cheia. */
                 const pontes = segmentos
                   .slice(0, -1)
                   .map((segmento, indice) => ({

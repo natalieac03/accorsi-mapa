@@ -55,27 +55,22 @@ import {
 import { STATE_LABEL, STATE_UF } from "./state.ts";
 
 /**
- * Camada SUBMUNICIPAL: votação por LOCAL DE VOTAÇÃO.
+ * Camada SUBMUNICIPAL: votação por local de votação.
  *
- * O motor não reimplementa nada do espectro — ele reusa as primitivas de
- * `spectrum.ts` (`resolvePartyScore`, `classifySpectrumBlock`,
- * `resolveWaveYear`, `getAbsoluteThresholds`) e aplica a MESMA disciplina de
- * nulos do projeto: unidade sem nenhum voto com nota fica com índice `null`,
- * fora do ranking e das faixas — nunca contada como zero.
+ * Reusa as primitivas de `spectrum.ts` (`resolvePartyScore`,
+ * `classifySpectrumBlock`, `resolveWaveYear`, `getAbsoluteThresholds`) e a
+ * disciplina de nulos do projeto: unidade sem voto com nota fica com índice
+ * `null`, fora do ranking e das faixas, nunca contada como zero.
  *
- * DUAS MÉTRICAS, ESCOLHA DE QUEM OLHA: a unidade pode ser medida pelo índice
- * ideológico (padrão, em qualquer cargo) ou pelo percentual de voto de uma
- * sigla escolhida (também em qualquer cargo). O modelo continua calculando o
- * índice nos dois casos (o agente de dados e o agregado municipal dependem
- * dele), mas o que vira cor, faixa, ranking e CSV é `unit.value` — o valor da
- * métrica ativa. Ver `getPollingMetric`.
+ * O que vira cor, faixa, ranking e CSV é `unit.value`, o valor da métrica
+ * ativa (ver `getPollingMetric`); o índice segue calculado sempre, porque o
+ * agregado municipal depende dele.
  *
- * GANCHO DE MALHA DE BAIRROS: não existe polígono de bairro no projeto. Se um
- * dia existir `src/data/neighborhoods-{ibge}.geojson`, a camada deve pintar o
- * polígono do bairro em vez da bolha agregada; até lá, o modo "Bairros"
- * desenha UMA bolha por bairro no centroide dos locais daquele bairro, e a
- * interface diz explicitamente que é agregação de locais, não polígono.
- * O teste do gancho vive em `pollingData.ts` (`hasNeighborhoodMesh`).
+ * Gancho de malha de bairros: não há polígono de bairro no projeto. Se um dia
+ * existir `src/data/neighborhoods-{ibge}.geojson`, a camada deve pintar o
+ * polígono em vez da bolha agregada; até lá o modo "Bairros" desenha uma bolha
+ * por bairro no centroide dos locais. Teste do gancho: `hasNeighborhoodMesh`
+ * em `pollingData.ts`.
  */
 
 export const POLLING_VIEW_MODES: Array<{
@@ -98,26 +93,13 @@ export const POLLING_VIEW_MODES: Array<{
 ];
 
 /**
- * MÉTRICA DA CAMADA, ESCOLHA DE QUEM OLHA — em todo pleito, sem exceção.
+ * Métrica da camada, disponível em qualquer cargo. Ordem de precedência única,
+ * aplicada só aqui: pleito da candidata escolhido vence; senão, sigla em foco
+ * = percentual da sigla; sem sigla = índice ideológico 0–10 (padrão).
  *
- * O índice ideológico 0–10 é o PADRÃO e existe em qualquer cargo: é a régua
- * histórica da plataforma, a mesma da camada de espectro, e é o que aparece ao
- * abrir a camada. O percentual de voto de uma sigla é a segunda medida, também
- * disponível em qualquer cargo, para quem quer ler distribuição de voto em vez
- * de posição no espectro. Nenhum cargo perde uma das duas: cabe a quem olha
- * decidir qual pergunta está fazendo.
- *
- * Entre essas duas, a escolha se expressa pela SIGLA EM FOCO, e não por um
- * campo separado: sem sigla escolhida a camada mede o índice; com uma sigla
- * escolhida, mede o percentual dela.
- *
- * A TERCEIRA medida — os votos nominais da candidata em foco — tem prioridade
- * sobre as outras duas quando um pleito DELA está escolhido, e por isso mora
- * num campo próprio. Ela não pode se expressar por sigla nenhuma: não sai do
- * arquivo `votes-*.json` (que agrega por partido, não por candidatura) e nem
- * sequer divide a mesma lista de pleitos. Ainda assim o estado continua sem
- * como divergir de si mesmo — há uma ordem de precedência única, aplicada
- * aqui e em lugar nenhum mais.
+ * Os votos da candidata moram em campo próprio porque não saem de
+ * `votes-*.json` (que agrega por partido, não por candidatura) e usam outra
+ * lista de pleitos.
  */
 export function getPollingMetric(
   partyCode: string | null | undefined,
@@ -154,19 +136,17 @@ export const POLLING_METRICS: Array<{
 ];
 
 /**
- * Rampa SEQUENCIAL de um tom só para o percentual de UMA sigla: claro = pouco
- * voto, escuro = muito voto. Percentual de uma sigla é magnitude, não
- * polaridade — usar aqui a paleta divergente do espectro sugeriria dois polos
- * onde existe uma única grandeza crescente.
+ * Rampa sequencial de um tom só para o percentual de uma sigla: claro = pouco
+ * voto, escuro = muito. Percentual é magnitude, não polaridade, por isso não
+ * se usa aqui a paleta divergente do espectro. O azul também não é a cor de
+ * nenhuma sigla do seletor.
  *
- * São os passos 300→700 do azul sequencial documentado na skill de dataviz.
- * Validada como rampa ordinal (`--ordinal`) nas duas superfícies claras do
- * app: lightness monótona, ΔL adjacente ≥ 0,06, tom único (3° de variação) e
- * a ponta clara em 2,50:1 sobre o branco e 2,27:1 sobre #f6f3f2 (piso 2:1).
- * Todo passo fica a ΔE ≥ 14,6 (OKLab ×100, visão normal, protanopia e
- * deuteranopia) do cinza de dado ausente #788382, então "0% da sigla" nunca se
- * confunde com "sem voto apurado aqui". O azul também não é a cor de nenhuma
- * das siglas que o seletor oferece — a bolha mede o quanto, não quem.
+ * Passos 300→700 do azul sequencial da skill de dataviz. Validada como rampa
+ * ordinal (`--ordinal`) nas duas superfícies claras do app: lightness
+ * monótona, ΔL adjacente ≥ 0,06, tom único (3° de variação), ponta clara em
+ * 2,50:1 sobre o branco e 2,27:1 sobre #f6f3f2 (piso 2:1). Todo passo fica a
+ * ΔE ≥ 14,6 (OKLab ×100, visão normal, protanopia e deuteranopia) do cinza de
+ * dado ausente #788382.
  */
 export const POLLING_SHARE_COLORS = [
   "#6da7ec",
@@ -178,35 +158,26 @@ export const POLLING_SHARE_COLORS = [
 
 /**
  * Faixas do percentual de uma sigla: escala fixa de 0 a 100, os mesmos cortes
- * que o espectro usa nas suas métricas percentuais. Fixas de propósito — corte
- * por quantil mudaria de significado a cada troca de sigla ou de recorte, e a
- * mesma cor deixaria de querer dizer a mesma coisa entre dois mapas.
+ * das métricas percentuais do espectro. Fixas de propósito: por quantil, a
+ * mesma cor mudaria de significado a cada troca de sigla ou de recorte.
  */
 export const POLLING_SHARE_THRESHOLDS = [20, 40, 60, 80];
 
 /**
- * Rampa SEQUENCIAL de um tom só para os votos da candidata: claro = poucos
- * votos dela, escuro = muitos. É magnitude, como o percentual da sigla, então
- * usar a divergente do espectro sugeriria dois polos onde há uma grandeza
- * crescente.
- *
- * Aqui o VERMELHO DA CAMPANHA (#c1121f, o mesmo dos botões do app) é o tom
- * honesto e é o passo do meio da rampa: a série É ela — uma pessoa, uma
- * campanha, uma cor —, e não uma sigla arbitrária escolhida num seletor. Foi
- * por ser arbitrária que a medida de % de sigla teve de recorrer ao azul
- * neutro; esse argumento não vale para esta rampa.
+ * Rampa sequencial de um tom só para os votos da candidata: claro = poucos
+ * votos, escuro = muitos. O passo do meio é o vermelho da campanha (#c1121f,
+ * o mesmo dos botões do app).
  *
  * Validada como rampa ordinal (`--ordinal`, validador da skill de dataviz) nas
  * duas superfícies claras do app: lightness monótona (OKLCH L 0,760 · 0,640 ·
  * 0,516 · 0,397 · 0,271, ΔL adjacente 0,120 · 0,124 · 0,119 · 0,126, piso
- * 0,06), tom único (1° de dispersão) e a ponta clara em 2,28:1 sobre o branco
- * e 2,07:1 sobre #f6f3f2 (piso 2:1).
+ * 0,06), tom único (1° de dispersão), ponta clara em 2,28:1 sobre o branco e
+ * 2,07:1 sobre #f6f3f2 (piso 2:1).
  *
- * Contra o cinza de dado ausente #788382 — a distinção que mais importa aqui,
- * porque "0 voto dela" e "ela não era candidata nesta cidade" são coisas
- * diferentes — todo passo fica a ΔE 9,8 · 10,6 · 12,6 · 20,8 · 32,5 (OKLab
- * ×100, pior entre protanopia e deuteranopia; alvo 8,0) e 22,3 · 23,6 · 23,1 ·
- * 26,8 · 35,1 em visão normal (piso 15).
+ * Contra o cinza de dado ausente #788382 (distinguir "0 voto dela" de "ela não
+ * era candidata nesta cidade"): todo passo fica a ΔE 9,8 · 10,6 · 12,6 · 20,8
+ * · 32,5 (OKLab ×100, pior entre protanopia e deuteranopia; alvo 8,0) e 22,3 ·
+ * 23,6 · 23,1 · 26,8 · 35,1 em visão normal (piso 15).
  */
 export const POLLING_CANDIDATE_COLORS = [
   "#ff8a81",
@@ -223,15 +194,10 @@ export function getPollingMetricColors(metric: PollingMetric) {
 }
 
 /**
- * Cortes das faixas.
- *
- * Índice e percentual têm escala FIXA (0–10 e 0–100): a mesma cor quer dizer a
- * mesma coisa entre dois mapas. Voto absoluto não tem escala fixa possível —
- * um local com 40 votos dela pode ser muito num pleito e pouco em outro —,
- * então ali os cortes saem por quantil do recorte, calculados em
- * `buildPollingModel` (que é quem conhece os valores) e declarados na legenda.
- * Esta função devolve a régua fixa; para a candidata ela devolve os cortes
- * neutros que o modelo substitui.
+ * Cortes das faixas. Índice e percentual têm escala fixa (0–10 e 0–100): a
+ * mesma cor quer dizer a mesma coisa entre dois mapas. Voto absoluto não tem
+ * escala fixa possível, então sai por quantil do recorte, calculado em
+ * `buildPollingModel` e declarado na legenda.
  */
 export function getPollingThresholds(
   metric: PollingMetric,
@@ -244,10 +210,10 @@ export function getPollingThresholds(
 }
 
 /**
- * Teto de bolhas desenhadas de uma vez. Goiás tem milhares de locais de votação e
- * cada bolha é um marcador do mapa: sem teto o navegador trava. Acima do
- * limite ficam as maiores por eleitorado, e a interface informa quantas
- * ficaram de fora — filtrar por município mostra todas as daquele município.
+ * Teto de bolhas desenhadas de uma vez: Goiás tem milhares de locais e cada
+ * bolha é um marcador do mapa, sem teto o navegador trava. Acima do limite
+ * ficam as maiores por eleitorado e a interface informa quantas ficaram de
+ * fora.
  */
 export const POLLING_MAX_BUBBLES = 600;
 
@@ -257,8 +223,7 @@ export const POLLING_BUBBLE_MAX_RADIUS = 34;
 
 /**
  * Raio da bolha com ÁREA proporcional ao eleitorado: raio ∝ √eleitorado.
- * Escalar o raio direto pelo valor infla visualmente os locais grandes pelo
- * quadrado — o erro clássico de bolha proporcional.
+ * Escalar o raio direto pelo valor infla os locais grandes pelo quadrado.
  */
 export function getPollingBubbleRadius(
   electorate: number,
@@ -275,9 +240,9 @@ export function getPollingBubbleRadius(
 }
 
 /**
- * Identificador do arquivo de votos do pleito (`votes-{contestId}.json`).
- * Os pleitos do espectro carregam o prefixo da origem (`elections:2022-1-1`);
- * o arquivo do ETL usa apenas o sufixo (`2022-1-1`).
+ * Identificador do arquivo de votos do pleito (`votes-{contestId}.json`). Os
+ * pleitos do espectro carregam o prefixo da origem (`elections:2022-1-1`); o
+ * arquivo do ETL usa apenas o sufixo (`2022-1-1`).
  */
 export function getPollingContestId(contest: SpectrumSourceContest) {
   const separator = contest.id.indexOf(":");
@@ -298,11 +263,9 @@ export function getDefaultPollingState(
     contestId: contests[0]?.id ?? "",
     viewMode: "places",
     municipalityId: null,
-    // null = nenhuma sigla em foco, ou seja, a camada abre no índice
-    // ideológico — o comportamento histórico da plataforma.
+    // null = nenhuma sigla em foco: a camada abre no índice ideológico.
     partyCode: null,
-    // null = a camada não abre na medida da candidata: ela é uma escolha
-    // deliberada, não um padrão imposto a quem só quer ver o espectro.
+    // null = a medida da candidata não é padrão, é escolha deliberada.
     candidateContestId: null,
     candidateRate: false,
     activeBands: [...ALL_ANALYSIS_BANDS],
@@ -312,8 +275,8 @@ export function getDefaultPollingState(
 
 /**
  * Id de pleito da candidata vindo de fora (armazenamento local, link antigo):
- * só sobrevive se tiver a forma "ano-cargo-turno". Ele ainda passa pelo
- * modelo, que o descarta se aquele pleito não tiver cadastro de locais.
+ * só sobrevive na forma "ano-cargo-turno". O modelo ainda o descarta se o
+ * pleito não tiver cadastro de locais.
  */
 function sanitizeCandidateContestId(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -323,8 +286,8 @@ function sanitizeCandidateContestId(value: unknown): string | null {
 
 /**
  * Sigla vinda de fora (armazenamento local, link antigo): só sobrevive se
- * parecer um código de partido. Ela ainda passa pelo filtro do modelo, que a
- * descarta se não houver voto apurado dela no pleito.
+ * parecer código de partido. O modelo ainda a descarta se não houver voto
+ * apurado dela no pleito.
  */
 function sanitizePartyCode(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -389,9 +352,8 @@ function toText(value: unknown, fallback = "") {
 }
 
 /**
- * Leitura defensiva do arquivo de locais: qualquer coisa que não case com o
- * contrato vira `null` e a camada informa que o dado não foi gerado, em vez
- * de quebrar o app.
+ * Leitura defensiva do arquivo de locais: o que não casa com o contrato vira
+ * `null` e a camada informa que o dado não foi gerado.
  */
 export function parsePollingPlacesDataset(
   value: unknown,
@@ -514,10 +476,9 @@ function createTally(): Tally {
 }
 
 /**
- * Soma um conjunto de votos por sigla no acumulador, usando exatamente as
- * primitivas do espectro para resolver a nota do partido na onda do pleito.
- * `partyCode` é a sigla em foco na métrica de voto por partido: os votos dela
- * são somados à parte, sem interferir em nada do índice.
+ * Soma votos por sigla no acumulador, usando as primitivas do espectro para
+ * resolver a nota do partido na onda do pleito. `partyCode` é a sigla em foco:
+ * seus votos são somados à parte, sem interferir no índice.
  */
 function addVotesToTally(
   tally: Tally,
@@ -557,7 +518,7 @@ function finishTally(tally: Tally, partyCode = "") {
       tally.totalVotes > 0 ? (tally.scoredVotes / tally.totalVotes) * 100 : 0,
     partyVotes: tally.partyVotes,
     // Percentual só existe com denominador: sem voto apurado na unidade (ou
-    // sem sigla escolhida) o valor é AUSENTE, jamais 0%. Com apuração e sem
+    // sem sigla escolhida) o valor é ausente, jamais 0%. Com apuração e sem
     // voto da sigla, 0 é zero de verdade e a unidade continua no ranking.
     partySharePct:
       partyCode && tally.totalVotes > 0
@@ -578,8 +539,8 @@ function finishTally(tally: Tally, partyCode = "") {
 
 /**
  * Grafia de exibição do bairro: a mais frequente entre os locais. No empate
- * (dois locais, duas grafias), vence a grafia do local com mais eleitores —
- * critério determinístico, para o rótulo não oscilar entre execuções.
+ * vence a grafia do local com mais eleitores (critério determinístico, para o
+ * rótulo não oscilar entre execuções).
  */
 function mostFrequentSpelling(entries: Array<{ value: string; weight: number }>) {
   const counts = new Map<string, { count: number; weight: number }>();
@@ -610,13 +571,12 @@ function mostFrequentSpelling(entries: Array<{ value: string; weight: number }>)
 }
 
 /* -------------------------------------------------------------------------
- * Medida "votos da candidata": a lista de pleitos DELA
+ * Medida "votos da candidata": lista de pleitos própria
  *
- * Os pleitos das outras duas medidas vêm dos arquivos `votes-*.json` do
- * espectro (2022-1-1, 2024-11-1…). Os dela são outros — 2016-11-1, 2018-7-1,
- * 2020-11-1, 2022-6-1, 2024-11-1 — e quase não coincidem. Misturar as duas
- * listas mostraria "sem dado" em pleito que ela nem disputou, então cada
- * medida oferece a sua.
+ * Os pleitos das outras duas medidas vêm dos `votes-*.json` do espectro
+ * (2022-1-1, 2024-11-1…); os dela (2016-11-1, 2018-7-1, 2020-11-1, 2022-6-1,
+ * 2024-11-1) quase não coincidem. Misturar as listas mostraria "sem dado" em
+ * pleito que ela nem disputou.
  * ------------------------------------------------------------------------- */
 
 /** Rótulo do pleito dela: ano + cargo no feminino (+ turno quando > 1). */
@@ -625,10 +585,9 @@ export function getPollingCandidateContestLabel(contest: CandidateContest) {
 }
 
 /**
- * Pleitos dela que PODEM virar mapa: os que têm o recorte por local de votação
- * preenchido. Ano sem cadastro de locais publicado pelo TSE chega com
- * `locais: null` e fica de fora da lista — não é oferecido e não vira mapa
- * vazio. Ordem: do mais recente para o mais antigo.
+ * Pleitos dela que podem virar mapa: os com recorte por local preenchido. Ano
+ * sem cadastro de locais publicado pelo TSE chega com `locais: null` e fica de
+ * fora da lista. Ordem: do mais recente para o mais antigo.
  */
 export function listPollingCandidateContests(
   dataset: CandidateDataset | null | undefined,
@@ -666,27 +625,20 @@ export function getPollingCandidateAvailability(
 }
 
 /**
- * AUSÊNCIA × ZERO na medida da candidata — a regra decisiva desta camada.
+ * AUSÊNCIA × ZERO na medida da candidata, a regra decisiva desta camada. O ETL
+ * só acumula voto onde ela teve voto, então local ausente do mapa `locais`
+ * significa:
  *
- * O ETL só acumula voto onde ela TEVE voto, então um local ausente do mapa
- * `locais` pode significar duas coisas incompatíveis:
- *
- *  - pleito MUNICIPAL (Prefeita/Vereadora, cargos 11 e 13): ela disputou UMA
- *    cidade. Local naquela cidade e ausente do mapa = 0 voto DE VERDADE (ela
- *    estava na urna ali e ninguém votou nela naquele local). Local em qualquer
- *    outra cidade = FORA DA DISPUTA: valor null, cor de dado ausente, fora do
- *    ranking — nunca 0, porque ela não era candidata ali;
+ *  - pleito MUNICIPAL (Prefeita/Vereadora, cargos 11 e 13): ela disputou uma
+ *    cidade. Local naquela cidade = 0 voto de verdade; local em outra cidade =
+ *    fora da disputa, valor null, cor de dado ausente, fora do ranking, nunca
+ *    0, porque ela não era candidata ali;
  *  - pleito ESTADUAL/FEDERAL: ela estava na urna no estado inteiro, então
  *    local ausente = 0 voto de verdade, em qualquer cidade.
  *
- * É a diferença entre "ela não teve voto aqui" e "ela nem era candidata aqui".
- * Esta função devolve o conjunto de IBGEs em que ela estava na urna, ou `null`
- * quando a urna era o estado inteiro.
- *
- * As cidades saem de `contest.municipios`, que num pleito municipal tem uma
- * entrada só — a cidade da disputa. O conjunto (e não a única chave) cobre sem
- * inventar nada o caso degenerado de um pleito municipal que chegasse com mais
- * de um município no arquivo.
+ * Devolve o conjunto de IBGEs em que ela estava na urna (de
+ * `contest.municipios`, uma entrada só num pleito municipal), ou `null` quando
+ * a urna era o estado inteiro.
  */
 export function getPollingCandidateScope(
   contest: CandidateContest,
@@ -705,8 +657,7 @@ export type PollingModelInput = {
   contest: SpectrumSourceContest | null;
   /**
    * Trajetória da candidata em foco (o mesmo arquivo da aba dela). `null` ou
-   * pendente = a medida de votos da candidata não é oferecida — nada é
-   * sintetizado para preencher o buraco.
+   * pendente = a medida de votos da candidata não é oferecida.
    */
   candidate?: CandidateDataset | null;
   state: PollingState;
@@ -717,18 +668,14 @@ export type PollingModelInput = {
 /**
  * Reindexa os locais dela pela convenção de id do CADASTRO de locais.
  *
- * Os dois ETLs normalizam o código TSE do município de formas OPOSTAS, e isso
- * é uma armadilha silenciosa: `process_tse_sections.py` (que gera
- * `places-go.json`) preenche o código com zeros à esquerda até cinco dígitos,
- * enquanto `process_candidato_foco.py` (que grava `contest.locais`) REMOVE os
- * zeros à esquerda. Em Goiás os códigos têm zero à esquerda — Goiânia é
- * 09373 —, então o id dela sairia `9373-1-1015` contra `09373-1-1015` do
- * cadastro. Nenhum local casaria, a camada mostraria zero voto em toda parte,
- * e o contador de "locais não casados" acusaria 100% sem que nada tivesse
- * dado erro.
- *
- * Canonicalizar aqui faz a camada funcionar com o JSON que já está gerado, e
- * continua correto depois que o ETL for alinhado (vira operação sem efeito).
+ * Armadilha silenciosa: os dois ETLs normalizam o código TSE do município de
+ * formas opostas. `process_tse_sections.py` (gera `places-go.json`) preenche o
+ * código com zeros à esquerda até cinco dígitos; `process_candidato_foco.py`
+ * (grava `contest.locais`) remove os zeros. Em Goiás os códigos têm zero à
+ * esquerda (Goiânia é 09373), então `9373-1-1015` não casaria com
+ * `09373-1-1015`: zero voto em toda parte e 100% de "locais não casados", sem
+ * erro nenhum. Canonicalizar aqui vira operação sem efeito depois que o ETL
+ * for alinhado.
  */
 export function canonicalPlaceId(id: string): string {
   const partes = id.split("-");
@@ -769,10 +716,9 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
     : registry.metadata.waves[0].year;
 
   // ---- Pleito da candidata ----------------------------------------------
-  // A medida dela só existe com trajetória gerada E com pleito que tenha
-  // cadastro de locais. Um id guardado que não vale mais (trajetória pendente,
-  // pleito sem locais) cede lugar ao pleito dela mais recente, do mesmo jeito
-  // que uma sigla sem voto cede lugar à mais votada — nunca a um mapa vazio.
+  // A medida dela exige trajetória gerada e pleito com cadastro de locais. Id
+  // guardado que não vale mais cede lugar ao pleito dela mais recente, nunca a
+  // um mapa vazio.
   const candidateAvailability = getPollingCandidateAvailability(candidate);
   const candidateOptions = listPollingCandidateContests(candidate);
   const candidateContest = state.candidateContestId
@@ -787,9 +733,7 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
       null)
     : null;
 
-  // A métrica sai da ESCOLHA guardada no estado, não do cargo do pleito: sem
-  // sigla em foco a camada mede o índice ideológico, em Presidente, Governador
-  // ou qualquer outro cargo; com um pleito dela em foco, mede os votos dela.
+  // A métrica sai da ESCOLHA guardada no estado, não do cargo do pleito.
   const metric = getPollingMetric(
     state.partyCode,
     candidateContest ? candidateContest.id : null,
@@ -798,15 +742,15 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
   const votesByPlace = votes ?? {};
 
   // ---- Votos dela por local ----------------------------------------------
-  // Reindexado pela convenção do CADASTRO antes de qualquer cruzamento — ver
-  // canonicalPlaceId, logo acima do buildPollingModel.
+  // Reindexado pela convenção do CADASTRO antes de qualquer cruzamento (ver
+  // canonicalPlaceId, logo acima do buildPollingModel).
   const candidateByPlace = reindexarLocaisDaCandidata(candidateContest?.locais);
   const candidateScope = candidateContest
     ? getPollingCandidateScope(candidateContest)
     : null;
   /**
-   * Ver `getPollingCandidateScope`: fora do escopo é AUSÊNCIA (null), dentro
-   * do escopo a falta de registro é ZERO medido.
+   * Ver `getPollingCandidateScope`: fora do escopo é ausência (null); dentro
+   * do escopo, falta de registro é zero medido.
    */
   const candidateVotesAt = (placeId: string, ibgeCode: string) => {
     if (!candidateContest) return null;
@@ -825,8 +769,8 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
 
   // ---- Siglas do pleito ---------------------------------------------------
   // O leque de siglas sai do pleito INTEIRO, não do recorte: filtrar por
-  // município não pode fazer a sigla escolhida sumir do seletor. Uma sigla só
-  // entra na lista se realmente teve voto apurado — nada de sigla inventada.
+  // município não pode fazer a sigla escolhida sumir do seletor. Só entra
+  // sigla com voto apurado.
   const contestVotesByParty: Record<string, number> = {};
   let contestTotalVotes = 0;
   for (const place of places) {
@@ -845,9 +789,8 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
     .sort(
       (a, b) => b.votes - a.votes || a.code.localeCompare(b.code, "pt-BR"),
     );
-  // Na métrica de sigla, uma escolha que não tem voto apurado aqui (outro
-  // pleito, outro cargo) não vale como filtro vazio — ela cede lugar à sigla
-  // mais votada do pleito, para o mapa não ficar inteiro sem valor.
+  // Na métrica de sigla, escolha sem voto apurado aqui cede lugar à sigla mais
+  // votada do pleito, para o mapa não ficar inteiro sem valor.
   const partyCode =
     metric === "votoPartido"
       ? partyOptions.find((option) => option.code === state.partyCode)?.code ??
@@ -903,8 +846,8 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
   });
 
   // ---- Bairros: soma os VOTOS antes de calcular o índice ------------------
-  // Média ponderada de verdade (mesmo princípio de selection.ts): jamais a
-  // média das médias dos locais, que ignoraria o tamanho de cada local.
+  // Média ponderada de verdade (mesmo princípio de selection.ts), jamais a
+  // média das médias dos locais.
   type NeighborhoodGroup = {
     ibgeCode: string;
     municipalityName: string;
@@ -951,9 +894,8 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
       if (!Number.isFinite(amount) || amount <= 0) continue;
       group.byParty[party] = (group.byParty[party] ?? 0) + amount;
     }
-    // O bairro é a soma dos VOTOS dos seus locais, como nas outras medidas.
-    // Bairro vive dentro de um município (a chave do grupo carrega o IBGE),
-    // então ou todos os locais estão na disputa dela ou nenhum está: o null
+    // O bairro é a soma dos VOTOS dos seus locais. A chave do grupo carrega o
+    // IBGE, então ou todos os locais estão na disputa dela ou nenhum: o null
     // sobrevive só quando nenhum local do bairro entrou na conta.
     const candidateHere = candidateVotesAt(place.id, place.ibgeCode);
     if (candidateHere !== null) {
@@ -1095,10 +1037,9 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
     ? sourceUnits.filter((unit) => unit.ibgeCode === municipalityId)
     : sourceUnits;
   // Cortes das faixas. Índice e percentual têm escala fixa; o voto da
-  // candidata é contagem sem teto natural, então os cortes saem por quantil
-  // dos valores do RECORTE — e a legenda declara isso. O agregado municipal
-  // tem régua própria pelo mesmo motivo: o total de uma cidade e o voto de um
-  // único local não cabem na mesma escala.
+  // candidata sai por quantil dos valores do RECORTE, e a legenda declara
+  // isso. O agregado municipal tem régua própria: total de uma cidade e voto
+  // de um único local não cabem na mesma escala.
   const thresholds = getPollingThresholds(
     metric,
     registry,
@@ -1122,9 +1063,8 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
           ? (0 as AnalysisBand)
           : getAnalysisBand(item.value, municipalityThresholds),
     }));
-  // Ranking, faixas e cor saem sempre do valor da MÉTRICA ATIVA: unidade sem
-  // valor (sem voto com nota no índice, sem denominador no percentual) fica
-  // fora de tudo isso, nunca no fim da fila como se valesse zero.
+  // Ranking, faixas e cor saem do valor da MÉTRICA ATIVA: unidade sem valor
+  // fica fora de tudo isso, nunca no fim da fila como se valesse zero.
   const ranked = scopedUnits
     .filter((unit) => unit.value !== null)
     .slice()
@@ -1213,13 +1153,10 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
   );
 
   // ---- Recorte da candidata ----------------------------------------------
-  // Voto dela no recorte: soma dos locais do recorte que estavam na disputa.
-  // Recorte inteiramente fora da disputa (município que ela não disputou num
-  // pleito municipal) fica com null — não com 0.
+  // Voto dela no recorte: soma dos locais que estavam na disputa. Recorte
+  // inteiramente fora da disputa fica com null, não com 0.
   let summaryCandidateVotes: number | null = null;
   // Denominador da taxa: só o eleitorado dos locais em que ela ESTAVA NA URNA.
-  // Dividir o voto de Goiânia pelo eleitorado do estado inteiro produziria uma
-  // densidade que não descreve disputa nenhuma.
   let summaryCandidateElectorate = 0;
   for (const place of scopedPlaces) {
     const votesHere = candidateVotesAt(place.id, place.ibgeCode);
@@ -1233,14 +1170,13 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
   );
 
   /**
-   * LOCAIS QUE NÃO CASAM — a medida de confiança deste recorte.
+   * Locais que não casam: a medida de confiança deste recorte.
    *
    * `places-go.json` foi montado com os cadastros de 2022 e 2024, mas os
-   * pleitos dela vão até 2016 e o TSE renumera seções (e locais) entre
-   * eleições. Local presente no mapa dela e AUSENTE do cadastro não tem
-   * coordenada, bairro nem eleitorado: não vira bolha e não entra em nenhuma
-   * soma do mapa. Ele é contado e declarado na interface — descartar em
-   * silêncio faria o mapa parecer completo sem ser.
+   * pleitos dela vão até 2016 e o TSE renumera seções e locais entre eleições.
+   * Local presente no mapa dela e ausente do cadastro não tem coordenada,
+   * bairro nem eleitorado: não vira bolha nem entra em soma alguma, mas é
+   * contado e declarado na interface.
    *
    * A contagem é sempre ESTADUAL, mesmo com filtro de município: sem cadastro
    * não há como saber a que cidade o local não casado pertencia.
@@ -1303,8 +1239,7 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
 
   return {
     // Na medida da candidata o pleito é o DELA: é o que nomeia o CSV, o PNG e
-    // o relatório. Deixar aqui o pleito do espectro rotularia a exportação com
-    // uma eleição que nada tem a ver com o número exportado.
+    // o relatório.
     contestId: candidateContest
       ? candidateContest.id
       : contest
@@ -1384,10 +1319,9 @@ export function buildPollingModel(input: PollingModelInput): PollingModel {
 }
 
 /**
- * Opções de texto das medidas. `rate` = a medida da candidata está em votos
- * por 1.000 eleitores; `nome` = o nome de urna dela, para o rótulo dizer de
- * QUEM é o voto exibido; `inScope` = a unidade estava na disputa dela (só
- * `false` distingue "fora da disputa" de "sem denominador").
+ * Opções de texto das medidas. `rate` = medida da candidata em votos por 1.000
+ * eleitores; `nome` = nome de urna dela; `inScope` = a unidade estava na
+ * disputa dela (só `false` distingue "fora da disputa" de "sem denominador").
  */
 export type PollingLabelOptions = {
   rate?: boolean;
@@ -1403,9 +1337,8 @@ export function formatPollingValue(
 ) {
   if (metric === "votosCandidata") {
     if (value === null) {
-      // As duas ausências desta medida têm nomes diferentes de propósito: uma
-      // é "ela não era candidata aqui", a outra é "não há eleitorado para
-      // dividir". Nenhuma das duas é zero voto.
+      // Duas ausências distintas: "ela não era candidata aqui" e "não há
+      // eleitorado para dividir". Nenhuma das duas é zero voto.
       if (options.inScope === false) return "Fora da disputa";
       return options.rate ? "Sem eleitorado no local" : "Sem dado";
     }
@@ -1480,10 +1413,9 @@ export function getPollingRangeLabel(
 }
 
 /**
- * Proporção 0–1 do valor dentro da escala da métrica, para a barrinha do
- * ranking. O índice mora em 0–10; o percentual, em 0–100. O voto da candidata
- * não tem teto fixo: a barra é relativa ao MAIOR valor do recorte, que o
- * chamador informa — sem ele a barra ficaria sempre cheia ou sempre vazia.
+ * Proporção 0–1 do valor na escala da métrica, para a barrinha do ranking.
+ * Índice em 0–10, percentual em 0–100. O voto da candidata não tem teto fixo:
+ * a barra é relativa ao maior valor do recorte, informado pelo chamador.
  */
 export function getPollingValueRatio(
   metric: PollingMetric,
@@ -1502,7 +1434,7 @@ export function getPollingValueRatio(
   return Math.min(Math.max(ratio, 0), 1);
 }
 
-/** Maior valor da métrica ativa no recorte — a escala da barrinha do ranking. */
+/** Maior valor da métrica ativa no recorte: a escala da barrinha do ranking. */
 export function getPollingMaximumValue(model: PollingModel) {
   return model.units.reduce(
     (maximum, unit) => (unit.value === null ? maximum : Math.max(maximum, unit.value)),
@@ -1515,9 +1447,8 @@ export function getPollingUnitLabel(viewMode: PollingViewMode) {
 }
 
 /**
- * O que a camada está mostrando e POR QUE, em uma frase que muda com a MEDIDA
- * escolhida — nunca com o cargo. A explicação anda junto com o dado, não num
- * rodapé, e cada texto diz também qual é a outra leitura disponível.
+ * Frase do que a camada mostra, variando com a MEDIDA escolhida e nunca com o
+ * cargo. Cada texto diz também qual é a outra leitura disponível.
  */
 export function describePollingLayer(model: PollingModel) {
   if (model.metric === "votosCandidata") {
@@ -1552,9 +1483,9 @@ export function describePollingScope(model: PollingModel) {
       model.summary.candidateVotesPerThousand === null
         ? ""
         : ` — ${formatDecimal(model.summary.candidateVotesPerThousand)} votos por 1.000 eleitores`;
-    // Quando o recorte é o estado inteiro, o total do pleito entra na frase:
-    // sem ele a soma dos locais casados pareceria ser a votação dela, e a
-    // diferença (locais fora do cadastro, voto sem local) sumiria da leitura.
+    // Com recorte estadual, o total do pleito entra na frase: sem ele a soma
+    // dos locais casados pareceria ser a votação dela, e a diferença (locais
+    // fora do cadastro, voto sem local) sumiria da leitura.
     const noPleito =
       model.municipalityId === null &&
       model.candidate !== null &&
@@ -1650,12 +1581,11 @@ export function createPollingCsv(model: PollingModel) {
           unit.latitude === null ? "" : formatCsvDecimal(unit.latitude),
           unit.longitude === null ? "" : formatCsvDecimal(unit.longitude),
         ]),
-    // A cauda do arquivo segue a MÉTRICA ATIVA: numa tela de percentual não
-    // sobra coluna de índice ideológico nem de blocos, que ali não descrevem
-    // nada. Célula vazia = valor ausente; 0 escrito é zero apurado.
+    // A cauda do arquivo segue a MÉTRICA ATIVA. Célula vazia = valor ausente;
+    // 0 escrito é zero apurado.
     ...(isCandidate
-      ? // Célula vazia = ela não era candidata ali (ausência declarada); um 0
-        // escrito é zero DE VERDADE, com ela na urna daquele local.
+      ? // Célula vazia = ela não era candidata ali; 0 escrito é zero de
+        // verdade, com ela na urna daquele local.
         [
           model.candidate?.partido ?? "",
           unit.candidateVotes === null ? "" : unit.candidateVotes,

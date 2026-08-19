@@ -27,18 +27,14 @@ import { createCsv, formatCsvDecimal, type CsvCell } from "./csv.ts";
 import { formatInteger, formatPercent } from "./electorate.ts";
 
 /**
- * Motor da janela "Estatísticas" — agregados de carreira e o cruzamento
- * voto × indicador municipal. Puro e sem React, como o resto dos utils, para
- * os testes cobrirem a aritmética com payloads sintéticos.
+ * Motor da janela "Estatísticas": agregados de carreira e o cruzamento
+ * voto × indicador municipal. Puro e sem React.
  *
- * Duas disciplinas específicas desta janela, além das herdadas do projeto
- * (null nunca vira zero; percentual só com denominador):
- *
- * - votos de eleições DIFERENTES nunca se somam num total único: cada pleito
- *   é um universo próprio de eleitores e regras. O que atravessa pleitos é
- *   contagem (municípios alcançados) ou comparação entre pares comparáveis;
- * - correlação municipal é leitura AGREGADA: o coeficiente sai daqui, mas a
- *   interface é obrigada a exibir o aviso da falácia ecológica junto.
+ * Regras próprias daqui, além das herdadas (null nunca vira zero; percentual
+ * só com denominador): votos de eleições DIFERENTES nunca se somam num total
+ * único (o que atravessa pleitos é contagem ou comparação entre pares
+ * comparáveis); a correlação municipal é leitura AGREGADA, então a interface
+ * é obrigada a exibir o aviso da falácia ecológica junto.
  */
 
 /** Prefeita (11) e Vereadora (13): os cargos de pleito municipal do TSE. */
@@ -49,9 +45,8 @@ export function isMunicipalContest(contest: Pick<CandidateContest, "officeCode">
 }
 
 /**
- * Divide a trajetória nos dois universos da navegação lateral. Os grupos são
- * DERIVADOS do dado (nunca uma lista fixa de anos): uma candidatura nova no
- * JSON aparece no grupo certo sem tocar em código. Ordem: mais recente
+ * Divide a trajetória nos dois universos da navegação lateral. Grupos
+ * DERIVADOS do dado, nunca uma lista fixa de anos. Ordem: mais recente
  * primeiro; dentro do mesmo ano, 1º turno antes do 2º.
  */
 export function groupContests(dataset: CandidateDataset): ContestGroups {
@@ -67,7 +62,7 @@ export function groupContests(dataset: CandidateDataset): ContestGroups {
   };
 }
 
-/** Maior votação nominal num único pleito — o pico da carreira. */
+/** Maior votação nominal num único pleito. */
 export function buildCareerBest(dataset: CandidateDataset): CareerBest | null {
   let best: CandidateContest | null = null;
   for (const contest of dataset.contests) {
@@ -86,11 +81,9 @@ export function buildCareerBest(dataset: CandidateDataset): CareerBest | null {
 }
 
 /**
- * Crescimento entre os dois pleitos municipais mais recentes que sejam
- * COMPARÁVEIS: mesmo cargo e mesmo turno, em anos diferentes. Prefeita 2024
- * não se compara com vereadora 2016 — se não existe par comparável, não
- * existe taxa (null), em vez de um número que não significa nada.
- * Variação arredondada (declarado) a 1 casa.
+ * Crescimento entre os dois pleitos municipais mais recentes COMPARÁVEIS:
+ * mesmo cargo e mesmo turno, em anos diferentes. Sem par comparável não existe
+ * taxa (null). Variação arredondada (declarado) a 1 casa.
  */
 export function buildMunicipalGrowth(
   dataset: CandidateDataset,
@@ -126,10 +119,9 @@ export function buildMunicipalGrowth(
 }
 
 /**
- * Cartões da visão geral. "Municípios alcançados" é a UNIÃO dos municípios
- * com voto em qualquer pleito — uma contagem de território, nunca soma de
- * votos entre eleições. "Campanhas" conta ano+cargo distintos: o 2º turno é
- * a mesma campanha do 1º.
+ * Cartões da visão geral. "Municípios alcançados" é a UNIÃO dos municípios com
+ * voto em qualquer pleito, nunca soma de votos entre eleições. "Campanhas"
+ * conta ano+cargo distintos: o 2º turno é a mesma campanha do 1º.
  */
 export function buildCareerOverview(dataset: CandidateDataset): CareerOverview {
   const alcancados = new Set<string>();
@@ -147,14 +139,12 @@ export function buildCareerOverview(dataset: CandidateDataset): CareerOverview {
 }
 
 /**
- * % dos votos válidos do cargo que foram dela, no agregado do estado — só
- * faz sentido para cargo de disputa estadual (deputada, senadora…), onde os
- * válidos de todos os municípios pertencem à MESMA disputa. Em pleito
- * municipal cada cidade é uma eleição diferente e somar válidos seria
- * misturar universos: null. O denominador soma os válidos apurados dos
- * municípios onde ela teve voto — municípios sem voto dela ficam fora do
- * arquivo, então o valor é declarado na interface como "dos municípios com
- * voto". Arredondado (declarado) a 2 casas.
+ * % dos votos válidos do cargo que foram dela, no agregado do estado. Só faz
+ * sentido em cargo de disputa estadual, onde os válidos de todos os municípios
+ * pertencem à MESMA disputa; em pleito municipal cada cidade é uma eleição
+ * diferente e somar válidos misturaria universos: null. O denominador soma os
+ * válidos dos municípios onde ela teve voto (os demais nem estão no arquivo),
+ * e a interface declara isso. Arredondado (declarado) a 2 casas.
  */
 export function pctValidosNoEstado(contest: CandidateContest): number | null {
   if (isMunicipalContest(contest)) return null;
@@ -167,17 +157,11 @@ export function pctValidosNoEstado(contest: CandidateContest): number | null {
 }
 
 /**
- * A cidade de um pleito municipal, quando o pleito de fato tem uma só.
- *
- * Prefeita e vereadora se disputam dentro de um município; ler esse pleito na
- * régua do estado gera cartão sem conteúdo ("1 município com voto", "top 5 =
- * 100%") e uma colocação que mistura candidaturas de cidades diferentes. Aqui
- * devolvemos o recorte certo para a interface trocar a régua.
- *
- * Devolve null fora de pleito municipal e também quando o pleito traz mais de
- * um município — nesse caso o dado contraria a premissa e o certo é a
- * interface continuar na leitura estadual em vez de escolher uma cidade em
- * silêncio.
+ * A cidade de um pleito municipal, quando o pleito tem uma só. Ler prefeita ou
+ * vereadora na régua do estado gera cartão sem conteúdo ("1 município com
+ * voto", "top 5 = 100%") e colocação que mistura cidades. null fora de pleito
+ * municipal e também com mais de um município: aí o dado contraria a premissa
+ * e a interface segue na leitura estadual.
  */
 export function getMunicipalScope(
   contest: CandidateContest,
@@ -198,20 +182,11 @@ export function getMunicipalScope(
 }
 
 /**
- * O que ela fez num município, na eleição mais recente de CADA universo.
- *
- * Devolve no máximo dois destaques — um municipal (prefeita/vereadora) e um
- * estadual/federal —, do mais recente para o mais antigo. Em quase todo
- * município de Goiás sai um só, porque prefeitura ela só disputou em Goiânia;
- * lá saem os dois.
- *
- * Os dois universos são apurados separados de propósito: 168 mil votos para
- * prefeita de Goiânia e 96 mil para deputada federal são disputas de regras,
- * eleitorados e adversários diferentes. Somá-los daria um número que não
- * existe, e escolher "o maior" esconderia metade da história.
- *
- * Município sem voto apurado dela devolve lista vazia — e a interface tem de
- * dizer isso, nunca desenhar zero.
+ * O que ela fez num município, na eleição mais recente de CADA universo: no
+ * máximo dois destaques (um municipal, um estadual/federal), do mais recente
+ * para o mais antigo. Os universos nunca se somam nem se reduzem ao maior.
+ * Município sem voto apurado devolve lista vazia, e a interface tem de dizer
+ * isso, nunca desenhar zero.
  */
 export function getMunicipioDestaques(
   dataset: CandidateDataset,
@@ -286,11 +261,9 @@ function pleitosDoGrupo(
 }
 
 /**
- * Monta as setas de uma série a partir dos seus pontos consecutivos.
- * Dois pleitos só são COMPARÁVEIS quando são do mesmo cargo e do mesmo turno.
- * A variação entre cargos diferentes continua sendo calculada e exibida — é o
- * crescimento que a campanha quer enxergar — mas sai marcada, para ninguém ler
- * "cresceu 146%" achando que é a mesma disputa medida duas vezes.
+ * Setas entre pontos consecutivos da série. Dois pleitos só são COMPARÁVEIS
+ * com mesmo cargo e mesmo turno; entre cargos diferentes a variação continua
+ * calculada e exibida, mas sai marcada como não comparável.
  */
 function construirSetas(points: GrowthPoint[]): GrowthArrow[] {
   const arrows: GrowthArrow[] = [];
@@ -334,12 +307,9 @@ function construirSerie(
 }
 
 /**
- * Recortes disponíveis para comparar dentro do grupo.
- *
- * Ordenados pelo voto no pleito MAIS RECENTE em que o recorte aparece — nunca
- * pela soma entre eleições. Somar votos de 2016 com os de 2024 para ordenar uma
- * lista pareceria inofensivo e é exatamente o tipo de total que não existe:
- * são eleitorados e disputas diferentes.
+ * Recortes disponíveis para comparar dentro do grupo. Ordenados pelo voto no
+ * pleito MAIS RECENTE em que o recorte aparece, nunca pela soma entre eleições
+ * (são eleitorados e disputas diferentes).
  */
 function construirOpcoes(
   pleitos: CandidateContest[],
@@ -347,8 +317,8 @@ function construirOpcoes(
   focoIbge: string | null,
 ): GrowthOption[] {
   const porId = new Map<string, GrowthOption>();
-  // Do mais recente para o mais antigo: o primeiro que define o rótulo e o
-  // valor de ordenação é justamente o pleito mais recente do recorte.
+  // Do mais recente para o mais antigo: o primeiro visto define rótulo e
+  // valor de ordenação.
   for (const contest of [...pleitos].reverse()) {
     if (grupo === "municipais") {
       const mapa = focoIbge ? contest.bairros?.[focoIbge] : null;
@@ -415,10 +385,7 @@ function cidadeDoGrupoMunicipal(pleitos: CandidateContest[]): MunicipalScope | n
 
 /**
  * Modelo da visão "Geral" de um grupo (municipais ou federais/estaduais).
- *
- * Devolve null quando o grupo tem menos de dois pleitos: com um pleito só não
- * existe crescimento para mostrar, e uma tela de comparação vazia mente mais
- * do que ajuda.
+ * null com menos de dois pleitos: sem par não há crescimento para mostrar.
  */
 export function buildGrowthModel(
   dataset: CandidateDataset,
@@ -483,9 +450,8 @@ export function createGrowthCsv(model: GrowthModel): string {
     );
     for (const ponto of serie.points) {
       const seta = setaPorDestino.get(ponto.contestId);
-      // Célula vazia = sem apuração. Escrever 0 aqui transformaria "o bairro
-      // não aparece neste pleito" em "o bairro deu zero voto", que é outra
-      // afirmação — e é a que a planilha somaria sem perguntar.
+      // Célula vazia = sem apuração. Escrever 0 viraria "o bairro deu zero
+      // voto", outra afirmação, e é a que a planilha somaria.
       rows.push([
         serie.label,
         ponto.electionYear,
@@ -493,9 +459,8 @@ export function createGrowthCsv(model: GrowthModel): string {
         ponto.round,
         ponto.votos ?? "",
         seta?.variacaoPct != null ? formatCsvDecimal(seta.variacaoPct) : "",
-        // A coluna só fala quando existe variação para qualificar: "sim" ao
-        // lado de uma variação vazia sugeriria que houve comparação e ela deu
-        // nada, quando o que houve foi ausência de apuração.
+        // Só qualifica quando existe variação: "sim" ao lado de variação
+        // vazia sugeriria uma comparação que não houve.
         seta?.variacaoPct != null
           ? seta.comparavel
             ? "sim"
@@ -521,15 +486,14 @@ export function getGrowthCsvFilename(
 
 /**
  * Abaixo de 10 municípios plotados o coeficiente vira ruído de amostra
- * pequena — a interface mostra "amostra insuficiente" em vez de um número.
+ * pequena: a interface mostra "amostra insuficiente" em vez de um número.
  */
 export const PEARSON_MIN_N = 10;
 
 /**
  * Coeficiente de correlação de Pearson. null com menos de 2 pontos ou com
- * variância zero em qualquer eixo (reta vertical/horizontal não tem
- * correlação definida — o denominador é zero). Sem arredondar: quem exibe
- * decide a precisão.
+ * variância zero em qualquer eixo (denominador zero). Sem arredondar: quem
+ * exibe decide a precisão.
  */
 export function pearson(points: ReadonlyArray<{ x: number; y: number }>): number | null {
   const n = points.length;
@@ -561,10 +525,9 @@ export function pearson(points: ReadonlyArray<{ x: number; y: number }>): number
  * ------------------------------------------------------------------------- */
 
 /**
- * Subconjunto dos indicadores da aba Análise que respondem à pergunta da
- * janela ("ela foi melhor em cidades com mais mulheres? mais alfabetizadas?
- * mais velhas?"). Rótulos e descrições vêm de ANALYSIS_METRICS — mesma
- * fonte, mesma redação em toda a aplicação.
+ * Subconjunto dos indicadores da aba Análise usados no cruzamento. Rótulos e
+ * descrições vêm de ANALYSIS_METRICS: mesma fonte e mesma redação em toda a
+ * aplicação.
  */
 const STATS_INDICATOR_IDS: StatsIndicatorId[] = [
   "female",
@@ -596,12 +559,9 @@ export function getStatsIndicator(id: StatsIndicatorId): StatsIndicator {
 }
 
 /**
- * Valores socioeconômicos AUSENTES — todos os campos em null.
- *
- * É o que entra quando o insumo não traz o snapshot do IBGE (ou traz o
- * placeholder "pendente"). null é "sem dado" em toda a aplicação, então o
- * resultado é o comportamento correto — município fora do cruzamento, o
- * indicador declarado como sem dado —, nunca um número inventado.
+ * Valores socioeconômicos AUSENTES: todos os campos em null. Entra quando o
+ * insumo não traz o snapshot do IBGE (ou traz o placeholder "pendente"). null
+ * é "sem dado", nunca um número inventado.
  */
 const SOCIOECONOMIC_AUSENTE: MunicipalityProfile["socioeconomic"] = {
   populationEstimate: null,
@@ -617,8 +577,8 @@ const SOCIOECONOMIC_AUSENTE: MunicipalityProfile["socioeconomic"] = {
 
 /**
  * O snapshot socioeconômico é utilizável? Placeholder "pendente" e mapa vazio
- * contam como ausência: um arquivo de zeros e nulls não é dado do IBGE, é a
- * espera pelo `gerar_dados.sh`.
+ * contam como ausência: um arquivo de zeros e nulls é a espera pelo
+ * `gerar_dados.sh`.
  */
 export function hasSocioeconomicSnapshot(
   source: StatsIndicatorSource,
@@ -634,26 +594,20 @@ export function hasSocioeconomicSnapshot(
 }
 
 /**
- * Monta o índice ibge -> perfil que alimenta getAnalysisMetricValue — o
- * cálculo de cada indicador é REUSADO da aba Análise, não reimplementado.
- * Devolve null enquanto o snapshot do eleitorado for placeholder ("pendente"
- * ou vazio): sem eleitorado não há nenhum indicador confiável. Censo pendente
- * não anula o índice — só deixa null os indicadores que dependem dele.
- * Município com eleitorado zerado fica fora (não pode ser denominador).
+ * Monta o índice ibge -> perfil que alimenta getAnalysisMetricValue: o cálculo
+ * de cada indicador é REUSADO da aba Análise, não reimplementado.
  *
- * O bloco socioeconômico entra do snapshot REAL quando o insumo o traz. Isto
- * é o que faz renda, PIB, densidade, saneamento, escolarização e população
- * chegarem ao relatório: até aqui o perfil era montado com todos esses campos
- * em null e os indicadores do IBGE nunca apareciam, mesmo com o arquivo
- * gerado no disco. Sem o snapshot, os campos seguem null — o indicador é
- * declarado como sem dado, e jamais entra valendo zero.
+ * null enquanto o snapshot do eleitorado for placeholder ("pendente" ou
+ * vazio). Censo pendente não anula o índice, só deixa null os indicadores que
+ * dependem dele. Município com eleitorado zerado fica fora (não pode ser
+ * denominador). O bloco socioeconômico entra do snapshot REAL quando o insumo
+ * o traz; sem ele os campos seguem null, jamais zero.
  *
  * Os campos do eleitorado que o insumo não traz (zonas, biometria,
- * deficiência, nome social) continuam preenchidos com 0 aqui apenas para
- * satisfazer o shape de MunicipalityProfile, que os declara como number. Quem
- * consome isto em análise precisa distinguir "0 apurado" de "campo ausente" —
- * `hasStatsElectorateField` existe exatamente para isso, e o motor do
- * relatório (reportDataset.ts) a usa antes de aceitar qualquer um deles.
+ * deficiência, nome social) ficam em 0 apenas para satisfazer o shape de
+ * MunicipalityProfile, que os declara como number. Quem consome precisa
+ * distinguir "0 apurado" de "campo ausente": `hasStatsElectorateField` existe
+ * para isso, e reportDataset.ts a usa antes de aceitar qualquer um deles.
  */
 export function buildStatsProfiles(
   source: StatsIndicatorSource,
@@ -698,12 +652,9 @@ export type StatsElectorateField =
   | "socialName";
 
 /**
- * O snapshot trouxe o campo bruto para ESTE município?
- *
- * Sem esta pergunta, um insumo sem biometria produziria "0% de biometria em
- * todos os municípios" — um dado sintético perfeitamente plausível, com
- * variância zero, que entraria em correlação e em comparação de grupos sem
- * ninguém perceber. Zonas eleitorais também: `zoneCount` em 0 faria
+ * O snapshot trouxe o campo bruto para ESTE município? Sem a pergunta, um
+ * insumo sem biometria produziria "0% em todos os municípios", dado sintético
+ * de variância zero que entraria em correlação; `zoneCount` em 0 faria
  * "eleitores por zona" devolver o eleitorado inteiro.
  */
 export function hasStatsElectorateField(
@@ -718,9 +669,9 @@ export function hasStatsElectorateField(
 }
 
 /**
- * Valor do indicador para um município, já na escala do eixo X. Para escala
- * log só existe valor com indicador > 0 (log de zero não existe — o município
- * sai do scatter e entra na contagem de "sem dado").
+ * Valor do indicador para um município, já na escala do eixo X. Em escala log
+ * só existe valor com indicador > 0; o resto sai do scatter e entra na
+ * contagem de "sem dado".
  */
 function indicatorAxisValue(
   profile: MunicipalityProfile | undefined,
@@ -735,9 +686,8 @@ function indicatorAxisValue(
 }
 
 /**
- * Monta o scatter % dos válidos (Y) × indicador (X) de um pleito.
- *
- * Exclusões são contadas, nunca silenciosas:
+ * Scatter % dos válidos (Y) × indicador (X) de um pleito. Exclusões são
+ * contadas, nunca silenciosas:
  * - município sem % dos válidos (denominador não apurado) -> semPercentual;
  * - município sem valor do indicador (ou índice inteiro pendente) -> semIndicador.
  *
@@ -786,7 +736,7 @@ export function buildScatter(
 }
 
 /* -------------------------------------------------------------------------
- * CSV — mesmo dialeto do projeto (createCsv põe BOM e ponto e vírgula)
+ * CSV: mesmo dialeto do projeto (createCsv põe BOM e ponto e vírgula)
  * ------------------------------------------------------------------------- */
 
 /** CSV da visão geral: uma linha por pleito, sem linha de total (de propósito). */
@@ -850,17 +800,10 @@ export function getTrajectoryCsvFilename(dataset: CandidateDataset): string {
 export type ContestCard = { titulo: string; valor: string; nota: string };
 
 /**
- * Os cartões de resumo de um pleito, como TEXTO já formatado.
- *
- * Mora aqui, e não no componente, porque agora existem dois consumidores: a
- * tela (ContestCards) e o sumário do relatório exportado. Se cada um montasse
- * os seus, o PDF que vai para a reunião poderia divergir do que a candidata
- * viu na tela — e a régua de leitura (municipal × estadual) é justamente a
- * parte que não pode divergir.
- *
- * A régua: prefeita e vereadora se disputam dentro de uma cidade, então os
- * cartões são da cidade; em cargo estadual/federal o estado inteiro é uma
- * disputa só e a leitura é estadual. Ausência sempre vira travessão.
+ * Os cartões de resumo de um pleito, como TEXTO já formatado. Mora aqui porque
+ * há dois consumidores (a tela ContestCards e o sumário do relatório) e a
+ * régua não pode divergir: prefeita e vereadora dão cartões da cidade, cargo
+ * estadual/federal dá leitura estadual. Ausência sempre vira travessão.
  */
 export function buildContestCards(contest: CandidateContest): ContestCard[] {
   const escopo = getMunicipalScope(contest);

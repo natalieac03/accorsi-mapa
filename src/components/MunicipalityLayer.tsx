@@ -127,22 +127,18 @@ const electorateData = buildTerritorialDataset(
   literacyJson as LiteracyDataset,
 );
 const electionData = electionHistoryJson as unknown as ElectionDataset;
-// A trajetória dela e o índice de eleitorado que a camada "candidato" usa como
-// denominador. O índice é null enquanto o snapshot do eleitorado for
-// placeholder — e null aqui desliga a métrica de taxa inteira, em vez de
-// deixar 246 municípios sem valor.
+// Trajetória dela e o índice de eleitorado usado como denominador na camada
+// "candidato". O índice é null enquanto o snapshot for placeholder, e null
+// desliga a métrica de taxa inteira em vez de deixar 246 municípios sem valor.
 const candidateData = candidatoJson as unknown as CandidateDataset;
 const candidateElectorateIndex = buildElectorateIndex(
   electorateJson as unknown as ElectorateSource,
 );
-// Trajetória ainda não gerada: a camada dela não é oferecida — o pedido cai na
-// camada padrão e a aba explica o que rodar, como já acontece com o histórico
-// do TSE. A checagem é a mesma que o painel usa, para as duas telas nunca
-// discordarem sobre o que existe.
+// Trajetória não gerada: a camada dela não é oferecida e o pedido cai na
+// camada padrão. Mesma checagem que o painel usa, para não discordarem.
 const candidatePendente = isCandidatePendente(candidateData);
-// Histórico do TSE ainda não gerado: a camada de eleições fica indisponível —
-// sem legenda, sem pintura no mapa e sem virar camada ativa. O resto do
-// aplicativo (eleitorado, espectro, locais, cadastros) segue funcionando.
+// Histórico do TSE não gerado: a camada de eleições fica indisponível (sem
+// legenda, sem pintura, sem virar ativa). O resto do app segue funcionando.
 const electionPendente = isElectionDatasetPendente(electionData);
 const spectrumRegistry = partySpectrumJson as unknown as PartySpectrumRegistry;
 const spectrumIndex = buildPartySpectrumIndex(spectrumRegistry);
@@ -232,19 +228,13 @@ function clampZoomKeepingFocus(
     const zoom = map.getZoom();
     if (!zoom || zoom <= maxZoom) return;
     map.setZoom(maxZoom);
-    // fitBounds compensates the asymmetric padding with a pixel offset that
-    // is only valid at the fitted zoom; clamping the zoom shrinks that offset
-    // proportionally, so the focused area would drift behind the side panel.
-    // Re-center explicitly: panTo puts the focus point at the screen center,
-    // then panBy moves the MAP CENTER by (dx, dy) pixels at the current zoom.
-    // panBy convention: positive dx moves the center east, so on-screen
-    // content appears to move west (and positive dy moves the center down /
-    // south, content appears to move up). The center of the visible area —
-    // the region not covered by the paddings — sits at
-    // (padding.left - padding.right) / 2 pixels horizontally and
-    // (padding.top - padding.bottom) / 2 vertically from the screen center,
-    // so the map center must move by the OPPOSITE amount to place the focus
-    // there: dx = (right - left) / 2 and dy = (bottom - top) / 2.
+    // O offset com que o fitBounds compensa o padding assimétrico só vale no
+    // zoom ajustado: ao limitar o zoom ele encolhe e a área focada some atrás
+    // do painel. Recentraliza na mão com panTo (foco no centro da tela) e
+    // panBy, que move o CENTRO DO MAPA em pixels no zoom atual. O centro da
+    // área visível fica a (left - right) / 2 e (top - bottom) / 2 do centro da
+    // tela, então o mapa move o oposto: dx = (right - left) / 2 e
+    // dy = (bottom - top) / 2.
     const padding = getMapPadding();
     map.panTo(focus);
     map.panBy(
@@ -351,8 +341,8 @@ function extractPolygonRings(polygon: google.maps.Data.Polygon) {
 
 /**
  * Anéis de coordenadas de uma geometria do `map.data`, para o export em PNG.
- * A malha vem em runtime, então a extração acontece uma única vez, após o
- * carregamento — nunca refazemos o fetch da malha para exportar.
+ * A malha vem em runtime e a extração roda uma única vez, depois do
+ * carregamento: nunca refazemos o fetch da malha para exportar.
  */
 function extractGeometryRings(
   geometry: google.maps.Data.Geometry,
@@ -403,9 +393,8 @@ export function MunicipalityLayer() {
   const registrationAnalysis = useRegistrationAnalysis();
 
   /**
-   * Entrada do agente de dados: exatamente os mesmos conjuntos que alimentam o
-   * mapa. É daqui que vem a garantia de que a resposta do chat e o número na
-   * tela não podem divergir — não há segunda fonte.
+   * Entrada do agente de dados: os mesmos conjuntos que alimentam o mapa, sem
+   * segunda fonte, para o chat e a tela nunca divergirem.
    */
   const agentData = useMemo(
     () => ({
@@ -416,14 +405,11 @@ export function MunicipalityLayer() {
       eleicoes: electionData,
       registroPartidos: spectrumRegistry,
       votosPorPartido: partyVotesJson as unknown as PartyVotesDataset,
-      // A trajetória da candidata — o MESMO arquivo da aba "Accorsi" e do
-      // cartão do município. Sem ela o agente não teria como responder nada
-      // sobre a votação da Dra. Adriana e acabaria explicando a própria
-      // limitação como se o dado não existisse.
+      // Trajetória da candidata: o MESMO arquivo da aba "Accorsi" e do cartão.
       trajetoriaCandidata: candidateData,
-      // O hook devolve os campos soltos; o agente espera o formato de snapshot.
-      // O limiar de privacidade vem daqui, e o motor do agente ainda impõe o
-      // piso de 5 por cima — nunca abaixo, mesmo que a base declare menos.
+      // O hook devolve campos soltos; o agente espera formato de snapshot. O
+      // limiar de privacidade vem daqui e o motor do agente impõe o piso de 5
+      // por cima, nunca abaixo, mesmo que a base declare menos.
       cadastros: {
         metadata: {
           mode: "synthetic-demo" as const,
@@ -445,9 +431,8 @@ export function MunicipalityLayer() {
     [registrations.records, registrations.referenceDate, registrations.privacyThreshold],
   );
   const spectrumAnalysis = useSpectrumAnalysis(spectrumContests);
-  // Pleito e métrica da aba "Accorsi" moram aqui (e não dentro do painel) para
-  // o mapa e o painel lerem o MESMO par de controles — e para a escolha
-  // sobreviver a sair e voltar da aba, que desmonta o painel.
+  // Pleito e métrica da aba "Accorsi" moram aqui, não no painel: mapa e painel
+  // leem o MESMO par, e a escolha sobrevive ao desmonte do painel.
   const candidateLayer = useCandidateLayer(
     candidateData,
     candidateElectorateIndex,
@@ -481,10 +466,8 @@ export function MunicipalityLayer() {
   const [candidateOpenRequest, setCandidateOpenRequest] = useState(0);
   const [hoveredPollingId, setHoveredPollingId] = useState<string | null>(null);
   const [activeLayer, setActiveLayer] = useState<MapLayerId>("analysis");
-  // Camada cujo dado ainda não foi gerado cai para a camada padrão
-  // (eleitorado): melhor mostrar o dado que existe do que pintar o mapa com uma
-  // série que ninguém gerou ainda. Vale para o histórico do TSE e para a
-  // trajetória da candidata.
+  // Camada sem dado gerado cai para a padrão (eleitorado). Vale para o
+  // histórico do TSE e para a trajetória da candidata.
   const changeActiveLayer = useCallback((layer: MapLayerId) => {
     const semDado =
       (layer === "election" && electionPendente) ||
@@ -557,9 +540,8 @@ export function MunicipalityLayer() {
         index: spectrumIndex,
         registry: spectrumRegistry,
         contest: polling.contest,
-        // A MESMA trajetória da aba dela e do cartão do município: é daqui que
-        // sai a medida de votos nominais por local, e ela não passa pelo
-        // carregamento sob demanda porque já vem no bundle.
+        // A MESMA trajetória da aba dela: fonte dos votos nominais por local, e
+        // não passa pelo carregamento sob demanda porque já vem no bundle.
         candidate: candidateData,
         state: polling.state,
       }),
@@ -773,10 +755,9 @@ export function MunicipalityLayer() {
         municipalityName: municipality.name,
       });
       if (activeLayerRef.current === "registration") {
-        // The filter derives from the records themselves (normalized inside
-        // buildRegistrationModel), not from the privacy-truncated cluster
-        // list, so a ViaCEP spelling such as "Cidade Baixa" still matches
-        // records stored as "CIDADE BAIXA".
+        // O filtro sai dos próprios registros (normalizados dentro de
+        // buildRegistrationModel), não da lista de clusters truncada por
+        // privacidade: "Cidade Baixa" do ViaCEP casa com "CIDADE BAIXA".
         const cepPrefix = (target.cep ?? "").replace(/\D/g, "").slice(0, 5);
         const neighborhood = target.neighborhood?.trim() ?? "";
         registrationAnalysis.setGeography(
@@ -963,9 +944,8 @@ export function MunicipalityLayer() {
 
   /**
    * Parte do estilo que NÃO depende do ponteiro: cor da faixa, destaque do
-   * recorte e marcação da seleção territorial. Fica em um callback para ser
-   * usada tanto pelo `setStyle` (todas as features) quanto pelo destaque de
-   * hover/seleção (uma feature só).
+   * recorte e seleção territorial. Em callback para servir ao `setStyle`
+   * (todas as features) e ao destaque de hover/seleção (uma só).
    */
   const getMunicipalityStyleInputs = useCallback(
     (featureId: string): MunicipalityStyleInputs => {
@@ -973,12 +953,11 @@ export function MunicipalityLayer() {
       const electionItem = electionItemById.get(featureId);
       const registrationItem = registrationItemById.get(featureId);
       const spectrumItem = spectrumItemById.get(featureId);
-      // Na camada submunicipal o polígono do município recebe o índice
-      // AGREGADO dos seus locais de votação (soma dos votos antes do índice);
-      // o detalhe abaixo do município vive nas bolhas desenhadas por cima.
+      // Na camada submunicipal o polígono recebe o índice AGREGADO dos seus
+      // locais (soma dos votos antes do índice); o detalhe vive nas bolhas.
       const pollingItem = pollingItemById.get(featureId);
-      // Na camada dela o município já chega classificado pelo motor: valor,
-      // faixa e o MOTIVO da ausência (fora da disputa × sem denominador).
+      // Na camada dela o município chega classificado pelo motor: valor, faixa
+      // e o MOTIVO da ausência (fora da disputa × sem denominador).
       const candidateItem = candidateItemById.get(featureId);
       const value =
         activeLayer === "candidato"
@@ -1063,8 +1042,8 @@ export function MunicipalityLayer() {
     ],
   );
 
-  // `setStyle` reavalia os 246 polígonos a cada chamada: ele só pode reagir a
-  // mudanças reais de camada, métrica ou faixa — nunca ao ponteiro do mouse.
+  // `setStyle` reavalia os 246 polígonos a cada chamada: só pode reagir a
+  // mudança real de camada, métrica ou faixa, nunca ao ponteiro do mouse.
   useEffect(() => {
     if (!map) return;
 
@@ -1079,11 +1058,10 @@ export function MunicipalityLayer() {
   const hoveredId = hovered?.id ?? null;
   const selectedId = selected?.id ?? null;
 
-  // Hover e seleção pintam só a feature afetada (overrideStyle) e desfazem a
-  // pintura no cleanup (revertStyle). Percorrer o mapa com o mouse passa a
-  // custar duas features por transição em vez de 246 reavaliações de estilo.
-  // `mapShapes` entra nas dependências como sinal de "malha carregada": sem
-  // ele, uma seleção restaurada por link não encontraria a feature ainda.
+  // Hover e seleção pintam só a feature afetada (overrideStyle) e desfazem no
+  // cleanup (revertStyle): duas features por transição, não 246 reavaliações.
+  // `mapShapes` está nas dependências como sinal de "malha carregada"; sem ele
+  // uma seleção restaurada por link não acharia a feature.
   useEffect(() => {
     if (!map) return;
 
@@ -1114,11 +1092,9 @@ export function MunicipalityLayer() {
     };
   }, [getMunicipalityStyleInputs, hoveredId, map, mapShapes, selectedId]);
 
-  // Pleito municipal na camada dela: a disputa aconteceu em UMA cidade e o
-  // resto do estado fica cinza por definição. Enquadrar a cidade evita abrir a
-  // camada num mapa inteiro apagado, em que a única informação visível é um
-  // polígono pequeno perdido no meio. Só reenquadra quando a cidade muda —
-  // nunca a cada render, para não brigar com quem já moveu o mapa.
+  // Pleito municipal na camada dela: a disputa foi em UMA cidade e o resto do
+  // estado fica cinza, então o mapa enquadra a cidade. Só reenquadra quando a
+  // cidade muda, nunca a cada render, para não brigar com quem moveu o mapa.
   const candidateFocusRef = useRef<string | null>(null);
   useEffect(() => {
     if (!map) return;
@@ -1127,9 +1103,8 @@ export function MunicipalityLayer() {
         ? candidateModel?.escopoMunicipal ?? null
         : null;
     if (!cidade) {
-      // Saindo de um pleito municipal que NÓS enquadramos para outro pleito da
-      // mesma camada, o mapa volta ao estado inteiro: a leitura estadual não
-      // pode abrir com o zoom de uma cidade só.
+      // Saindo de um pleito municipal que NÓS enquadramos, o mapa volta ao
+      // estado inteiro: leitura estadual não abre no zoom de uma cidade.
       if (candidateFocusRef.current !== null && activeLayer === "candidato") {
         map.panTo(CENTRO_DO_ESTADO);
         map.setZoom(6);
@@ -1138,8 +1113,8 @@ export function MunicipalityLayer() {
       return;
     }
     if (candidateFocusRef.current === cidade.ibgeCode) return;
-    // Sem a malha carregada não há o que enquadrar; `mapShapes` reexecuta o
-    // efeito assim que os polígonos chegam.
+    // Sem malha não há o que enquadrar; `mapShapes` reexecuta o efeito quando
+    // os polígonos chegam.
     const feature = featureByCodeRef.current.get(cidade.ibgeCode);
     if (!feature) return;
     const bounds = getFeatureBounds(feature);
@@ -1180,8 +1155,7 @@ export function MunicipalityLayer() {
   };
 
   // Rótulo curto da métrica ativa, usado no title, no aria-label e no tooltip
-  // das bolhas: numa tela de percentual não sobra a palavra "índice", e numa
-  // tela de voto dela não sobra nem "índice" nem "% da sigla".
+  // das bolhas.
   const pollingMetricLabel = getPollingMetricShortLabel(
     pollingModel.metric,
     pollingModel.partyCode,
@@ -1391,8 +1365,8 @@ export function MunicipalityLayer() {
           </strong>
           {activeLayer === "candidato" && candidateModel ? (
             <small>
-              {/* O denominador vai escrito aqui de propósito: "por 1.000" sem
-                  dizer de quê convida a supor "por 1.000 habitantes". */}
+              {/* O denominador vai escrito: "por 1.000" sozinho leva a supor
+                  "por 1.000 habitantes". */}
               {describeCandidateLayer(candidateModel)}
             </small>
           ) : activeLayer === "election" && electionModel ? (
@@ -1412,8 +1386,8 @@ export function MunicipalityLayer() {
             </small>
           ) : activeLayer === "polling" ? (
             <small>
-              {/* A medida da candidata só precisa dos locais: o arquivo de
-                  votos por sigla é de outra medida e não a bloqueia. */}
+              {/* A medida da candidata só precisa dos locais; o arquivo de votos
+                  por sigla é de outra medida e não a bloqueia. */}
               {polling.placesStatus === "ready" &&
               (polling.votesStatus === "ready" ||
                 pollingModel.metric === "votosCandidata")
@@ -1488,8 +1462,8 @@ export function MunicipalityLayer() {
         </div>
       )}
 
-      {/* Sem modelo (histórico pendente) a legenda não aparece: faixa nenhuma
-          é melhor do que faixas calculadas sobre dado inexistente. */}
+      {/* Sem modelo (histórico pendente) a legenda não aparece: nada de faixas
+          calculadas sobre dado inexistente. */}
       {activeLayer === "candidato" && candidateModel ? (
         <CandidateLegend
           model={candidateModel}

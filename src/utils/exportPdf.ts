@@ -27,36 +27,24 @@ import {
 } from "./reportModel.ts";
 
 /**
- * RELATÓRIO EM PDF — a tradução do modelo em um documento de leitura.
+ * Relatório em PDF: traduz o modelo num documento de leitura.
  *
- * O documento é montado em SEÇÕES (`report.sections`), na ordem em que se lê:
- * capa com identificação e resumo executivo, distribuição territorial,
- * concentração e rankings, um capítulo por indicador, resumo comparativo,
- * metodologia e — só quando pedido — o anexo municipal. Um documento que ainda
- * não tem seções (a trajetória, o crescimento, os painéis do mapa) recebe as
- * seções padrão montadas a partir dos próprios cartões, fontes e tabelas: o
- * renderizador tem UM caminho só.
+ * O documento é montado em SEÇÕES (`report.sections`), na ordem em que se lê.
+ * Documento ainda sem seções próprias recebe as seções padrão montadas dos
+ * cartões, fontes e tabelas: o renderizador tem UM caminho só.
  *
- * ESCOLHA DA BIBLIOTECA: jsPDF + jspdf-autotable, e não pdfmake.
+ * jsPDF + jspdf-autotable, e não pdfmake:
  *
- * - o autotable resolve de graça as três coisas que fazem uma tabela longa
- *   parecer relatório e não despejo: cabeçalho repetido em toda página
- *   (`showHead: "everyPage"`), quebra de página por linha e zebra;
- * - o jsPDF desenha em COORDENADAS, que é o que a capa, a grade de cartões e —
- *   principalmente — os gráficos em vetor precisam. Nenhum gráfico deste
- *   relatório é imagem: o texto continua pesquisável, o arquivo fica em
- *   dezenas de kB e a ampliação não pixeliza nome de município (`pdfDraw.ts`);
- * - tamanho: jsPDF + autotable somam ~380 kB minificados contra ~1,2 MB do
- *   pdfmake com o vfs de fontes embutido. Como as duas bibliotecas entram por
- *   import dinâmico, isso só pesa para quem exporta — mas o de menor peso
- *   ganha o desempate.
+ * - o autotable dá cabeçalho repetido em toda página (`showHead: "everyPage"`),
+ *   quebra de página por linha e zebra;
+ * - o jsPDF desenha em COORDENADAS, que é o que a capa, a grade de cartões e os
+ *   gráficos em vetor precisam (`pdfDraw.ts`);
+ * - somam ~380 kB minificados contra ~1,2 MB do pdfmake com o vfs de fontes
+ *   embutido, e as duas entram por import dinâmico.
  *
  * ACENTUAÇÃO: as fontes padrão do PDF usam WinAnsi (cp1252), que cobre todo o
- * português — "Goiânia", "Anápolis", "Luziânia", "eleição", "índice" saem
- * corretos e são extraíveis como texto. O que cp1252 NÃO cobre são símbolos
- * como a seta "→": `toPdfText` os transcreve antes de escrever. Embutir uma
- * fonte UTF-8 custaria ~400 kB por arquivo gerado para resolver meia dúzia de
- * setas — não compensa.
+ * português e sai extraível como texto. Símbolo fora dela, como a seta "→",
+ * passa por `toPdfText`; embutir uma fonte UTF-8 custaria ~400 kB por arquivo.
  */
 
 const PDF_MIME = "application/pdf";
@@ -70,14 +58,13 @@ const RODAPE = 20;
 const UTIL = LARGURA - 2 * MARGEM;
 
 /**
- * Teto de linhas por tabela no PDF. Um recorte de locais de votação pode ter
- * milhares de unidades: imprimir tudo geraria um documento de centenas de
- * páginas que ninguém abre. O PDF é o documento de leitura; a planilha é a
- * base completa — e o corte é declarado na própria tabela, nunca silencioso.
+ * Teto de linhas por tabela no PDF: um recorte de locais de votação pode ter
+ * milhares de unidades. O PDF é o documento de leitura, a planilha é a base
+ * completa, e o corte é declarado na própria tabela, nunca silencioso.
  */
 export const PDF_MAX_ROWS = 250;
 
-/** Reexportado de `pdfDraw`: é o utilitário que os testes de texto usam. */
+/** Reexportado de `pdfDraw` para os testes de texto. */
 export { toPdfText } from "./pdfDraw.ts";
 
 /* -------------------------------------------------------------------------
@@ -117,11 +104,9 @@ function noTopo(ctx: Contexto) {
 const FAIXA_MINIMA = 72;
 
 /**
- * A capa. A faixa vermelha tem altura VARIÁVEL: com um título de duas linhas
- * (o caso comum — "Desempenho eleitoral — 2022 · Deputada Federal"), uma faixa
- * fixa empurrava o subtítulo para cima do recorte, e as duas linhas saíam
- * sobrepostas. Aqui cada linha é escrita a partir do fim da anterior, e a
- * faixa é fechada onde o texto terminou.
+ * A capa. A faixa tem altura VARIÁVEL: cada linha é escrita a partir do fim da
+ * anterior e a faixa fecha onde o texto terminou, porque com altura fixa um
+ * título de duas linhas empurrava o subtítulo para cima do recorte.
  */
 function desenharCapa(ctx: Contexto, report: ReportDocument) {
   const { doc, tema } = ctx;
@@ -131,8 +116,8 @@ function desenharCapa(ctx: Contexto, report: ReportDocument) {
   const linhas: Array<{ texto: string; size: number; y: number }> = [];
   linhas.push({ texto: report.subtitle, size: 12, y: base });
   base += 7;
-  // O estado só entra quando o recorte ainda não o nomeia — "Goiás · Goiás"
-  // na capa é o tipo de repetição que denuncia arquivo montado por script.
+  // O estado só entra quando o recorte ainda não o nomeia, para a capa não
+  // sair com "Goiás · Goiás".
   const escopo = report.scope.includes(report.estado)
     ? report.scope
     : `${report.scope} · ${report.estado}`;
@@ -148,9 +133,8 @@ function desenharCapa(ctx: Contexto, report: ReportDocument) {
   doc.setFillColor(tema.marca[0], tema.marca[1], tema.marca[2]);
   doc.rect(0, 0, LARGURA, altura, "F");
   definirTexto(doc, 9, tema.branco, "bold");
-  // A linha de topo é dividida: a candidatura à esquerda e a marca da versão à
-  // direita. Com o nome ocupando a largura inteira, um badge alinhado à
-  // direita cairia por cima dele — por isso cada lado tem a sua metade.
+  // Topo dividido: candidatura à esquerda, marca da versão à direita. Com o
+  // nome ocupando a largura inteira, o badge cairia por cima dele.
   const badge = report.versionBadge ?? "";
   const larguraNome = badge === "" ? UTIL : UTIL * 0.52;
   doc.text(encurtar(doc, report.candidatura, larguraNome), MARGEM, 20);
@@ -174,13 +158,9 @@ function desenharCapa(ctx: Contexto, report: ReportDocument) {
  * ------------------------------------------------------------------------- */
 
 /**
- * Corpo mínimo que precisa caber DEPOIS do título de uma seção.
- *
- * Sem essa reserva, uma seção que começa no meio da página (é o caso da
- * versão resumida, que não quebra folha a cada seção) podia imprimir o título
- * a três milímetros do rodapé e abrir o conteúdo na página seguinte — um
- * título órfão, que lê como se a seção estivesse vazia. Nas seções que já
- * começam em página nova isto nunca dispara: no topo da folha sobram 259 mm.
+ * Corpo mínimo que precisa caber DEPOIS do título de uma seção, para não sair
+ * título órfão no pé da página na versão resumida, que não quebra folha a cada
+ * seção. Em seção que começa em página nova nunca dispara: sobram 259 mm.
  */
 const CORPO_MINIMO_APOS_TITULO = 24;
 
@@ -377,8 +357,7 @@ function blocoLinks(
     doc.text(encurtar(doc, item.label, UTIL), MARGEM, ctx.y + 3);
     ctx.y += 4;
     definirTexto(doc, 7.2, tema.marca);
-    // Link clicável de verdade: o endereço é o texto, e o retângulo do link
-    // acompanha a linha escrita.
+    // Link clicável: o endereço é o texto e o retângulo acompanha a linha.
     doc.textWithLink(encurtar(doc, item.url, UTIL), MARGEM, ctx.y + 2.6, {
       url: item.url,
     });
@@ -412,9 +391,8 @@ function blocoImagem(
 
 function blocoGrafico(ctx: Contexto, chart: Parameters<typeof desenharGrafico>[1]) {
   const altura = medirGrafico(ctx.doc, chart, UTIL);
-  // O gráfico é indivisível: título, desenho, descrição e fonte moram na
-  // mesma página. Se não couber, a página vira ANTES de desenhar qualquer
-  // traço — nunca no meio de um eixo.
+  // O gráfico é indivisível: título, desenho, descrição e fonte na mesma
+  // página. Se não couber, a página vira ANTES de desenhar qualquer traço.
   garantirEspaco(ctx, altura);
   ctx.y += desenharGrafico(ctx.doc, chart, MARGEM, ctx.y, UTIL, ctx.tema);
 }
@@ -475,19 +453,13 @@ function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
   // Cabeçalho da tabela mais três linhas: menos que isso na página é órfão.
   garantirEspaco(ctx, 22 + alturaSub);
 
-  /* LARGURA DE COLUNA MEDIDA, não estimada por contagem de caracteres.
-     A conta antiga contava letras: numa tabela com uma coluna de texto longo,
-     "Ano" recebia 9 mm e o autotable quebrava "2026" em "20 / 26" — um ano
-     partido no meio lê como dois números. Aqui cada coluna declara duas
-     larguras, as duas medidas em milímetros com a fonte da tabela:
-
-       mínimo   — a maior PALAVRA do cabeçalho e, nas colunas numéricas, o
-                  número inteiro. Nada disso pode quebrar;
-       desejado — o cabeçalho inteiro e a maior célula em uma linha só.
-
-     O que sobra depois dos mínimos é distribuído na proporção do que cada
-     coluna ainda queria; só as colunas de texto encolhem, e elas quebram em
-     mais linhas sem perder legibilidade. */
+  /* LARGURA DE COLUNA MEDIDA, não estimada por contagem de caracteres: contar
+     letras dava 9 mm a "Ano" e o autotable quebrava "2026" em "20 / 26". Cada
+     coluna declara duas larguras, medidas em mm com a fonte da tabela:
+     mínimo (a maior PALAVRA do cabeçalho e, nas colunas numéricas, o número
+     inteiro) e desejado (cabeçalho inteiro e maior célula em uma linha só). O
+     que sobra dos mínimos é distribuído na proporção do que cada coluna ainda
+     queria, e só as colunas de texto encolhem. */
   const PADDING = 4.4;
   const maiorPalavra = (texto: string) =>
     Math.max(
@@ -554,11 +526,9 @@ function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
     };
   });
 
-  /* Tabela CURTA não se parte. Uma tabela de doze linhas quebrada em nove e
-     três, com o cabeçalho repetido para três linhas, lê como defeito. Se ela
-     cabe inteira numa página e não cabe no que sobrou desta, a página vira
-     antes. Tabela longa (o anexo municipal) continua paginando normalmente:
-     ali a quebra é inevitável e o cabeçalho repetido é o que a resolve. */
+  /* Tabela CURTA não se parte: se cabe inteira numa página e não cabe no que
+     sobrou desta, a página vira antes. Tabela longa (o anexo municipal)
+     continua paginando, com o cabeçalho repetido em cada folha. */
   const notas = montarNotas(table, maxRows);
   definirTexto(doc, 7.5, tema.tintaFraca);
   const blocosNotas = notas.map((nota) => ({
@@ -568,12 +538,9 @@ function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
     (soma, bloco) => soma + bloco.linhas.length * 3.4 + 1,
     0,
   );
-  /* Altura estimada da tabela. Duas coisas que a conta ingênua errava:
-     a célula que QUEBRA em duas linhas (uma classificação com o coeficiente
-     entre parênteses passa de uma linha em coluna estreita) e a reserva das
-     notas, que é a mesma margem inferior que o autotable vai aplicar. Sem as
-     duas, a conta dizia que a tabela cabia e a última linha caía sozinha na
-     página seguinte. */
+  /* Altura estimada da tabela, contando a célula que QUEBRA em duas linhas e
+     a reserva das notas (a mesma margem inferior que o autotable aplica). Sem
+     as duas, a última linha caía sozinha na página seguinte. */
   definirTexto(doc, 8, tema.tinta);
   const linhasDaLinha = (linha: string[]) =>
     Math.max(
@@ -620,18 +587,9 @@ function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
   doc.line(MARGEM, ctx.y, MARGEM + UTIL, ctx.y);
   ctx.y += 2.6;
 
-  /* As notas são montadas e MEDIDAS antes da tabela, e a altura delas entra na
-     margem inferior do autotable. Sem isso a tabela ocupava até o pé da página
-     e o bloco de notas — que não pode ser partido — migrava inteiro para uma
-     folha nova, deixando o relatório terminar numa página quase vazia com
-     meia dúzia de linhas de legenda. Reservando o espaço, a tabela quebra um
-     pouco antes e as notas ficam sempre logo abaixo dela. */
   /* As notas foram montadas e MEDIDAS acima, e a altura delas entra na margem
-     inferior do autotable. Sem isso a tabela ocupava até o pé da página e o
-     bloco de notas — que não pode ser partido — migrava inteiro para uma folha
-     nova, deixando o relatório terminar numa página quase vazia com meia dúzia
-     de linhas de legenda. Reservando o espaço, a tabela quebra um pouco antes
-     e as notas ficam sempre logo abaixo dela. */
+     inferior do autotable: sem essa reserva o bloco de notas, que não pode ser
+     partido, migrava inteiro para uma folha nova. */
   ctx.autoTable(doc, {
     head: [columns.map((column) => toPdfText(column.header))],
     body: linhas,
@@ -640,10 +598,9 @@ function desenharTabela(ctx: Contexto, table: ReportTable, maxRows: number) {
       left: MARGEM,
       right: MARGEM,
       top: TOPO,
-      // +9 não é folga arbitrária: são os 5 mm de respiro entre a tabela e as
-      // notas mais os 2 mm que o garantirEspaco exige, e ainda 2 mm de sobra.
-      // Com +4 a conta fechava 1,9 mm curta e o bloco de notas caía sozinho
-      // numa página nova — o relatório terminava numa folha quase branca.
+      // +9 = 5 mm de respiro entre tabela e notas, 2 mm exigidos pelo
+      // garantirEspaco e 2 mm de sobra. Com +4 a conta fechava 1,9 mm curta e
+      // o bloco de notas caía sozinho numa página nova.
       bottom: RODAPE + alturaNotas + 9,
     },
     // "striped" é o único tema do autotable que aplica a zebra; as cores são
@@ -734,11 +691,8 @@ function desenharSecao(ctx: Contexto, section: ReportSection) {
   const inicio = ctx.doc.getNumberOfPages();
   tituloSecao(ctx, section.title, section.subtitle);
   section.blocks.forEach((block, indice) => {
-    /* Um subtítulo NUNCA fica sozinho no pé da página. Quando o bloco seguinte
-       é um gráfico — que é indivisível e costuma ser alto —, os dois são
-       reservados JUNTOS: sem isso, o nome do indicador ficava numa página e a
-       nuvem de pontos dele na seguinte, e a página anterior terminava com um
-       título solto que lê como seção vazia. */
+    /* Um subtítulo NUNCA fica sozinho no pé da página: quando o bloco seguinte
+       é um gráfico (indivisível e alto), os dois são reservados JUNTOS. */
     const proximo = section.blocks[indice + 1];
     if (block.kind === "subtitulo" && proximo?.kind === "grafico") {
       garantirEspaco(ctx, 9 + medirGrafico(ctx.doc, proximo.chart, UTIL));
@@ -753,9 +707,8 @@ function desenharSecao(ctx: Contexto, section: ReportSection) {
 }
 
 /**
- * As seções de um documento que ainda não tem narrativa própria (trajetória,
- * crescimento, painéis do mapa). O renderizador continua tendo um caminho só:
- * cartões, imagens, fontes, omissões e uma seção por tabela.
+ * Seções de um documento sem narrativa própria (trajetória, crescimento,
+ * painéis do mapa): cartões, imagens, fontes, omissões e uma seção por tabela.
  */
 function secoesPadrao(report: ReportDocument): ReportSection[] {
   const secoes: ReportSection[] = [];
@@ -796,13 +749,9 @@ function secoesPadrao(report: ReportDocument): ReportSection[] {
 }
 
 /**
- * O anexo municipal — a base inteira, página a página, DESLIGADO por padrão.
- *
- * Ligado, ele entra depois do relatório analítico, com marcador próprio no
- * topo de cada página, cabeçalho repetido e a nota de que a mesma base está no
- * Excel e no CSV. Desligado (o padrão), o relatório termina na metodologia:
- * um anexo de centenas de linhas some com o documento que a pessoa abriu para
- * ler, e a base completa já tem dois formatos melhores para ela.
+ * Anexo municipal: a base inteira, página a página, DESLIGADO por padrão.
+ * Ligado, entra depois do relatório analítico, com marcador próprio no topo de
+ * cada página. Desligado, o relatório termina na metodologia.
  */
 function secaoAnexo(table: ReportTable): ReportSection {
   return {
@@ -832,9 +781,9 @@ function secaoAnexo(table: ReportTable): ReportSection {
  * ------------------------------------------------------------------------- */
 
 /**
- * Rodapé desenhado no fim, quando o total de páginas já é conhecido — assim
- * "página X de Y" é o número real, sem placeholder trocado depois. O marcador
- * de anexo entra no mesmo passo, pelo mesmo motivo.
+ * Rodapé desenhado no fim, com o total de páginas já conhecido: "página X de
+ * Y" sai com o número real, sem placeholder trocado depois. O marcador de
+ * anexo entra no mesmo passo, pelo mesmo motivo.
  */
 function desenharRodapes(ctx: Contexto, report: ReportDocument) {
   const { doc, tema } = ctx;
@@ -868,8 +817,7 @@ function desenharRodapes(ctx: Contexto, report: ReportDocument) {
       { align: "right" },
     );
   }
-  // A capa leva o rodapé em branco, sobre a faixa: escrever cinza sobre
-  // vermelho seria ilegível, e uma capa sem paginação parece página perdida.
+  // A capa também leva rodapé: capa sem paginação parece página perdida.
   doc.setPage(1);
   definirTexto(doc, 7, tema.tintaFraca);
   doc.text(toPdfText(report.attribution), MARGEM, ALTURA - 10);
@@ -935,7 +883,7 @@ export async function renderReportPdf(
   return doc;
 }
 
-/** Bytes do PDF — usado pelos testes e pelo gerador de exemplos. */
+/** Bytes do PDF, usados pelos testes e pelo gerador de exemplos. */
 export async function buildPdfBuffer(
   report: ReportDocument,
   options: ReportPdfOptions = {},
@@ -945,9 +893,8 @@ export async function buildPdfBuffer(
 }
 
 /**
- * Gera e baixa o PDF. Resolve `false` quando não há nada para imprimir — um
- * relatório só com capa passaria a impressão de que os dados estão ali para
- * quem não rolar até o fim.
+ * Gera e baixa o PDF. Resolve `false` quando não há nada para imprimir: um
+ * relatório só com capa passaria a impressão de que os dados estão ali.
  */
 export async function exportReportAsPdf(
   report: ReportDocument,

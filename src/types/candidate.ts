@@ -1,11 +1,7 @@
 /**
- * Trajetória de uma candidatura em foco (aba "Accorsi").
- *
- * O shape espelha o que `scripts/process_candidato_foco.py` grava em
- * `src/data/candidato/<slug>.json` (função `consolidar`). Os campos que lá
- * saem como `None` chegam aqui como `null` — e null significa "o dado não
- * existe", nunca zero: município sem denominador fica sem taxa e fora de
- * qualquer ranking, em vez de aparecer com 0% falso.
+ * Trajetória de uma candidatura em foco (aba "Accorsi"), espelhando
+ * `src/data/candidato/<slug>.json` (`scripts/process_candidato_foco.py`).
+ * `null` = dado inexistente, nunca zero: sem denominador não há taxa nem rank.
  */
 
 import type { AnalysisBand, AnalysisMetricId } from "./analysis";
@@ -91,11 +87,7 @@ export type CandidateDataset = {
   contests: CandidateContest[];
 };
 
-/**
- * Recorte mínimo do electorate-go.json que o motor precisa. Estrutural de
- * propósito: o motor não conhece o resto do perfil do eleitorado e os testes
- * conseguem montar o insumo inline.
- */
+/** Recorte mínimo do electorate-go.json que o motor precisa (estrutural, para testes). */
 export type ElectorateSource = {
   metadata: { status?: string };
   municipalities: Record<string, { electorate: number }>;
@@ -125,7 +117,7 @@ export type CandidateRankingRow = {
   ibgeCode: string;
   nome: string;
   votos: number;
-  /** Valor da métrica escolhida — linhas sem valor (null) nem entram no ranking. */
+  /** Valor da métrica escolhida; linhas sem valor (null) nem entram no ranking. */
   value: number;
   posicaoNoMunicipio: number | null;
   /** Eleitorado usado no denominador; null quando não há dado. */
@@ -143,10 +135,7 @@ export type TrajectoryPoint = {
   resultado: string;
   /** Resultado legível ("Eleita", "Foi ao 2º turno"…), para dropdown/tooltip. */
   resultadoLabel: string;
-  /**
-   * Versão curta do resultado para caber sob a barra sem colidir com as
-   * vizinhas ("2º turno", "Eleita QP"); o rótulo completo fica no tooltip.
-   */
+  /** Versão curta do resultado para caber sob a barra ("2º turno", "Eleita QP"). */
   resultadoShort: string;
   partido: string;
   votos: number;
@@ -174,18 +163,14 @@ export type BairroComparison = {
 };
 
 /**
- * O que a seção "Bairros de Goiânia" pode mostrar para o pleito selecionado.
- *
- * A régua é o CARGO (e o turno) do pleito escolhido no seletor: só se comparam
- * eleições da mesma disputa. Quando aquele cargo tem um pleito só com recorte
- * de bairro — o caso de uma candidatura a deputada federal com cadastro de
- * locais publicado em um único ano — não existe comparação, e a interface diz
- * isso em vez de silenciosamente comparar com outro cargo.
+ * O que a seção "Bairros de Goiânia" mostra para o pleito selecionado. A régua
+ * é o CARGO e o turno: com um único pleito daquele cargo com recorte de
+ * bairro não há comparação, e a interface diz isso.
  */
 export type BairroComparisonScope = {
   officeCode: number;
   round: number;
-  /** "Prefeita", "Deputada Federal · 2º turno"… — nomeia o que se compara. */
+  /** "Prefeita", "Deputada Federal · 2º turno": nomeia o que se compara. */
   officeLabel: string;
   /** Pleitos do mesmo cargo/turno com recorte de bairro, do mais antigo ao mais recente. */
   pleitos: CandidateContest[];
@@ -194,18 +179,14 @@ export type BairroComparisonScope = {
 };
 
 /* -------------------------------------------------------------------------
- * Janela "Estatísticas" — tipos do motor de src/utils/candidateStats.ts.
- *
- * Moram aqui (e não num arquivo novo) porque descrevem a MESMA candidatura
- * em foco: agrupamentos da trajetória, crescimento entre pleitos comparáveis
- * e o cruzamento voto × indicador municipal.
+ * Janela "Estatísticas": tipos do motor de src/utils/candidateStats.ts.
  * ------------------------------------------------------------------------- */
 
 /** Trajetória dividida em dois universos que NUNCA se somam entre si. */
 export type ContestGroups = {
-  /** Prefeita/Vereadora (códigos TSE 11 e 13) — universo municipal. */
+  /** Prefeita/Vereadora (códigos TSE 11 e 13): universo municipal. */
   municipais: CandidateContest[];
-  /** Os demais cargos — universo federal/estadual. */
+  /** Os demais cargos: universo federal/estadual. */
   federaisEstaduais: CandidateContest[];
 };
 
@@ -218,11 +199,7 @@ export type CareerBest = {
   votos: number;
 };
 
-/**
- * Crescimento entre dois pleitos COMPARÁVEIS: mesmo cargo e mesmo turno.
- * Comparar prefeita com vereadora (ou 1º com 2º turno) não mede crescimento
- * de nada — são disputas de natureza diferente.
- */
+/** Crescimento entre dois pleitos COMPARÁVEIS: mesmo cargo e mesmo turno. */
 export type GrowthComparison = {
   anteriorId: string;
   recenteId: string;
@@ -241,20 +218,15 @@ export type CareerOverview = {
   best: CareerBest | null;
   /** null quando não há dois pleitos municipais do mesmo cargo/turno. */
   growth: GrowthComparison | null;
-  /** União de municípios com voto em QUALQUER pleito — contagem, nunca soma de votos. */
+  /** União de municípios com voto em QUALQUER pleito: contagem, nunca soma de votos. */
   municipiosAlcancados: number;
   /** Campanhas distintas (ano+cargo); um 2º turno é a mesma campanha. */
   campanhas: number;
 };
 
 /**
- * Recorte de um pleito MUNICIPAL: a única cidade onde a disputa aconteceu.
- *
- * Prefeita e vereadora se disputam dentro de um município só. Ler esse pleito
- * com a régua estadual produz cartão degenerado — "1 município com voto",
- * "concentração top 5: 100%" — e uma posição ("3ª de 627 candidaturas") que
- * compara a candidata com gente que disputava OUTRA cidade. Aqui o pleito é
- * lido na régua certa: a disputa daquela cidade.
+ * Recorte de um pleito MUNICIPAL: a única cidade onde a disputa aconteceu,
+ * lida na régua daquela cidade e não na estadual.
  */
 export type MunicipalScope = {
   ibgeCode: string;
@@ -266,17 +238,13 @@ export type MunicipalScope = {
   percentualValidos: number | null;
   /** Colocação dela na disputa DAQUELA cidade; null quando não apurada. */
   posicaoNoMunicipio: number | null;
-  /** Candidaturas com voto apurado na cidade — o "de N" da colocação. */
+  /** Candidaturas com voto apurado na cidade: o "de N" da colocação. */
   candidaturasComVoto: number;
 };
 
 /**
- * O desempenho dela num município, na eleição mais recente de cada universo.
- *
- * É o que aparece no cartão do município clicado no mapa. Um município comum
- * traz um só: a última disputa estadual/federal em que ele apurou voto dela.
- * Goiânia traz dois, porque lá ela disputou os dois universos — a prefeitura e
- * uma cadeira — e esses números não se somam nem se comparam entre si.
+ * Desempenho dela num município, na eleição mais recente de cada universo:
+ * Goiânia traz dois (prefeitura e cadeira), que não se somam nem se comparam.
  */
 export type CandidateMunicipioDestaque = {
   contestId: string;
@@ -285,7 +253,7 @@ export type CandidateMunicipioDestaque = {
   officeName: string;
   officeShort: string;
   round: number;
-  /** true para Prefeito/Vereador — muda a régua de leitura do cartão. */
+  /** true para Prefeito/Vereador: muda a régua de leitura do cartão. */
   municipal: boolean;
   votos: number;
   /** % dos válidos apurados no município; null sem denominador. */
@@ -296,12 +264,8 @@ export type CandidateMunicipioDestaque = {
 };
 
 /* -------------------------------------------------------------------------
- * Visão "Geral": crescimento ao longo das eleições
- *
- * Uma série é uma linha do tempo de UM recorte (o total da candidatura, um
- * bairro, um município) medida em vários pleitos. A regra que atravessa todos
- * estes tipos: voto de eleição diferente nunca vira soma — o que se lê entre
- * pleitos é variação, e só quando existe base para calculá-la.
+ * Visão "Geral": série é a linha do tempo de UM recorte (total, bairro ou
+ * município). Voto de eleição diferente nunca vira soma: lê-se variação.
  * ------------------------------------------------------------------------- */
 
 export type GrowthPoint = {
@@ -325,12 +289,7 @@ export type GrowthArrow = {
   votosPara: number | null;
   /** Variação % (1 casa); null sem base positiva dos dois lados. */
   variacaoPct: number | null;
-  /**
-   * false quando os dois pleitos são de cargos ou turnos diferentes. A
-   * variação continua visível — é o que a usuária pediu para enxergar — mas
-   * marcada, porque disputar a prefeitura e disputar uma cadeira na Assembleia
-   * não são a mesma corrida e a taxa entre elas não mede a mesma coisa.
-   */
+  /** false quando os pleitos têm cargos ou turnos diferentes: variação visível, mas marcada. */
   comparavel: boolean;
 };
 
@@ -347,11 +306,7 @@ export type GrowthSeries = {
   variacaoTotalComparavel: boolean;
 };
 
-/**
- * Recorte oferecido no seletor. `votosRecentes` é o voto no pleito MAIS
- * RECENTE em que o recorte aparece — nunca a soma entre eleições, que
- * misturaria universos de eleitores diferentes só para ordenar uma lista.
- */
+/** Recorte do seletor; `votosRecentes` = voto no pleito MAIS RECENTE, nunca a soma. */
 export type GrowthOption = {
   id: string;
   label: string;
@@ -366,7 +321,7 @@ export type GrowthModel = {
   pleitos: GrowthPoint[];
   /** A série "total" sempre vem primeiro; depois os recortes escolhidos. */
   series: GrowthSeries[];
-  /** "Bairros de Goiânia" ou "Municípios" — o que o seletor oferece. */
+  /** "Bairros de Goiânia" ou "Municípios": o que o seletor oferece. */
   breakdownLabel: string;
   options: GrowthOption[];
   /** true quando o grupo mistura cargos: a interface explica as setas marcadas. */
@@ -389,24 +344,14 @@ export type StatsIndicator = {
   shortLabel: string;
   description: string;
   unit: string;
-  /**
-   * true para o eleitorado total: a distribuição é tão assimétrica (Goiânia
-   * tem ~1000× o menor município) que o eixo linear esmagaria todo mundo no
-   * canto; o scatter e o Pearson usam log10, e a interface declara isso.
-   */
+  /** true para o eleitorado total: scatter e Pearson usam log10, e a interface declara. */
   logScale: boolean;
 };
 
 /**
- * Um município no snapshot do eleitorado, como o motor de indicadores o lê.
- *
- * `name`, `electorate` e `gender` são obrigatórios porque sem eles não existe
- * indicador nenhum. Os demais são OPCIONAIS de propósito: o insumo é
- * estrutural (os testes montam payload inline) e nem todo consumidor tem o
- * perfil completo do eleitorado à mão. Campo ausente significa "esta
- * instalação não trouxe o dado" — e o indicador que depende dele fica FORA da
- * análise, declarado como sem dado. Nunca entra valendo zero: um município com
- * `biometricsPct` ausente não é um município com 0% de biometria.
+ * Município no snapshot do eleitorado, como o motor de indicadores o lê.
+ * `name`, `electorate` e `gender` são obrigatórios; os demais, OPCIONAIS.
+ * Campo ausente tira da análise o indicador que depende dele, nunca vale zero.
  */
 export type StatsElectorateMunicipio = {
   name: string;
@@ -420,21 +365,16 @@ export type StatsElectorateMunicipio = {
 };
 
 /**
- * Recorte do socioeconomic-<uf>.json que o motor precisa: o mapa de valores
- * por município. É OPCIONAL no insumo — sem ele, renda, PIB, densidade,
- * saneamento, escolarização e população simplesmente não entram na lista de
- * indicadores disponíveis, em vez de entrarem zerados.
+ * Recorte do socioeconomic-<uf>.json: valores por município. OPCIONAL; sem ele
+ * renda, PIB, densidade, saneamento, escolarização e população ficam fora dos
+ * indicadores, em vez de entrar zerados.
  */
 export type StatsSocioeconomicSource = {
   metadata: { status?: string };
   municipalities: Record<string, { values: MunicipalitySocioeconomicValues }>;
 };
 
-/**
- * Insumo mínimo para montar os indicadores — estrutural de propósito, como o
- * ElectorateSource acima: os testes montam payloads inline e o motor não
- * conhece o resto dos snapshots.
- */
+/** Insumo mínimo dos indicadores; estrutural, como o ElectorateSource acima. */
 export type StatsIndicatorSource = {
   electorate: {
     metadata: { status?: string };
@@ -449,10 +389,8 @@ export type StatsIndicatorSource = {
     municipalities: Record<string, MunicipalityLiteracy>;
   };
   /**
-   * Snapshot do IBGE. Opcional: quem só precisa dos indicadores do eleitorado
-   * (a janela de estatísticas até aqui) continua passando três snapshots, e o
-   * relatório passa os quatro para renda, população e urbanização chegarem ao
-   * PDF.
+   * Snapshot do IBGE. Opcional: a janela de estatísticas passa três snapshots;
+   * o relatório passa os quatro, para renda, população e urbanização no PDF.
    */
   socioeconomic?: StatsSocioeconomicSource;
 };
@@ -472,60 +410,45 @@ export type ScatterPoint = {
 export type ScatterModel = {
   indicator: StatsIndicator;
   points: ScatterPoint[];
-  /** Municípios do pleito sem valor do indicador — FORA do gráfico, contados. */
+  /** Municípios do pleito sem valor do indicador: FORA do gráfico, contados. */
   semIndicador: number;
-  /** Municípios sem % dos válidos (denominador não apurado) — idem. */
+  /** Municípios sem % dos válidos (denominador não apurado): idem. */
   semPercentual: number;
   /** Pearson sobre os pontos plotados; null sem amostra ou sem variância. */
   pearson: number | null;
-  /** true quando n < 10 — correlação não é exibida. */
+  /** true quando n < 10: correlação não é exibida. */
   amostraInsuficiente: boolean;
 };
 
 /* -------------------------------------------------------------------------
- * Camada "candidato" do mapa — o coroplético do desempenho DELA.
+ * Camada "candidato" do mapa: o coroplético do desempenho DELA, no pleito e na
+ * métrica escolhidos no painel da aba "Accorsi". Dois cinzas distintos:
  *
- * A aba "Accorsi" já lê a trajetória no painel; esta camada leva a mesma
- * leitura para o mapa, seguindo o pleito e a métrica escolhidos lá (um par de
- * controles só, nunca dois concorrendo).
- *
- * A regra que atravessa os tipos abaixo, e que aqui tem dois casos bem
- * distintos que NUNCA podem virar o mesmo cinza sem explicação:
- *
- * - pleito MUNICIPAL (prefeita/vereadora): a disputa existiu em UMA cidade.
- *   Os outros municípios não são "zero voto" — ela não estava na urna deles.
- *   Ficam FORA da disputa, fora do ranking e fora da escala;
- * - pleito ESTADUAL/FEDERAL: ela estava na urna do estado inteiro, então
- *   município ausente do pleito é ZERO voto apurado (um dado de verdade).
- *   O que pode faltar ali é o DENOMINADOR da métrica — e sem denominador a
- *   taxa é null, cinza e fora da escala, jamais 0.
+ * - pleito MUNICIPAL (prefeita/vereadora): a disputa existiu em UMA cidade; os
+ *   demais municípios ficam FORA da disputa, do ranking e da escala;
+ * - pleito ESTADUAL/FEDERAL: município ausente é ZERO voto apurado (dado de
+ *   verdade); o que pode faltar é o DENOMINADOR, e sem ele a taxa é null,
+ *   cinza e fora da escala, jamais 0.
  * ------------------------------------------------------------------------- */
 
-/**
- * Universo territorial da camada: os municípios da malha do mapa. Estrutural
- * de propósito (como ElectorateSource acima) para os testes montarem a lista
- * inline e o motor não depender do perfil completo do eleitorado.
- */
+/** Universo territorial da camada: os municípios da malha do mapa (estrutural). */
 export type CandidateLayerMunicipio = {
   ibgeCode: string;
   name: string;
 };
 
 export type CandidateLayerState = {
-  /** Pleito em detalhe — o MESMO seletor do painel da aba dela. */
+  /** Pleito em detalhe: o MESMO seletor do painel da aba dela. */
   contestId: string;
-  /** Métrica do ranking e do mapa — idem, um par de controles só. */
+  /** Métrica do ranking e do mapa: idem, um par de controles só. */
   metricId: CandidateRankingMetricId;
   activeBands: AnalysisBand[];
 };
 
 /**
- * Por que um município está pintado, cinza ou fora da escala.
- *
- * `foraDaDisputa` e `semDenominador` são os dois cinzas, e são coisas
- * diferentes: no primeiro ela não era candidata ali; no segundo o dado dela
- * existe (inclusive zero voto apurado), mas a métrica escolhida não tem
- * denominador naquele município.
+ * Por que um município está pintado, cinza ou fora da escala. Os dois cinzas
+ * diferem: em `foraDaDisputa` ela não era candidata ali; em `semDenominador` o
+ * dado existe (inclusive zero voto), mas a métrica não tem denominador ali.
  */
 export type CandidateLayerStatus =
   | "medido"
@@ -536,9 +459,8 @@ export type CandidateLayerItem = {
   ibgeCode: string;
   nome: string;
   /**
-   * Votos nominais dela no município. 0 é dado de verdade (pleito estadual em
-   * que o município não apurou voto dela); null significa "ela não disputou
-   * aqui" — pleito municipal de outra cidade.
+   * Votos nominais dela no município. 0 é dado de verdade (pleito estadual sem
+   * voto dela apurado ali); null = ela não disputou aqui.
    */
   votos: number | null;
   /** Valor da métrica ativa; null mantém o município fora da escala. */
@@ -555,13 +477,12 @@ export type CandidateLayerItem = {
 export type CandidateLayerModel = {
   contest: CandidateContest;
   contestLabel: string;
-  /** "Deputada Federal · 2º turno" — o cargo no feminino, como no painel. */
+  /** "Deputada Federal · 2º turno": o cargo no feminino, como no painel. */
   officeLabel: string;
   metric: CandidateRankingMetric;
   /**
-   * Métrica efetivamente usada. Sem o snapshot do eleitorado a taxa por 1.000
-   * eleitores não existe: em vez de pintar o estado inteiro de cinza, a camada
-   * cai em votos absolutos e a legenda declara a troca.
+   * Métrica efetivamente usada: sem o snapshot do eleitorado não existe taxa
+   * por 1.000 eleitores, a camada cai em votos absolutos e a legenda declara.
    */
   metricId: CandidateRankingMetricId;
   /** true quando o snapshot do eleitorado ainda é placeholder. */
@@ -569,17 +490,15 @@ export type CandidateLayerModel = {
   /** Cidade única de um pleito municipal; null nos pleitos estaduais/federais. */
   escopoMunicipal: MunicipalScope | null;
   /**
-   * false quando há menos de dois municípios com valor — é o caso do pleito
-   * municipal. Sem distribuição não existe quintil: a legenda troca as cinco
-   * faixas por uma leitura só, em vez de fingir uma escala.
+   * false quando há menos de dois municípios com valor (pleito municipal): sem
+   * distribuição não há quintil, e as cinco faixas viram uma leitura só.
    */
   escalaPorQuantil: boolean;
   thresholds: number[];
   bandCounts: number[];
   /**
-   * Faixas em foco no mapa. Sem escala por quantil todas ficam ativas: filtrar
-   * faixa não faz sentido quando existe um valor só, e uma faixa herdada de
-   * outro pleito apagaria a única cidade pintada.
+   * Faixas em foco no mapa. Sem escala por quantil todas ficam ativas: faixa
+   * herdada de outro pleito apagaria a única cidade pintada.
    */
   activeBands: AnalysisBand[];
   allItems: CandidateLayerItem[];
@@ -587,9 +506,8 @@ export type CandidateLayerModel = {
   semDenominadorCount: number;
   foraDaDisputaCount: number;
   /**
-   * Frase do denominador da métrica ativa, escrita na legenda e na descrição
-   * da camada. Existe porque "votos por 1.000 eleitores" é sobre o ELEITORADO
-   * APTO — não sobre a população do município, que inclui quem não vota.
+   * Frase do denominador da métrica ativa (legenda e descrição da camada):
+   * "votos por 1.000 eleitores" é sobre o ELEITORADO APTO, não a população.
    */
   denominadorNota: string | null;
 };

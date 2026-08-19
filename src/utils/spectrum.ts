@@ -34,13 +34,11 @@ export const SPECTRUM_BLOCK_LABELS: Record<SpectrumBlock, string> = {
  * Paleta divergente de cinco passos do índice: violeta (esquerda) ↔ ocre
  * (direita), com cinza claro neutro no centro.
  *
- * Escolhida deliberadamente fora do par vermelho-azul e fora das cores usadas
- * pelos partidos brasileiros, para que a cor não sugira nenhuma sigla. Violeta
- * e ocre se separam pelo eixo azul-amarelo, justamente o eixo que a daltonia
- * vermelho-verde preserva: validado par a par com ΔE ≥ 16 (OKLab ×100) sob
- * protanopia e deuteranopia, e ≥ 3:1 de contraste sobre o painel escuro. O
- * passo do meio tem croma ~0,01, ou seja, é cinza de verdade: lê como "sem
- * predominância", nunca como um terceiro lado.
+ * Fica fora do par vermelho-azul e das cores dos partidos para não sugerir
+ * sigla. Violeta e ocre se separam pelo eixo azul-amarelo, preservado na
+ * daltonia vermelho-verde: ΔE ≥ 16 (OKLab ×100) par a par sob protanopia e
+ * deuteranopia, e ≥ 3:1 de contraste sobre o painel escuro. O passo do meio
+ * tem croma ~0,01 (cinza de verdade), lido como "sem predominância".
  */
 export const SPECTRUM_COLORS = [
   "#7a52b8",
@@ -51,19 +49,16 @@ export const SPECTRUM_COLORS = [
 ] as const;
 
 /**
- * Paleta divergente própria do DESLOCAMENTO do índice, em torno de zero:
- * violeta = moveu para a esquerda, ocre = moveu para a direita, cinza neutro
- * = estável. Deriva da SPECTRUM_COLORS porque os polos têm o mesmo
- * significado (esquerda/direita), mas com passos próprios para que os dois
- * mapas não se confundam e para abrir a separação dos vizinhos num
- * coroplético, onde qualquer par de faixas pode ficar lado a lado.
+ * Paleta divergente do DESLOCAMENTO do índice, em torno de zero: violeta =
+ * moveu para a esquerda, ocre = moveu para a direita, cinza neutro = estável.
+ * Deriva da SPECTRUM_COLORS (mesmos polos) com passos próprios, para os dois
+ * mapas não se confundirem e para separar faixas vizinhas no coroplético.
  *
- * Validada com o validador da skill dataviz sobre o fundo #070d0d no modo
- * todos-os-pares: pior par #b96712↔#e2a45c com ΔE 16,6 sob deuteranopia e
- * 17,0 em visão normal (piso 15), todos os passos ≥ 3:1 de contraste. O
- * centro #eae8e3 tem croma ~0,01 (cinza de verdade, "não se moveu") e fica a
- * ΔE ~31 do cinza de "sem dado" (#788382), então estabilidade nunca se
- * confunde com ausência de índice.
+ * Validada sobre o fundo #070d0d em todos os pares: pior par #b96712↔#e2a45c
+ * com ΔE 16,6 sob deuteranopia e 17,0 em visão normal (piso 15), todos os
+ * passos ≥ 3:1 de contraste. O centro #eae8e3 tem croma ~0,01 e fica a ΔE ~31
+ * do cinza de "sem dado" (#788382): estabilidade nunca se confunde com
+ * ausência de índice.
  */
 export const SPECTRUM_SHIFT_COLORS = [
   "#8a5cd0",
@@ -352,8 +347,7 @@ export function sanitizeSpectrumState(
     : fallback.metricId;
   const contestId = contest?.id ?? fallback.contestId;
   // O pleito de comparação precisa existir na lista e NUNCA pode ser o próprio
-  // pleito analisado — mesma disciplina adotada em elections depois do defeito
-  // do "próprio pleito fora da lista". Estados antigos sem o campo caem em null.
+  // pleito analisado. Estado antigo sem o campo cai em null.
   const comparisonCandidate =
     typeof raw.comparisonContestId === "string"
       ? contests.find((item) => item.id === raw.comparisonContestId)
@@ -476,14 +470,14 @@ export function buildSpectrumModel(
     contests.find((item) => item.id === sanitized.contestId) ?? contests[0];
   const wave =
     index.waves.get(contest.waveYear) ?? index.registry.metadata.waves[0];
-  // sanitizeSpectrumState já garante que a comparação existe na lista e não é
-  // o próprio pleito; aqui só a resolvemos.
+  // sanitizeSpectrumState já garante que a comparação existe e não é o próprio
+  // pleito; aqui só a resolvemos.
   //
-  // ATENÇÃO metodológica: cada pleito usa a onda do survey do seu ano. Ao
-  // comparar pleitos de ONDAS DIFERENTES (ex.: 2018 vs 2022), misturam-se
-  // duas réguas — parte do deslocamento vem da reavaliação dos partidos pelos
-  // especialistas, não do movimento do eleitorado. A comparação não é
-  // bloqueada; o painel exibe o aviso sempre que as ondas diferem.
+  // ATENÇÃO metodológica: cada pleito usa a onda do survey do seu ano. Comparar
+  // pleitos de ONDAS DIFERENTES (ex.: 2018 vs 2022) mistura duas réguas: parte
+  // do deslocamento vem da reavaliação dos partidos pelos especialistas, não do
+  // eleitorado. A comparação não é bloqueada; o painel avisa quando as ondas
+  // diferem.
   const comparisonContest = sanitized.comparisonContestId
     ? contests.find(
         (item) =>
@@ -498,7 +492,7 @@ export function buildSpectrumModel(
     ? computeContestIndices(comparisonContest, index)
     : null;
   // Sem pleito de comparação o deslocamento não existe: a métrica EFETIVA cai
-  // para o índice, mesmo padrão adotado em elections para o swing sem série.
+  // para o índice.
   const metricId: SpectrumMetricId =
     sanitized.metricId === "shift" && !comparisonContest
       ? "index"
@@ -735,8 +729,8 @@ export function describeSpectrumIndex(
 }
 
 export function createSpectrumCsv(model: SpectrumModel) {
-  // Com a métrica de deslocamento, o CSV carrega também o pleito comparado e
-  // o deslocamento — ausência de índice em um dos lados vira célula vazia.
+  // Com a métrica de deslocamento o CSV carrega também o pleito comparado e o
+  // deslocamento; ausência de índice em um dos lados vira célula vazia.
   const comparisonContest =
     model.metricId === "shift" ? model.comparisonContest : null;
   const withShift = comparisonContest !== null;

@@ -28,43 +28,28 @@ import {
 } from "./reportModel.ts";
 
 /**
- * O RELATÓRIO ANALÍTICO em seções — o documento que o PDF imprime.
+ * O RELATÓRIO ANALÍTICO em seções: a projeção que o PDF imprime (`doc.tables`
+ * continua sendo a projeção da planilha).
  *
- * A pasta de trabalho continua sendo uma lista de tabelas (`doc.tables`, que o
- * exceljs consome inteira). Este módulo produz a OUTRA projeção do mesmo dado:
- * capa com identificação e resumo, distribuição territorial, concentração,
- * um capítulo por indicador, resumo comparativo e metodologia — a ordem que
- * um relatório de campanha precisa ter para ser lido do começo ao fim.
- *
- * Três regras governam o que se escreve aqui:
- *
+ * Três regras:
  * 1. NADA É RECALCULADO. Coeficiente, classificação, mediana de grupo,
- *    quadrante, atípico e resumo vêm prontos de `reportAnalysis`. O que este
- *    arquivo faz é escolher a forma (dispersão, barras, caixa, quadrantes,
- *    Pareto, pequenos múltiplos) e escrever a leitura em palavras. Onde um
- *    gráfico precisa dos pontos individuais — a caixa de um grupo, por
- *    exemplo — o corte usado é o `corte` que o motor publicou, nunca um
- *    critério novo inventado aqui;
- * 2. O FILTRO DA TELA NÃO LIMITA NADA. Ele já chegou resolvido em
- *    `analysis.indicadores` como ORDEM e como `destaque`. Todo indicador com
- *    dado ganha a sua seção, sempre, e o título do documento é sempre geral:
- *    "Desempenho eleitoral", nunca "Relatório de mulheres";
- * 3. AUSÊNCIA É AUSÊNCIA. Município sem valor não vira ponto no gráfico, não
- *    vira barra e não vira zero: é contado, pintado de cinza na legenda de
- *    sem-dado e declarado por escrito.
+ *    quadrante, atípico e resumo vêm prontos de `reportAnalysis`; gráfico que
+ *    precisa dos pontos usa o `corte` publicado pelo motor, nunca um critério
+ *    novo;
+ * 2. O FILTRO DA TELA NÃO LIMITA NADA: chega resolvido em
+ *    `analysis.indicadores` como ORDEM e `destaque`. Todo indicador com dado
+ *    ganha seção e o título do documento é sempre geral;
+ * 3. AUSÊNCIA É AUSÊNCIA. Município sem valor não vira ponto, barra nem zero:
+ *    é contado, marcado como sem-dado e declarado por escrito.
  */
 
 /**
- * Teto de linhas de um ranking impresso.
- *
- * Dez linhas cabem inteiras numa página junto com o título e as notas, e é o
- * que um ranking de leitura precisa ter: a lista completa de 246 municípios é
- * da pasta em Excel e do CSV, e imprimi-la aqui só faria o PDF triplicar de
- * tamanho para repetir, pior formatado, o que o outro arquivo já entrega.
+ * Teto de linhas de um ranking impresso: dez cabem numa página com título e
+ * notas. A lista completa fica na pasta em Excel e no CSV.
  */
 export const MAX_LINHAS_RANKING = 10;
 
-/** Painéis por gráfico de pequenos múltiplos — acima disso a célula fica ilegível. */
+/** Painéis por gráfico de pequenos múltiplos: acima disso a célula fica ilegível. */
 const MAX_PAINEIS = 6;
 
 /** Municípios rotulados dentro de um gráfico de dispersão. */
@@ -112,10 +97,8 @@ function valorComUnidade(valor: number, indicator: IndicatorMetadata) {
 }
 
 /**
- * As fontes distintas de um conjunto de indicadores, com a fonte eleitoral na
- * frente. A chave é o ENDEREÇO: o Censo 2022 publica meia dúzia de
- * indicadores na mesma tabela, e listar a mesma URL seis vezes só ocupa
- * página.
+ * As fontes distintas dos indicadores, com a eleitoral na frente. A chave é o
+ * ENDEREÇO: o Censo 2022 publica vários indicadores na mesma tabela.
  */
 function fontesUnicas(
   fonteEleitoral: ReportSource,
@@ -208,11 +191,7 @@ function secaoCapa(input: {
   analysis: ReportAnalysis;
   generatedAt: Date;
   fonteEleitoral: ReportSource;
-  /**
-   * O aviso de escopo da versão, quando a versão tem escopo a declarar. Ele
-   * entra ANTES de qualquer número: quem abre a resumida precisa saber o que
-   * está nas mãos antes de ler o primeiro percentual, não depois.
-   */
+  /** Aviso de escopo da versão. Entra ANTES de qualquer número. */
   avisoDeVersao?: { title: string; text: string };
 }): ReportSection {
   const { contest, reportDataset, analysis } = input;
@@ -269,20 +248,15 @@ function secaoCapa(input: {
     });
   }
 
-  // Uma linha por FONTE, não por indicador: a lista por indicador (vinte
-  // linhas repetindo a mesma URL do IBGE) enchia uma página inteira da capa e
-  // repetia, pior formatada, a tabela da metodologia.
+  // Uma linha por FONTE, não por indicador.
   const unicas = fontesUnicas(input.fonteEleitoral, analysis.indicadores.map((item) => item.indicator));
   if (unicas.length > 0) {
-    // Na capa a procedência é uma LINHA, não uma lista de endereços: cinco
-    // links ocupavam uma página inteira logo depois do resumo, e o endereço
-    // clicável de cada fonte já está na página de metodologia.
     blocks.push({
       kind: "paragrafo",
       tone: "suave",
       // Aqui a lista é de NOMES, então a chave é o nome: o Censo publica duas
-      // tabelas diferentes e sairia "IBGE — Censo 2022 · IBGE — Censo 2022".
-      // Os dois endereços continuam distintos na metodologia.
+      // tabelas e o mesmo rótulo sairia repetido. Os endereços continuam
+      // distintos na metodologia.
       text: `Fontes deste relatório: ${[...new Set(unicas.map((item) => item.label))].join(" · ")}. Os endereços completos, clicáveis, estão na página de metodologia.`,
     });
   }
@@ -295,16 +269,14 @@ function secaoCapa(input: {
 }
 
 /* -------------------------------------------------------------------------
- * Distribuição territorial — as quatro leituras
+ * Distribuição territorial: as quatro leituras
  * ------------------------------------------------------------------------- */
 
 /**
- * As quatro leituras do território, e por que elas não são a mesma coisa:
- * volume é voto absoluto, desempenho relativo é percentual dos válidos,
- * importância para a campanha é a fatia do próprio total e competitividade é a
- * colocação naquela cidade. Um município grande aparece no alto do volume sem
- * ter desempenho relativo nenhum — é por isso que "forte" não é sinônimo de
- * "muito voto" em lugar nenhum deste relatório.
+ * As quatro leituras do território não se substituem: volume é voto absoluto,
+ * desempenho relativo é percentual dos válidos, importância para a campanha é
+ * a fatia do próprio total e competitividade é a colocação naquela cidade.
+ * "Forte" nunca significa "muito voto" neste relatório.
  */
 function secaoTerritorio(input: {
   reportDataset: ReportDataset;
@@ -325,11 +297,8 @@ function secaoTerritorio(input: {
     .filter((valor): valor is number => valor !== null);
 
   /**
-   * Escala logarítmica quando a distribuição tem cauda longa — e a decisão sai
-   * do DADO, não do gosto: só entra em log quem tem todos os valores positivos
-   * (log de zero não existe) e amplitude de mais de uma ordem de grandeza
-   * entre o menor e o maior. Numa tira linear, um estado com uma capital
-   * empurra sessenta municípios para o primeiro milímetro do eixo.
+   * Escala log só quando o dado pede: todos os valores positivos (log de zero
+   * não existe) e razão de pelo menos 50 entre o maior e o menor.
    */
   const pedeLog = (valores: readonly number[]) => {
     const positivos = valores.filter((valor) => valor > 0);
@@ -504,12 +473,8 @@ function tabelaRanking(input: {
 }
 
 /**
- * Duas seções: a curva (com os cortes) e os rankings.
- *
- * Separadas de propósito. Juntas, a curva de Pareto e os três rankings davam
- * uma página e meia de gráfico seguida de tabelas partidas ao meio — nove
- * linhas numa folha e três na seguinte, com o cabeçalho repetido para três
- * linhas. Cada ranking cabe inteiro na sua página.
+ * Duas seções separadas: a curva (com os cortes) e os rankings, para cada
+ * ranking caber inteiro numa página.
  */
 function secoesConcentracao(input: {
   reportDataset: ReportDataset;
@@ -555,9 +520,8 @@ function secoesConcentracao(input: {
         ? "Sem votos apurados no recorte, não há curva acumulada."
         : `${contarMunicipios(concentracao.municipiosParaMetade)} reúnem metade dos votos do pleito.`),
     source: fonteEleitoral,
-    // Curva monótona e larga: 48 mm de altura bastam para a leitura, e o que
-    // se economiza aqui é o que faz o ranking de votos caber nesta mesma
-    // página, em vez de abrir uma folha nova para dez linhas.
+    // 48 mm bastam para a leitura da curva e deixam o ranking de votos caber
+    // nesta mesma página.
     plotHeight: 48,
     spec: {
       kind: "pareto",
@@ -755,10 +719,9 @@ function pontosDaDispersao(
 }
 
 /**
- * A forma do gráfico de comparação sai do DADO, não do gosto: com pelo menos
- * oito municípios de cada lado existe distribuição para desenhar uma caixa;
- * com menos, a caixa sugeriria uma dispersão que a amostra não sustenta, e o
- * honesto é comparar as duas medianas em barras.
+ * Mínimo por lado para desenhar caixa: com menos de oito municípios a caixa
+ * sugeriria dispersão que a amostra não sustenta, e o gráfico vira barras com
+ * as duas medianas.
  */
 const MINIMO_PARA_CAIXA = 8;
 
@@ -1035,13 +998,9 @@ function secaoIndicador(
     { kind: "paragrafo", text: item.interpretacao },
   ];
 
-  /* A ORDEM dos blocos é decisão de diagramação, e foi ajustada olhando as
-     páginas: com as ressalvas no fim, elas caíam sozinhas numa folha quase
-     branca depois da tabela. Aqui elas vêm logo depois da leitura — que é
-     onde se lê a interpretação e onde a ressalva importa —, e os blocos altos
-     (comparação de grupos, tabela, matriz de quadrantes) vão em seguida, do
-     menor para o maior, de modo que a quebra de página caia sempre ENTRE dois
-     blocos inteiros. */
+  /* Ordem de diagramação: ressalvas logo depois da leitura e os blocos altos
+     (grupos, tabela, quadrantes) em seguida, do menor para o maior, para a
+     quebra de página cair sempre ENTRE dois blocos inteiros. */
   blocks.push({
     kind: "aviso",
     title: "Limitação metodológica",
@@ -1060,15 +1019,14 @@ function secaoIndicador(
 
   blocks.push({ kind: "tabela", table: tabelaDeDestaques(item, reportDataset) });
 
-  // A matriz de quadrantes só acompanha o indicador em DESTAQUE, e fecha o
+  // A matriz de quadrantes acompanha só o indicador em DESTAQUE e fecha o
   // capítulo: é o bloco mais alto do documento.
   if (item.destaque) {
     const quadrantes = graficoDeQuadrantes(item);
     if (quadrantes) blocks.push({ kind: "grafico", chart: quadrantes });
   }
   // Sem bloco de fonte no fim do capítulo: cada gráfico e cada tabela já
-  // imprime a sua procedência logo abaixo de si, e repetir a mesma linha no
-  // rodapé da seção era duas vezes a mesma informação.
+  // imprime a sua procedência.
 
   return {
     id: `indicador-${indicator.id}`,
@@ -1088,12 +1046,9 @@ function secaoIndicador(
  * ------------------------------------------------------------------------- */
 
 /**
- * A TABELA DOS VINTE — a linha por indicador que garante que nenhum sumiu.
- *
- * Ela é a mesma nas duas versões do relatório, e é de propósito: é o que
- * permite abrir a versão resumida e ver, numa página só, que a régua não
- * escondeu indicador nenhum — os que não ganharam capítulo continuam aqui,
- * com o mesmo coeficiente e o mesmo número de municípios.
+ * Uma linha por indicador, a mesma tabela nas duas versões: é o que prova que
+ * a régua da resumida não escondeu nenhum indicador, todos com o mesmo
+ * coeficiente e o mesmo número de municípios.
  */
 function tabelaComparativa(
   analysis: ReportAnalysis,
@@ -1110,10 +1065,8 @@ function tabelaComparativa(
       { header: "Municípios analisados", format: "inteiro" },
       { header: "Ano", format: "numero" },
     ],
-    // A direção fica numa coluna e o coeficiente na outra, junto da
-    // intensidade que ele define. Escrever "sem associação clara (Spearman
-    // -0,04)" numa célula só fazia cada linha quebrar em duas e a tabela
-    // estourar a página por uma linha.
+    // Direção numa coluna e coeficiente na outra: juntos numa célula só, cada
+    // linha quebrava em duas e a tabela estourava a página.
     rows: analysis.indicadores.map((item) => [
       item.indicator.metric.label,
       item.classificacao.coeficiente === null
@@ -1151,10 +1104,8 @@ function secoesComparativo(
 
   const blocks: ReportBlock[] = [];
 
-  // Os painéis são distribuídos por igual entre os gráficos, não empacotados
-  // até o teto: com 20 indicadores, encher de 6 em 6 deixava um último gráfico
-  // de dois painéis sozinho numa página quase branca. Cinco e cinco e cinco e
-  // cinco ocupam as mesmas páginas sem a sobra.
+  // Painéis distribuídos por igual entre os gráficos, não empacotados até o
+  // teto: com 20 indicadores, de 6 em 6 sobra um gráfico de dois painéis.
   const partes = Math.max(
     1,
     Math.ceil(analysis.indicadores.length / MAX_PAINEIS),
@@ -1210,8 +1161,7 @@ function secoesComparativo(
       startsNewPage: true,
       blocks: [{ kind: "tabela", table: tabela }],
     },
-    // Os pequenos múltiplos começam em página nova: encaixados no que sobrava
-    // da tabela, o último gráfico ficava sozinho numa página quase branca.
+    // Os pequenos múltiplos começam em página nova.
     {
       id: "resumo-comparativo-graficos",
       title: "Todos os cruzamentos em miniatura",
@@ -1228,11 +1178,9 @@ function secoesComparativo(
  * ------------------------------------------------------------------------- */
 
 /**
- * TODO INDICADOR DO CATÁLOGO, com a situação de cada um.
- *
- * A mesma tabela nas duas versões: é ela que garante que um indicador sem
- * dado no recorte apareça declarado, com o motivo, em vez de sumir em
- * silêncio entre os que foram analisados.
+ * TODO INDICADOR DO CATÁLOGO, com a situação de cada um. A mesma tabela nas
+ * duas versões: indicador sem dado no recorte aparece declarado, com o motivo,
+ * em vez de sumir em silêncio.
  */
 function tabelaCatalogoIndicadores(reportDataset: ReportDataset): ReportTable {
   return {
@@ -1382,8 +1330,8 @@ function secaoMetodologia(input: {
     });
   }
 
-  // A tabela do catálogo fecha a seção: ela é longa, e uma tabela longa no fim
-  // evita que o documento termine numa página com quatro linhas de link.
+  // Tabela longa no fim para o documento não terminar numa página com quatro
+  // linhas de link.
   blocks.push({ kind: "subtitulo", text: "Indicadores incluídos e declarados" });
   blocks.push({ kind: "tabela", table: indicadores });
 
@@ -1402,12 +1350,10 @@ function secaoMetodologia(input: {
  * ------------------------------------------------------------------------- */
 
 /**
- * As seções do relatório de um pleito, na ordem em que são lidas.
- *
- * O `activeViewFilter` já entrou em `analysis.indicadores` como ordem e
- * destaque: aqui ele não aparece. Trocar o filtro na tela muda qual capítulo
- * vem primeiro e qual ganha a matriz de quadrantes — nenhuma seção entra ou
- * sai, e o título do documento é sempre o geral.
+ * As seções do relatório de um pleito, na ordem em que são lidas. O
+ * `activeViewFilter` já entrou em `analysis.indicadores` como ordem e
+ * destaque: ele muda qual capítulo vem primeiro e qual ganha a matriz de
+ * quadrantes, nenhuma seção entra ou sai e o título é sempre o geral.
  */
 export function buildContestSections(input: {
   contest: CandidateContest;
@@ -1427,9 +1373,8 @@ export function buildContestSections(input: {
     }),
   ];
 
-  // Pleito de uma cidade só não tem distribuição territorial, concentração
-  // entre municípios nem cruzamento: existe UM município, e não há o que
-  // comparar. A metodologia continua, com as omissões declaradas.
+  // Pleito de uma cidade só não tem território, concentração nem cruzamento:
+  // existe UM município. A metodologia continua, com as omissões declaradas.
   const territorial = !reportDataset.municipal && reportDataset.municipios.length > 1;
 
   if (territorial) {
@@ -1471,44 +1416,22 @@ export function buildContestSections(input: {
  * ------------------------------------------------------------------------- */
 
 /**
- * TETO DE CAPÍTULOS DA VERSÃO RESUMIDA — a régua, declarada no código e
- * impressa no documento.
- *
- * Cinco porque cinco é o que cabe numa leitura de reunião curta sem o
- * documento virar outro relatório de cinquenta páginas: cada capítulo ocupa
- * meia página com gráfico, leitura e limitação. Acima disso a versão resumida
- * deixa de ser resumo e passa a ser uma completa mal cortada; abaixo, a
- * escolha começa a parecer arbitrária.
- *
- * O que este teto NÃO faz: esconder indicador. Os que ficam de fora do
- * capítulo continuam inteiros na tabela de resumo comparativo desta mesma
- * versão, com coeficiente, direção e número de municípios.
+ * TETO DE CAPÍTULOS DA VERSÃO RESUMIDA: cinco, cada um com cerca de meia
+ * página (gráfico, leitura e limitação). O teto não esconde indicador: os que
+ * ficam de fora seguem inteiros na tabela de resumo comparativo desta versão,
+ * com coeficiente, direção e número de municípios.
  */
 export const MAX_CAPITULOS_RESUMIDO = 5;
 
 /**
- * O CRITÉRIO DE SELEÇÃO, em código.
- *
- * Entra primeiro o indicador em DESTAQUE — o que estava selecionado na tela
- * quando o relatório foi pedido —, quando existe. É a única coisa que o filtro
- * da tela decide aqui, e é decisão de apresentação: ele ocupa uma vaga, não
- * remove nenhum indicador do documento nem muda uma linha da tabela dos vinte.
- *
- * As vagas restantes vão para os de MAIOR MÓDULO DO COEFICIENTE DE SPEARMAN,
- * entre os que têm ASSOCIAÇÃO CLASSIFICADA. Duas escolhas aí, e as duas
- * declaradas no papel:
- *
- * - módulo, e não valor com sinal, porque uma associação negativa forte é tão
- *   digna de página quanto uma positiva forte;
- * - só disputa vaga quem o motor de análise não classificou como "sem
- *   associação clara". O corte não é inventado aqui: é o mesmo que
- *   `reportAnalysis` publica na metodologia das duas versões. Um capítulo com
- *   gráfico, leitura e limitação para um coeficiente abaixo desse corte
- *   gastaria uma página inteira para dizer que não há o que ler — e o número
- *   dele continua na tabela comparativa, onde é o que ele é.
- *
- * Empate se desfaz pelo número de municípios cruzados (mais município, mais
- * base) e, persistindo, pelo nome — para o arquivo sair igual a cada geração.
+ * O CRITÉRIO DE SELEÇÃO, em código. Primeiro o indicador em DESTAQUE (o
+ * selecionado na tela), que ocupa uma vaga sem tirar ninguém do documento. As
+ * vagas restantes vão para os de MAIOR MÓDULO do coeficiente de Spearman
+ * (módulo porque associação negativa forte vale tanto quanto positiva forte)
+ * entre os que o motor não classificou como "sem associação clara"; o corte é
+ * o que `reportAnalysis` publica na metodologia, não um novo. Empate se desfaz
+ * pelo número de municípios cruzados e, persistindo, pelo nome, para o arquivo
+ * sair igual a cada geração.
  */
 export function selecionarIndicadoresResumidos(
   indicadores: readonly IndicatorAnalysis[],
@@ -1535,7 +1458,7 @@ export function selecionarIndicadoresResumidos(
   return [...destaque, ...demais].slice(0, Math.max(0, teto));
 }
 
-/** "0,74" / "sem coeficiente calculado" — a força de um item, por extenso. */
+/** A força de um item por extenso: "0,74" ou "sem coeficiente calculado". */
 function forcaPorExtenso(item: IndicatorAnalysis): string {
   return item.classificacao.coeficiente === null
     ? "sem coeficiente calculado"
@@ -1544,11 +1467,7 @@ function forcaPorExtenso(item: IndicatorAnalysis): string {
       );
 }
 
-/**
- * O critério de seleção escrito para o papel. É obrigatório: uma versão
- * resumida que diz "os mais relevantes" sem dizer a régua está pedindo para
- * ser lida como se fosse a completa.
- */
+/** O critério de seleção escrito para o papel: a régua tem de ir no documento. */
 function criterioDosCapitulos(input: {
   selecionados: readonly IndicatorAnalysis[];
   /** Quantos indicadores passariam na régua se não houvesse teto. */
@@ -1580,13 +1499,8 @@ function criterioDosCapitulos(input: {
 }
 
 /**
- * A DECLARAÇÃO DE ESCOPO — a mesma contagem na capa e na metodologia.
- *
- * Na capa ela é curta, porque na capa ela concorre com o resumo executivo e
- * porque o que precisa ser lido em três segundos é a contagem. Na metodologia
- * ela é inteira, com a lista do que ficou de fora. As duas saem da MESMA
- * função e dos MESMOS números: não existe versão de capa que diga uma coisa e
- * versão de metodologia que diga outra.
+ * A DECLARAÇÃO DE ESCOPO: curta na capa, inteira na metodologia (com a lista
+ * do que ficou de fora), sempre da MESMA função e dos MESMOS números.
  */
 function avisoDeEscopoResumido(input: {
   selecionados: readonly IndicatorAnalysis[];
@@ -1611,14 +1525,10 @@ function avisoDeEscopoResumido(input: {
 }
 
 /**
- * Território e concentração numa seção só.
- *
- * Na versão completa são três seções e cinco páginas: as quatro leituras do
- * território, a curva de Pareto com o ranking de volume e mais dois rankings.
- * Aqui fica a leitura PRINCIPAL do território — o percentual dos válidos, que
- * é a métrica que todos os cruzamentos usam — junto da curva acumulada, dos
- * três cortes e de um ranking só. As outras três leituras e os outros dois
- * rankings são da versão completa, e o texto diz isso.
+ * Território e concentração numa seção só: a leitura PRINCIPAL do território
+ * (percentual dos válidos, a métrica dos cruzamentos), a curva acumulada, os
+ * três cortes e um ranking. As outras leituras e rankings são da versão
+ * completa, e o texto diz isso.
  */
 function secaoTerritorioResumida(input: {
   reportDataset: ReportDataset;
@@ -1654,9 +1564,8 @@ function secaoTerritorioResumida(input: {
       label: "municípios sem total de votos válidos apurado",
     },
     source: fonteEleitoral,
-    // 32 mm: a tira é UMA distribuição, não uma grade de painéis. Na altura
-    // padrão dos pequenos múltiplos (44 mm por linha) sobrava um palmo de
-    // branco entre o rótulo do painel e a caixa.
+    // 32 mm: a tira é UMA distribuição, não uma grade de painéis (nos 44 mm
+    // por linha dos pequenos múltiplos sobrava branco).
     plotHeight: 32,
     spec: {
       kind: "multiplos",
@@ -1731,10 +1640,8 @@ function secaoTerritorioResumida(input: {
     title: "Território e concentração",
     subtitle:
       "A leitura principal do território e o quanto do resultado veio de poucas cidades.",
-    /* SEM quebra de folha forçada. Num documento de dez páginas, abrir folha
-       nova a cada seção deixava metade das páginas pela metade — o defeito
-       que a versão resumida existe para não ter. Aqui o conteúdo flui, e o
-       renderizador só quebra ANTES de um gráfico que não caiba inteiro. */
+    /* SEM quebra de folha forçada: o conteúdo flui e o renderizador só quebra
+       ANTES de um gráfico que não caiba inteiro. */
     startsNewPage: false,
     blocks: [
       { kind: "grafico", chart: distribuicao },
@@ -1795,12 +1702,9 @@ function secaoTerritorioResumida(input: {
 }
 
 /**
- * Os capítulos escolhidos, em blocos compactos — gráfico, leitura, limitação.
- *
- * Uma seção só, com um subtítulo por indicador, e não uma seção por indicador:
- * cada capítulo compacto ocupa pouco mais de meia página, e abrir folha nova
- * para cada um deixaria metade de cada página em branco. Aqui dois capítulos
- * dividem a folha e a quebra cai entre blocos inteiros.
+ * Os capítulos escolhidos em blocos compactos (gráfico, leitura, limitação),
+ * numa seção só com um subtítulo por indicador: cada um ocupa pouco mais de
+ * meia página, então dois dividem a folha.
  */
 function secaoCruzamentosResumida(input: {
   selecionados: readonly IndicatorAnalysis[];
@@ -1821,8 +1725,8 @@ function secaoCruzamentosResumida(input: {
     );
     const semValor = disponibilidade?.semValor ?? item.correlacao.semPar;
 
-    // O cabeçalho do capítulo carrega a classificação: sem ela, o subtítulo
-    // repetia, palavra por palavra, o título do gráfico logo abaixo.
+    // O cabeçalho carrega a classificação; sem ela, repetiria o título do
+    // gráfico logo abaixo.
     blocks.push({
       kind: "subtitulo",
       text: `${metric.label} — ${item.classificacao.label}${item.destaque ? " · selecionado na tela" : ""}`,
@@ -1911,9 +1815,8 @@ function secaoComparativaResumida(input: {
     title: "Resumo comparativo",
     subtitle:
       "Uma linha por indicador analisado, na mesma régua — inclusive os que não ganharam capítulo nesta versão.",
-    // A tabela dos vinte cabe INTEIRA numa página, e é para isso que esta
-    // seção abre folha nova: partida ao meio, ela deixaria de ser a página
-    // que prova que nenhum indicador sumiu.
+    // Folha nova para a tabela caber INTEIRA: partida ao meio, ela deixa de
+    // provar que nenhum indicador sumiu.
     startsNewPage: true,
     blocks: [{ kind: "tabela", table: tabela }],
   };
@@ -2015,10 +1918,8 @@ function secaoMetodologiaResumida(input: {
     blocks.push({ kind: "links", items: unicos });
   }
 
-  /* A tabela do catálogo fecha a versão resumida pelo mesmo motivo que fecha a
-     completa — e aqui ela também resolve um defeito de diagramação: a
-     metodologia não cabe em uma página, e sem ela a última folha do documento
-     terminava com quatro linhas de link e três quartos de papel em branco. */
+  /* Tabela longa fecha a seção, como na completa: a metodologia não cabe em
+     uma página e a última folha terminaria em quatro linhas de link. */
   blocks.push({ kind: "subtitulo", text: "Indicadores incluídos e declarados" });
   blocks.push({ kind: "tabela", table: tabelaCatalogoIndicadores(reportDataset) });
 
@@ -2033,17 +1934,12 @@ function secaoMetodologiaResumida(input: {
 }
 
 /**
- * As seções da VERSÃO RESUMIDA, na ordem em que são lidas.
- *
- * Mesmos dados, mesmas regras, mesma análise: o que muda é o que entra no
- * papel. E o que fica de fora é declarado — na capa, na tabela comparativa e
- * na metodologia —, com a régua escrita e o ponteiro para a versão completa,
- * porque uma resumida que se apresenta como completa é pior que nenhuma.
- *
+ * As seções da VERSÃO RESUMIDA, na ordem em que são lidas. Mesmos dados e
+ * mesmas regras; o que fica de fora é declarado na capa, na tabela comparativa
+ * e na metodologia, com a régua escrita e o ponteiro para a versão completa.
  * Como na completa, o `activeViewFilter` já chegou resolvido em
- * `analysis.indicadores` como ordem e destaque: ele ocupa a primeira vaga de
- * capítulo e não altera o universo de municípios, a tabela com todos os
- * indicadores nem o título do documento.
+ * `analysis.indicadores`: ocupa a primeira vaga de capítulo e não altera o
+ * universo de municípios, a tabela de indicadores nem o título.
  */
 export function buildContestSummarySections(input: {
   contest: CandidateContest;
@@ -2057,8 +1953,7 @@ export function buildContestSummarySections(input: {
   const selecionados = territorial
     ? selecionarIndicadoresResumidos(analysis.indicadores)
     : [];
-  // Quantos passariam na régua sem o teto — a contagem que o documento
-  // publica para quem quiser saber se o corte de 5 apertou ou sobrou.
+  // Quantos passariam na régua sem o teto: contagem publicada no documento.
   const elegiveis = territorial
     ? selecionarIndicadoresResumidos(
         analysis.indicadores,

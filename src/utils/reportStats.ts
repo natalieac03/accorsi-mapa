@@ -48,16 +48,12 @@ import {
 } from "./reportModel.ts";
 
 /**
- * Relatórios da janela "Estatísticas" — a montagem do MODELO (capa, cartões,
- * tabelas, omissões) a partir dos motores já existentes. Nada aqui conhece
- * exceljs ou jsPDF: quem traduz o modelo em arquivo são `exportExcel.ts` e
- * `exportPdf.ts`, e é por isso que estas funções podem ser testadas com um
- * dataset sintético inline.
+ * Monta o MODELO dos relatórios da janela "Estatísticas" (capa, cartões,
+ * tabelas, omissões). Nada aqui conhece exceljs ou jsPDF: `exportExcel.ts` e
+ * `exportPdf.ts` traduzem o modelo em arquivo.
  *
- * Cada visão da janela vira um relatório do RECORTE VISÍVEL: a visão geral
- * exporta a trajetória inteira, a visão de um pleito exporta aquele pleito, e
- * a visão "Geral" exporta o crescimento do grupo. Ninguém recebe um arquivo
- * com dados que não estava vendo.
+ * Cada visão exporta o RECORTE VISÍVEL: a geral leva a trajetória inteira, a
+ * de um pleito leva aquele pleito, a "Geral" leva o crescimento do grupo.
  */
 
 const ATRIBUICAO =
@@ -73,9 +69,8 @@ function getCandidatura(dataset: CandidateDataset) {
 }
 
 /**
- * Procedência do arquivo da candidata. O `source`/`sourceUrl` vem do próprio
- * JSON gravado pelo ETL — se um dia a fonte mudar, o relatório muda junto, sem
- * ninguém precisar lembrar de editar um texto aqui.
+ * Procedência do arquivo: `source`/`sourceUrl` vêm do JSON gravado pelo ETL,
+ * então a fonte muda no relatório sem edição manual.
  */
 function fonteTse(dataset: CandidateDataset, detail: string): ReportSource {
   return {
@@ -110,10 +105,8 @@ function baseDocument(
 }
 
 /**
- * Dataset ainda não gerado: em vez de um arquivo com abas vazias (que
- * pareceria "a candidata não teve voto"), o relatório sai com a omissão
- * declarada. Os componentes desabilitam o botão antes disso — esta é a
- * segunda linha de defesa, para nenhum caminho novo produzir arquivo vazio.
+ * Dataset ainda não gerado: o relatório sai com a omissão declarada, nunca com
+ * abas vazias. Segunda linha de defesa; os componentes já desabilitam o botão.
  */
 export function omissaoDatasetPendente(): ReportOmission {
   return {
@@ -124,7 +117,7 @@ export function omissaoDatasetPendente(): ReportOmission {
 }
 
 /* -------------------------------------------------------------------------
- * Visão geral — trajetória da carreira
+ * Visão geral: trajetória da carreira
  * ------------------------------------------------------------------------- */
 
 const COLUNAS_TRAJETORIA: ReportColumn[] = [
@@ -173,8 +166,7 @@ function highlightsCarreira(
   trajectory: TrajectoryPoint[],
 ): ReportHighlight[] {
   const { best, growth } = overview;
-  // Prosa de cartão fala dela no feminino, como o resto da vitrine; a coluna
-  // "Cargo" da tabela é que mantém o nome cru do TSE, para rastreabilidade.
+  // Cartão no feminino; a coluna "Cargo" mantém o nome cru do TSE, para rastreabilidade.
   const melhorPleito = trajectory.find((ponto) => ponto.id === best?.contestId);
   return [
     {
@@ -233,22 +225,14 @@ export function buildTrajectoryReport(input: {
 }
 
 /* -------------------------------------------------------------------------
- * Visão de um pleito — o relatório COMPLETO do recorte
+ * Visão de um pleito: o relatório COMPLETO do recorte
  *
- * Aqui mora o defeito que motivou este motor, e vale escrever o que ele era
- * para ninguém reintroduzi-lo: o relatório do pleito era montado a partir do
- * `scatter` da TELA — um único cruzamento, o do indicador selecionado no
- * seletor — e do `rankingMetric` da tela. Com o filtro "Mulheres" ativo, o
- * PDF saía com o percentual feminino e nada mais, com aparência de relatório
- * completo. O ranking, pior: a métrica escolhida na interface decidia quais
- * municípios entravam, porque quem não tinha denominador para AQUELA métrica
- * ficava de fora — o universo mudava em silêncio a cada clique.
- *
- * Agora o documento é montado sobre o `reportDataset` inteiro (todos os
- * municípios, todos os indicadores com dado) e o que está selecionado na tela
- * entra só como `activeViewFilter`, que ordena e destaca. Trocar o filtro
- * muda a ORDEM dos capítulos e qual deles ganha as tabelas de detalhe;
- * nenhuma linha de dado entra ou sai.
+ * O documento é montado sobre o `reportDataset` inteiro (todos os municípios,
+ * todos os indicadores com dado). O que está selecionado na tela entra só como
+ * `activeViewFilter`: muda a ORDEM dos capítulos e qual ganha as tabelas de
+ * detalhe, nenhuma linha de dado entra ou sai. Armadilha conhecida: montar a
+ * partir do `scatter` ou do `rankingMetric` da tela fazia o universo mudar em
+ * silêncio a cada clique.
  * ------------------------------------------------------------------------- */
 
 /** Colunas do quadro municipal: TODAS as métricas, nunca só a da tela. */
@@ -266,13 +250,10 @@ const COLUNAS_MUNICIPIOS: ReportColumn[] = [
 ];
 
 /**
- * O quadro municipal do pleito: uma linha por município com voto apurado.
- *
- * Ordenado por VOTOS ABSOLUTOS, sempre — não pela métrica escolhida na tela.
- * A ordenação por votos é a única que não depende de denominador nenhum, e é
- * por isso que ela não exclui ninguém: todas as demais métricas viram
- * COLUNAS, e o município que não tem denominador para uma delas fica com a
- * célula vazia em vez de sumir do quadro.
+ * Quadro municipal do pleito: uma linha por município com voto apurado,
+ * sempre ordenado por VOTOS ABSOLUTOS (única ordem que não depende de
+ * denominador, logo não exclui ninguém), nunca pela métrica da tela. As demais
+ * métricas viram COLUNAS, com célula vazia quando falta denominador.
  */
 export function buildMunicipiosTable(
   dataset: CandidateDataset,
@@ -289,8 +270,8 @@ export function buildMunicipiosTable(
       municipio.nome,
       municipio.ibgeCode,
       municipio.votos,
-      // Célula vazia = denominador não apurado. Escrever 0 aqui inventaria um
-      // desempenho que o TSE não publicou — e a planilha somaria a invenção.
+      // Célula vazia = denominador não apurado; 0 inventaria desempenho que o
+      // TSE não publicou, e a planilha somaria a invenção.
       municipio.percentualValidos,
       municipio.percentualDoPartido,
       municipio.votosPorMilEleitores,
@@ -310,7 +291,7 @@ export function buildMunicipiosTable(
   };
 }
 
-/** O resumo executivo como tabela de leitura — no máximo quatro frases. */
+/** O resumo executivo como tabela de leitura: no máximo quatro frases. */
 export function buildResumoTable(
   dataset: CandidateDataset,
   contest: CandidateContest,
@@ -446,10 +427,9 @@ export function buildIndicatorTable(
 }
 
 /**
- * Os quatro grupos formados pelas medianas dos dois eixos, para o indicador
- * em destaque. Os nomes são descritivos do corte — nada de "oportunidade",
- * "ameaça" ou "prioridade": rotular um grupo assim é decidir estratégia de
- * campanha dentro de uma tabela, e essa decisão não é do relatório.
+ * Os quatro grupos formados pelas medianas dos dois eixos, para o indicador em
+ * destaque. Os nomes descrevem o corte: nada de "oportunidade", "ameaça" ou
+ * "prioridade", que seria decidir estratégia de campanha dentro da tabela.
  */
 export function buildQuadrantTable(
   item: IndicatorAnalysis,
@@ -635,14 +615,10 @@ export function buildExclusionTable(
 }
 
 /**
- * O relatório de um pleito.
- *
- * Recebe o `reportDataset` COMPLETO e, separadamente, o que está selecionado
- * na tela (`activeViewFilter`). O filtro entra em duas decisões, as duas de
- * apresentação: a ORDEM dos capítulos de cruzamento e QUAL indicador ganha as
- * tabelas de detalhe (grupos por mediana e municípios atípicos). Todo
- * indicador com dado tem o seu capítulo, com estatística completa, seja qual
- * for o filtro; todo indicador sem dado é declarado na lista de omissões.
+ * O relatório de um pleito. Recebe o `reportDataset` COMPLETO e, à parte, o
+ * `activeViewFilter`, que decide só apresentação: a ORDEM dos capítulos e QUAL
+ * indicador ganha as tabelas de detalhe. Todo indicador com dado tem capítulo;
+ * todo indicador sem dado é declarado na lista de omissões.
  */
 export function buildContestReport(input: {
   dataset: CandidateDataset;
@@ -654,12 +630,9 @@ export function buildContestReport(input: {
   generatedAt: Date;
   images?: ReportImage[];
   /**
-   * Qual versão o PDF vai imprimir. Padrão: a completa — quem não escolhe
-   * recebe o documento inteiro, nunca o recorte.
-   *
-   * A variante muda SÓ a projeção de leitura (`sections`) e o nome do
-   * arquivo. As tabelas do Excel (`doc.tables`), as omissões e os cartões são
-   * os mesmos nas duas: a pasta de trabalho não tem versão resumida.
+   * Qual versão o PDF imprime. Padrão: a completa. A variante muda só a
+   * projeção de leitura (`sections`) e o nome do arquivo; tabelas do Excel,
+   * omissões e cartões são os mesmos nas duas.
    */
   variante?: ReportVariant;
 }): ReportDocument {
@@ -670,18 +643,14 @@ export function buildContestReport(input: {
     activeViewFilter: input.activeViewFilter ?? null,
   });
   const escopo = getMunicipalScope(contest);
-  // Título, escopo e nome do arquivo falam da candidata no feminino, como o
-  // resto da vitrine ("Deputada Federal"); as CÉLULAS das tabelas mantêm o
-  // nome do cargo como o TSE publica, para o dado continuar rastreável.
+  // Título, escopo e nome do arquivo no feminino; as CÉLULAS das tabelas
+  // mantêm o cargo como o TSE publica, para o dado continuar rastreável.
   const cargoLabel = getOfficeLabel(contest);
-  // O título é SEMPRE geral. O que estava selecionado na tela não pode
-  // rebatizar o documento: um PDF chamado "Relatório de mulheres" porque o
-  // filtro estava em Mulheres seria a mesma falha do relatório parcial, agora
-  // na capa — o arquivo traz todos os cruzamentos, e o nome diz isso.
+  // O título é SEMPRE geral: o filtro da tela não pode rebatizar o documento,
+  // que traz todos os cruzamentos.
   const doc = baseDocument(dataset, {
-    // O nome do arquivo distingue as versões: as duas circulam por e-mail e
-    // grupo de mensagem no mesmo dia, e duas anexos com o mesmo nome viram
-    // "relatorio (1).pdf" na pasta de quem recebe.
+    // Nome distinto por versão: as duas circulam no mesmo dia e, com nome
+    // igual, viram "relatorio (1).pdf" na pasta de quem recebe.
     filenameBase:
       variante === "resumido"
         ? `relatorio-resumido-${contest.electionYear}-${slugifyReport(cargoLabel)}`
@@ -702,8 +671,8 @@ export function buildContestReport(input: {
   /** O quadro municipal completo: vai para o Excel e para o anexo opcional. */
   let quadroMunicipal: ReportTable | null = null;
 
-  // Quadro de municípios num pleito de uma cidade só seria uma tabela de UMA
-  // linha repetindo o cartão do resumo. A omissão é declarada com o motivo.
+  // Em pleito de uma cidade só o quadro teria UMA linha: omissão declarada
+  // com o motivo.
   if (escopo) {
     omitted.push({
       title: "Quadro de municípios",
@@ -722,8 +691,8 @@ export function buildContestReport(input: {
   const exclusoes = buildExclusionTable(dataset, contest, reportDataset);
   if (exclusoes) tables.push(exclusoes);
 
-  // Correlação entre municípios só faz sentido com dispersão territorial: em
-  // pleito municipal existe UM município, e não há o que comparar.
+  // Correlação entre municípios exige dispersão territorial; em pleito
+  // municipal existe UM município.
   if (reportDataset.municipal) {
     omitted.push({
       title: "Cruzamento com indicadores municipais",
@@ -733,11 +702,9 @@ export function buildContestReport(input: {
   } else {
     for (const item of analysis.indicadores) {
       tables.push(buildIndicatorTable(item, contest, reportDataset));
-      // As tabelas de detalhe acompanham o indicador em DESTAQUE. É a única
-      // coisa que o filtro da tela decide, e é decisão de apresentação: a
-      // estatística dos quadrantes e dos atípicos de todos os indicadores
-      // continua nas notas e no modelo de análise, disponível para quem
-      // renderiza.
+      // Tabelas de detalhe acompanham só o indicador em DESTAQUE (decisão de
+      // apresentação); a estatística de quadrantes e atípicos de todos os
+      // indicadores continua nas notas e no modelo de análise.
       if (!item.destaque) continue;
       const quadrantes = buildQuadrantTable(item, contest);
       if (quadrantes) tables.push(quadrantes);
@@ -752,8 +719,8 @@ export function buildContestReport(input: {
     `${getContestLabel(contest)} · votação nominal por município`,
   );
   const narrativa = { contest, reportDataset, analysis, generatedAt: input.generatedAt, fonteEleitoral };
-  // A marca da versão vai para a CAPA, com a contagem que a distingue: a
-  // resumida nunca pode ser confundida com a completa em cima de uma mesa.
+  // A marca da versão vai para a CAPA, com a contagem que distingue a
+  // resumida da completa.
   const comCapitulo =
     variante === "resumido"
       ? selecionarIndicadoresResumidos(analysis.indicadores).length
@@ -774,9 +741,8 @@ export function buildContestReport(input: {
     })),
     tables,
     omitted,
-    // A projeção do PDF: as mesmas contas, organizadas como documento de
-    // leitura. `doc.tables` continua sendo a projeção da planilha, e é dela
-    // que o exceljs monta as abas — a planilha não tem versão resumida.
+    // Projeção do PDF; `doc.tables` continua sendo a da planilha, que o
+    // exceljs consome e que não tem versão resumida.
     sections:
       variante === "resumido"
         ? buildContestSummarySections(narrativa)
@@ -786,7 +752,7 @@ export function buildContestReport(input: {
 }
 
 /* -------------------------------------------------------------------------
- * Visão "Geral" — crescimento entre eleições
+ * Visão "Geral": crescimento entre eleições
  * ------------------------------------------------------------------------- */
 
 const COLUNAS_CRESCIMENTO: ReportColumn[] = [
@@ -814,9 +780,8 @@ export function buildGrowthTable(
     );
     for (const ponto of serie.points) {
       const seta = setaPorDestino.get(ponto.contestId);
-      // Célula VAZIA quando não houve apuração para o recorte naquele pleito.
-      // Escrever 0 transformaria "o bairro não aparece neste pleito" em "o
-      // bairro deu zero voto" — e a planilha somaria essa mentira sem avisar.
+      // Célula VAZIA quando não houve apuração para o recorte naquele pleito;
+      // 0 viraria "deu zero voto" e a planilha somaria isso sem avisar.
       rows.push([
         serie.label,
         ponto.electionYear,

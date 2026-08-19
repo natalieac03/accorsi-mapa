@@ -30,11 +30,10 @@ import {
 /**
  * Exportação do mapa coroplético como PNG.
  *
- * Nunca capturamos os tiles do Google (viola os termos de uso e "suja" o
- * canvas): desenhamos um mapa autônomo em canvas offscreen a partir das
- * geometrias já carregadas no `map.data`, com projeção equiretangular
- * corrigida por cos(latitude média) — para a extensão de um estado a
- * distorção é desprezível.
+ * Nunca capturar os tiles do Google (viola os termos de uso e "suja" o canvas):
+ * o mapa é desenhado em canvas offscreen a partir das geometrias já carregadas
+ * em `map.data`, com projeção equiretangular corrigida por cos(latitude média),
+ * cuja distorção é desprezível na extensão de um estado.
  */
 
 export type MapExportPoint = { lat: number; lng: number };
@@ -288,19 +287,15 @@ export function buildSpectrumMapExport(model: SpectrumModel): MapExportData {
 /**
  * Montagem dos dados de export da camada submunicipal (locais de votação).
  *
- * O PNG é desenhado a partir das geometrias MUNICIPAIS já carregadas — não
- * existe malha de local nem de bairro. Por isso o mapa exportado mostra a
- * métrica AGREGADA POR MUNICÍPIO a partir dos locais de votação (soma dos
- * votos dos locais antes de calcular índice ou percentual, nunca média de
- * médias), e o subtítulo diz isso explicitamente. As bolhas por local/bairro
- * continuam só na tela.
+ * Não existe malha de local nem de bairro, então o PNG usa as geometrias
+ * MUNICIPAIS e mostra a métrica AGREGADA POR MUNICÍPIO: soma dos votos dos
+ * locais antes de calcular índice ou percentual, nunca média de médias. As
+ * bolhas por local/bairro continuam só na tela.
  */
 export function buildPollingMapExport(model: PollingModel): MapExportData {
-  // O PNG carrega a MESMA medida da tela, seja qual for o pleito: com uma
-  // sigla em foco o mapa exportado é de percentual, com a rampa sequencial e
-  // sem nenhuma palavra sobre índice ideológico; com um pleito da candidata em
-  // foco, é o voto nominal dela, na rampa vermelha da campanha; sem nada
-  // escolhido, é o índice.
+  // O PNG carrega a MESMA medida da tela: sigla em foco vira percentual (rampa
+  // sequencial, sem menção a índice ideológico), pleito da candidata em foco
+  // vira voto nominal dela (rampa vermelha), sem nada escolhido é o índice.
   const isPartyShare = model.metric === "votoPartido";
   const isCandidate = model.metric === "votosCandidata";
   const candidateLabels = {
@@ -334,10 +329,8 @@ export function buildPollingMapExport(model: PollingModel): MapExportData {
   const missingCount = model.municipalityAggregates.filter(
     (item) => item.value === null,
   ).length;
-  // As faixas do polígono municipal saem da régua MUNICIPAL do modelo: no voto
-  // da candidata os cortes são por quantil dos totais das cidades, e usar aqui
-  // os cortes das unidades (voto de um local) pintaria quase tudo na cor mais
-  // escura.
+  // As faixas do polígono saem da régua MUNICIPAL do modelo: usar os cortes
+  // das unidades (voto de um local) pintaria quase tudo na cor mais escura.
   const legend: MapExportLegendEntry[] = [
     ...ALL_ANALYSIS_BANDS.map((band) => ({
       color: colors[band],

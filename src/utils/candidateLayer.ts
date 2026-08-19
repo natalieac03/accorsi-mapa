@@ -32,41 +32,32 @@ import { POLLING_CANDIDATE_COLORS } from "./pollingPlaces.ts";
  * Motor da camada "candidato" do mapa: o coroplético do desempenho DELA,
  * município a município, no pleito e na métrica escolhidos na aba "Accorsi".
  *
- * Puro e sem React, como o resto dos utils, para os testes cobrirem a
- * aritmética e — principalmente — as regras de ausência com payload inline.
- *
  * As duas regras que este arquivo existe para não deixar escapar:
  *
  * 1. pleito MUNICIPAL (prefeita/vereadora, cargos 11/13) aconteceu em UMA
  *    cidade. Município fora dela não é zero voto: ela não estava na urna.
- *    Fica fora da escala, fora do ranking e com a cor de dado ausente — e a
- *    interface é obrigada a dizer por quê, porque um mapa quase todo cinza sem
- *    explicação parece defeito;
+ *    Fica fora da escala, fora do ranking e com a cor de dado ausente, e a
+ *    interface é obrigada a dizer por quê;
  * 2. pleito ESTADUAL/FEDERAL tinha o nome dela na urna do estado inteiro:
  *    município ausente do pleito apurou ZERO voto dela, e zero é dado. O que
  *    pode faltar ali é o DENOMINADOR da métrica (eleitorado, válidos, voto do
- *    partido) — e sem denominador a taxa é null, cinza e fora da escala.
+ *    partido); sem denominador a taxa é null, cinza e fora da escala.
  */
 
 /**
  * Rampa da camada: a MESMA de "votos dela por local de votação"
- * (POLLING_CANDIDATE_COLORS). Reaproveitada de propósito — as duas leituras
- * medem a mesma coisa (o voto nominal dela) em recortes diferentes, e uma
- * segunda rampa só ensinaria à pessoa que vermelho-escuro quer dizer duas
- * coisas. Sequencial de um tom só, com o vermelho da campanha no meio: a série
- * é ela. A validação de contraste e o ΔE contra o cinza de dado ausente estão
- * documentados na constante original, em utils/pollingPlaces.ts.
+ * (POLLING_CANDIDATE_COLORS), porque as duas leituras medem o voto nominal
+ * dela em recortes diferentes. A validação de contraste e o ΔE contra o cinza
+ * de dado ausente estão documentados na constante original, em
+ * utils/pollingPlaces.ts.
  */
 export const CANDIDATE_LAYER_COLORS = POLLING_CANDIDATE_COLORS;
 
 /**
- * O denominador de cada métrica, escrito por extenso.
- *
- * "Votos por 1.000 eleitores" divide pelo ELEITORADO APTO do TSE, não pela
- * população do município: voto só sai de eleitor, e por habitante entraria no
- * denominador quem não vota (menores de 16, quem não tem título). São réguas
- * diferentes, então a camada diz qual está usando em vez de deixar a pessoa
- * supor "por 1.000 habitantes".
+ * O denominador de cada métrica, escrito por extenso. "Votos por 1.000
+ * eleitores" divide pelo ELEITORADO APTO do TSE, não pela população: por
+ * habitante entraria no denominador quem não vota. São réguas diferentes, e a
+ * camada diz qual está usando.
  */
 const DENOMINADOR_NOTAS: Record<CandidateRankingMetricId, string | null> = {
   votos: null,
@@ -87,13 +78,10 @@ export function getCandidateLayerDenominadorNota(
 const METRIC_IDS = new Set(CANDIDATE_RANKING_METRICS.map((metric) => metric.id));
 
 /**
- * Estado inicial da camada e do painel.
- *
- * A leitura de entrada é "votos por 1.000 eleitores" — é a pergunta que
- * originou a camada ("onde ela teve mais votos por mil"), e é a única métrica
- * que compara cidades de tamanhos muito diferentes sem que Goiânia coma o
- * mapa. Sem o snapshot do eleitorado essa métrica não existe, e o padrão cai
- * em votos absolutos em vez de abrir a camada inteira sem valor.
+ * Estado inicial da camada e do painel. A leitura de entrada é "votos por
+ * 1.000 eleitores", única métrica que compara cidades de tamanhos muito
+ * diferentes sem que Goiânia coma o mapa. Sem o snapshot do eleitorado essa
+ * métrica não existe e o padrão cai em votos absolutos.
  */
 export function getDefaultCandidateLayerState(
   dataset: CandidateDataset,
@@ -109,7 +97,7 @@ export function getDefaultCandidateLayerState(
 /**
  * Estado vindo do armazenamento local: só sobrevive o que ainda existe nos
  * dados de hoje. Pleito que sumiu do JSON (ou métrica sem denominador nesta
- * instalação) volta ao padrão, em vez de deixar a camada apontando para nada.
+ * instalação) volta ao padrão.
  */
 export function sanitizeCandidateLayerState(
   value: unknown,
@@ -166,17 +154,16 @@ export function toggleCandidateLayerBand(
 
 export type CandidateLayerInput = {
   dataset: CandidateDataset;
-  /** Municípios da malha — o universo que o mapa pinta. */
+  /** Municípios da malha: o universo que o mapa pinta. */
   municipios: CandidateLayerMunicipio[];
   electorateIndex: ElectorateIndex;
   state: CandidateLayerState;
 };
 
 /**
- * Modelo da camada; null quando ela NÃO pode ser oferecida — trajetória
- * pendente ou sem nenhum pleito. Null aqui é o mesmo contrato do histórico do
- * TSE (`electionModel`): quem chama cai na camada padrão e explica, em vez de
- * pintar o mapa com uma série que ninguém gerou.
+ * Modelo da camada; null quando ela NÃO pode ser oferecida (trajetória
+ * pendente ou sem nenhum pleito). Mesmo contrato do histórico do TSE
+ * (`electionModel`): quem chama cai na camada padrão e explica.
  */
 export function buildCandidateLayerModel(
   input: CandidateLayerInput,
@@ -191,18 +178,16 @@ export function buildCandidateLayerModel(
   if (!contest) return null;
 
   const eleitoradoPendente = electorateIndex === null;
-  // Métrica de taxa sem snapshot do eleitorado não tem denominador em lugar
-  // nenhum: cair em votos absolutos mostra dado; insistir mostraria 246
-  // municípios cinza.
+  // Métrica de taxa sem snapshot do eleitorado não tem denominador: cair em
+  // votos absolutos mostra dado; insistir mostraria 246 municípios cinza.
   const metricId: CandidateRankingMetricId =
     eleitoradoPendente && getCandidateRankingMetric(state.metricId).requiresElectorate
       ? "votos"
       : state.metricId;
   const metric = getCandidateRankingMetric(metricId);
   const escopoMunicipal = getMunicipalScope(contest);
-  // Prefeita/vereadora se disputam DENTRO de um município: cidade que não
-  // aparece no pleito não teve o nome dela na urna. A régua vem do cargo do
-  // TSE (o motor de estatísticas já define quais são os municipais), nunca de
+  // Prefeita/vereadora se disputam DENTRO de um município: cidade fora do
+  // pleito não teve o nome dela na urna. A régua vem do cargo do TSE, nunca de
   // uma lista de anos ou de candidaturas fixada em código.
   const pleitoMunicipal = isMunicipalContest(contest);
 
@@ -210,10 +195,9 @@ export function buildCandidateLayerModel(
     const eleitorado = electorateIndex?.[municipio.ibgeCode] ?? null;
     const registro = contest.municipios[municipio.ibgeCode];
 
-    // Caso 1: pleito municipal. Onde ela não concorreu não existe voto zero —
-    // existe ausência de disputa. (Quase sempre é "todo mundo menos uma
-    // cidade"; se o arquivo trouxer mais de uma, a regra continua valendo por
-    // cidade em vez de virar leitura estadual.)
+    // Caso 1: pleito municipal. Onde ela não concorreu não existe voto zero,
+    // existe ausência de disputa (com mais de uma cidade no arquivo, a regra
+    // continua valendo por cidade).
     if (pleitoMunicipal && !registro) {
       return {
         ibgeCode: municipio.ibgeCode,
@@ -228,22 +212,21 @@ export function buildCandidateLayerModel(
     }
 
     // Caso 2: pleito estadual/federal sem registro do município. Ela estava na
-    // urna do estado inteiro, então o município apurou ZERO voto dela — e zero
-    // é dado, não ausência. O que falta ali é denominador: votos por 1.000
-    // eleitores existe (0) quando há eleitorado, e os percentuais não existem
-    // porque válidos e voto do partido daquele município não foram apurados
-    // no arquivo dela.
+    // urna do estado inteiro, então o município apurou ZERO voto dela, e zero é
+    // dado. O que falta é denominador: votos por 1.000 eleitores existe (0)
+    // quando há eleitorado; os percentuais não, porque válidos e voto do
+    // partido não foram apurados no arquivo dela.
     const votos = registro ? registro.votos : 0;
     const value = registro
       ? getRankingMetricValue(registro, metricId, eleitorado)
       : metricId === "votos"
         ? 0
         : metricId === "votosPorMilEleitores"
-          ? // Zero voto sobre o eleitorado apto é uma taxa de verdade (0) —
-            // e continua sendo null onde não há eleitorado apurado.
+          ? // Zero voto sobre o eleitorado apto é taxa de verdade (0), e
+            // continua null onde não há eleitorado apurado.
             votosPorMilEleitores(0, eleitorado)
           : // % dos válidos e % do partido precisam de denominadores que o
-            // arquivo dela só traz onde ela teve voto: aqui não existem.
+            // arquivo dela só traz onde ela teve voto.
             null;
 
     return {
@@ -261,14 +244,14 @@ export function buildCandidateLayerModel(
   const medidos = items.filter((item) => item.value !== null);
   const valores = medidos.map((item) => item.value as number);
   // Um valor só (o caso do pleito municipal) não tem distribuição: quintil
-  // sobre um ponto pintaria a cidade como se ela fosse "a faixa mais baixa".
+  // sobre um ponto pintaria a cidade como "a faixa mais baixa".
   const escalaPorQuantil = valores.length >= 2;
   const thresholds = escalaPorQuantil ? calculateQuantileThresholds(valores) : [];
 
   for (const item of items) {
     if (item.value === null) continue;
-    // Sem escala, a cidade recebe o passo do meio da rampa — o vermelho da
-    // campanha. A ponta escura sugeriria "topo de uma escala" que não existe.
+    // Sem escala, a cidade recebe o passo do meio da rampa; a ponta escura
+    // sugeriria um "topo de escala" que não existe.
     item.band = escalaPorQuantil
       ? getAnalysisBand(item.value, thresholds)
       : (2 as AnalysisBand);
@@ -334,11 +317,10 @@ export function getCandidateLayerShortLabel(model: CandidateLayerModel): string 
 }
 
 /**
- * Linha curta do que a camada está pintando, para o cartão "Camada ativa"
- * (uma caixa estreita, onde a nota inteira do denominador viraria parágrafo).
- * Na taxa, o denominador vai junto mesmo assim, na forma mais curta possível:
- * "por 1.000 eleitores" sem complemento é a frase que faz qualquer pessoa
- * supor habitantes. A nota completa fica na legenda e no painel.
+ * Linha curta do que a camada está pintando, para o cartão "Camada ativa".
+ * Na taxa o denominador vai junto na forma mais curta possível: "por 1.000
+ * eleitores" sem complemento faz supor habitantes. A nota completa fica na
+ * legenda e no painel.
  */
 export function describeCandidateLayer(model: CandidateLayerModel): string {
   const base = `${model.contest.electionYear} · ${model.officeLabel}`;
@@ -351,7 +333,7 @@ export function describeCandidateLayer(model: CandidateLayerModel): string {
 /**
  * O que o tooltip do município diz. Cada ausência tem a sua frase: "ela não
  * disputou aqui" e "aqui falta denominador" são leituras diferentes do mesmo
- * cinza, e trocá-las por um "sem dado" genérico apagaria a informação.
+ * cinza; um "sem dado" genérico apagaria a informação.
  */
 export function describeCandidateLayerItem(
   model: CandidateLayerModel,

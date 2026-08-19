@@ -51,8 +51,8 @@ export function getComparableContests(
   dataset: ElectionDataset,
   contest: ElectionContest,
 ) {
-  // The contest itself is never a comparison target: comparing a candidacy
-  // with another candidacy of the same contest is not an evolution.
+  // O próprio pleito nunca é alvo de comparação: candidatura contra outra do
+  // mesmo pleito não é evolução.
   return dataset.contests.filter(
     (candidate) =>
       candidate.id !== contest.id &&
@@ -62,7 +62,7 @@ export function getComparableContests(
 }
 
 // Um pleito nunca compara consigo mesmo: sem alternativa real, a comparação é
-// declarada indisponível (null) — jamais uma auto-comparação com evolução zero.
+// declarada indisponível (null), jamais auto-comparação com evolução zero.
 function isSelfComparison(
   candidate: { id: string },
   contest: { candidates: Array<{ id: string }> },
@@ -77,8 +77,8 @@ export function findComparableCandidate(
   if (isSelfComparison(source, target)) return null;
   const normalizedFullName = source.fullName.toLocaleLowerCase("pt-BR");
   const normalizedBallotName = source.ballotName.toLocaleLowerCase("pt-BR");
-  // Match by full name, ballot name or party — never by mere list position:
-  // when no equivalent candidacy exists, the comparison is unavailable.
+  // Casa por nome completo, nome de urna ou partido, nunca por posição na
+  // lista; sem candidatura equivalente, a comparação fica indisponível.
   return (
     target.candidates.find(
       (candidate) =>
@@ -97,18 +97,16 @@ export function findComparableCandidate(
 
 /**
  * `true` enquanto o histórico do TSE for o placeholder do repositório: sem
- * nenhum pleito OU marcado como "pendente" nos metadados. A camada inteira de
- * eleições é opcional — quem consome este arquivo decide se some da tela, e
- * nada aqui inventa pleito, candidatura ou voto para "preencher" a ausência.
+ * nenhum pleito OU marcado como "pendente" nos metadados. Nada aqui inventa
+ * pleito, candidatura ou voto para preencher a ausência.
  */
 export function isElectionDatasetPendente(dataset: ElectionDataset): boolean {
   return dataset.metadata.status === "pendente" || dataset.contests.length === 0;
 }
 
 /**
- * Estado neutro: usado quando não há pleito nenhum no snapshot. Todos os
- * identificadores ficam vazios/nulos — ausência declarada, jamais um pleito
- * fabricado com votos zerados.
+ * Estado neutro para quando não há pleito nenhum no snapshot: identificadores
+ * vazios/nulos, ausência declarada em vez de pleito com votos zerados.
  */
 function getEmptyElectionState(): ElectionState {
   return {
@@ -287,8 +285,8 @@ function getMetricValue(
 
 /**
  * Devolve `null` quando o histórico ainda é placeholder (nenhum pleito ou
- * pleito sem candidaturas). Ausência de dado é AUSÊNCIA: quem chama esconde a
- * camada e explica o porquê — nada de mapa pintado com zeros inventados.
+ * pleito sem candidaturas). Quem chama esconde a camada e explica o porquê;
+ * nada de mapa pintado com zeros inventados.
  */
 export function buildElectionModel(
   dataset: ElectionDataset,
@@ -306,8 +304,8 @@ export function buildElectionModel(
   const comparisonCandidate = sanitized.comparisonCandidateId
     ? getCandidate(comparisonContest, sanitized.comparisonCandidateId) ?? null
     : null;
-  // Without an equivalent candidacy the swing metric is unavailable: the map
-  // falls back to the share metric and the UI explains why.
+  // Sem candidatura equivalente a métrica "swing" fica indisponível: o mapa
+  // cai para "share" e a interface explica o motivo.
   const metricId: ElectionMetricId =
     sanitized.metricId === "swing" && !comparisonCandidate
       ? "share"

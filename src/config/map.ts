@@ -1,9 +1,7 @@
 /**
  * Enquadramento do mapa e endpoints territoriais.
  *
- * Os valores concretos vivem em `estado.ts` — este arquivo mantém apenas os
- * nomes que o resto da aplicação já importa, para que trocar de estado
- * continue sendo uma edição em um arquivo só.
+ * Reexporta os valores de `estado.ts` sob os nomes que a aplicação já importa.
  */
 import { ESTADO, URL_MALHA_MUNICIPAL, URL_MUNICIPIOS } from "./estado";
 

@@ -9,38 +9,31 @@ import type { MensagemAgente, MensagemChat, StatusAgente } from "../types/agent"
 /**
  * Laço de tool calling do agente de perguntas.
  *
- * A divisão de responsabilidades é o que garante que o chat nunca invente
- * número: o modelo (no servidor, via relé /agent/chat) só escolhe QUAL consulta
- * rodar; quem calcula é `executarFerramenta`, aqui no navegador, com os mesmos
- * motores que desenham o mapa. Nenhuma estatística atravessa a rede vinda do
- * modelo — ela sobe daqui como resultado de tool e volta apenas redigida.
- *
- * O servidor é um relé sem estado: a conversa inteira vai a cada requisição.
- * Por isso o histórico vive aqui, e é podado antes de subir (ver `podarHistorico`).
+ * O modelo (no servidor, via relé /agent/chat) só escolhe QUAL consulta rodar;
+ * quem calcula é `executarFerramenta`, no navegador, com os mesmos motores do
+ * mapa. Nenhuma estatística vem do modelo: ela sobe daqui como resultado de
+ * tool e volta apenas redigida. O relé é sem estado, então a conversa inteira
+ * sobe a cada requisição e o histórico vive aqui, podado por `podarHistorico`.
  */
 
 const ROTA_STATUS = "/api/v1/agent/status";
 const ROTA_CHAT = "/api/v1/agent/chat";
 
-/**
- * Teto de idas ao modelo por pergunta. Sem isso, um modelo que insista em
- * chamar tools entraria em laço infinito consumindo cota e dinheiro.
- */
+/** Teto de idas ao modelo por pergunta; sem ele, chamadas de tool viram laço infinito. */
 const MAXIMO_RODADAS = 6;
 
 /**
- * O relé recusa conversas acima do limite de mensagens/caracteres dele. Podamos
- * antes de enviar, mantendo sempre os turnos mais recentes — e nunca cortando
- * no meio de um par assistant→tool, que deixaria um tool_call sem resposta e
- * faria o provedor recusar a requisição inteira.
+ * Limite de mensagens aceito pelo relé. Podamos mantendo os turnos mais
+ * recentes e nunca cortando no meio de um par assistant→tool: um tool_call sem
+ * resposta faz o provedor recusar a requisição inteira.
  */
 const MAXIMO_MENSAGENS_ENVIADAS = 24;
 
 function podarHistorico(mensagens: MensagemAgente[]): MensagemAgente[] {
   if (mensagens.length <= MAXIMO_MENSAGENS_ENVIADAS) return mensagens;
   let inicio = mensagens.length - MAXIMO_MENSAGENS_ENVIADAS;
-  // Anda para frente enquanto o primeiro item for uma resposta de tool órfã:
-  // sem o assistant que a pediu, o provedor rejeita a conversa.
+  // Descarta respostas de tool órfãs no início: sem o assistant que as pediu, o
+  // provedor rejeita a conversa.
   while (inicio < mensagens.length && mensagens[inicio].role === "tool") {
     inicio += 1;
   }
@@ -80,9 +73,8 @@ export function useDataAgent(entrada: EntradaContextoAgente) {
   const [erro, setErro] = useState<string | null>(null);
 
   /**
-   * O histórico enviado ao modelo (com tool_calls e resultados) é diferente do
-   * histórico exibido: a interface não mostra o vaivém de ferramentas. Fica em
-   * ref para não disparar re-render a cada passo do laço.
+   * Histórico enviado ao modelo (com tool_calls e resultados), diferente do
+   * exibido. Em ref para não re-renderizar a cada passo do laço.
    */
   const historico = useRef<MensagemAgente[]>([]);
   const emVoo = useRef<AbortController | null>(null);
@@ -108,8 +100,7 @@ export function useDataAgent(entrada: EntradaContextoAgente) {
       })
       .catch((causa: unknown) => {
         if (controlador.signal.aborted) return;
-        // Indisponibilidade não é erro de conversa: o botão simplesmente não
-        // aparece, e o app segue inteiro.
+        // Indisponibilidade não é erro de conversa: o botão só não aparece.
         setStatus({
           carregando: false,
           disponivel: false,
@@ -182,8 +173,8 @@ export function useDataAgent(entrada: EntradaContextoAgente) {
             return;
           }
 
-          // Executa TODAS as ferramentas pedidas no turno. O resultado sobe como
-          // mensagem "tool"; o modelo só redige em cima do que voltar daqui.
+          // Executa TODAS as ferramentas do turno; o resultado sobe como mensagem
+          // "tool" e o modelo só redige em cima do que voltar daqui.
           for (const chamada of chamadas) {
             let argumentos: unknown = {};
             try {

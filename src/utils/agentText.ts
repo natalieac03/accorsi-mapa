@@ -1,19 +1,10 @@
 /**
- * Formatação da resposta do agente para leitura na tela.
- *
- * O modelo escreve em Markdown por hábito, e o painel renderizava o texto cru
- * dentro de um <p>: o resultado eram asteriscos soltos no meio dos números
- * ("**Eleitorado total** — 1.016.153"), que poluem exatamente o que a pessoa
- * precisa ler rápido.
- *
- * Aqui o texto vira ESTRUTURA (parágrafos, listas, trechos em negrito) que o
- * componente renderiza como elementos React de verdade. Nada de HTML injetado:
- * o conteúdo vem de um modelo de linguagem, e transformar isso em markup por
- * string seria abrir uma porta de XSS por conveniência de formatação.
- *
- * O escopo é deliberadamente pequeno — negrito, listas e títulos curtos. Não é
- * um renderizador de Markdown, é uma faxina: o que não for reconhecido perde a
- * pontuação decorativa e volta como texto limpo, nunca como asterisco órfão.
+ * Formatação da resposta do agente para leitura na tela: o Markdown do modelo
+ * vira ESTRUTURA (parágrafos, listas, negrito) que o componente renderiza como
+ * elementos React. Nada de HTML injetado, que abriria XSS com texto vindo de um
+ * modelo de linguagem. Escopo pequeno de propósito (negrito, listas, títulos
+ * curtos); o que não for reconhecido perde a pontuação decorativa e volta como
+ * texto limpo, nunca como asterisco órfão.
  */
 
 /** Um pedaço de linha: texto comum ou destacado. */
@@ -32,11 +23,8 @@ const MARCADOR_ORDENADA = /^\s{0,4}(\d{1,2})[.)]\s+/;
 const MARCADOR_TITULO = /^\s{0,3}#{1,6}\s+/;
 
 /**
- * Quebra uma linha em trechos comuns e fortes.
- *
- * Só pares COMPLETOS de ** viram negrito. Um asterisco sozinho é lixo de
- * formatação e sai da string — deixá-lo passar seria repetir o defeito que
- * esta função existe para corrigir.
+ * Quebra uma linha em trechos comuns e fortes. Só pares COMPLETOS de ** viram
+ * negrito; asterisco sozinho é lixo de formatação e sai da string.
  */
 export function dividirTrechos(linha: string): TrechoAgente[] {
   const trechos: TrechoAgente[] = [];
@@ -102,8 +90,7 @@ export function formatarRespostaAgente(texto: string): BlocoAgente[] {
       const conteudo = linha.replace(ehOrdenada ? MARCADOR_ORDENADA : MARCADOR_LISTA, "");
       const trechos = dividirTrechos(conteudo);
       if (trechos.length === 0) continue;
-      // Trocar de tipo de lista no meio começa uma lista nova, em vez de
-      // misturar numeração com marcador no mesmo bloco.
+      // Trocar de tipo de lista no meio começa uma lista nova.
       if (!listaAtual || listaAtual.ordenada !== ehOrdenada) {
         fecharLista();
         listaAtual = { ordenada: ehOrdenada, itens: [] };

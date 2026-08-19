@@ -79,25 +79,21 @@ import {
 } from "../../utils/reportStats";
 
 /**
- * Janela "Estatísticas": overlay de tela inteira dedicado às campanhas da
- * Dra. Adriana Accorsi. Carregada por React.lazy a partir do App — os quatro
- * snapshots que ela importa só são baixados quando alguém abre a janela.
+ * Janela "Estatísticas": overlay de tela inteira. Carregada por React.lazy no
+ * App para que os quatro snapshots só baixem quando alguém abre a janela.
  *
- * Toda a aritmética mora em utils/candidateStats.ts (motor puro, testado);
- * aqui é só composição visual. Como no resto do projeto, os dados importados
- * podem ser placeholders "pendente" — a janela mostra o estado vazio com a
- * instrução do gerar_dados.sh e nunca quebra.
+ * A aritmética mora em utils/candidateStats.ts; aqui é só composição visual.
+ * Dados podem vir como placeholder "pendente": a janela mostra o estado vazio
+ * com a instrução do gerar_dados.sh e nunca quebra.
  */
 
 const dataset = candidatoJson as unknown as CandidateDataset;
 const electorateSource = electorateJson as unknown as ElectorateSource;
 /*
- * Os quatro snapshots territoriais. O socioeconômico entrou aqui junto com o
- * motor do relatório: sem ele, renda, PIB, densidade, saneamento,
- * escolarização e população ficavam de fora do PDF mesmo com o arquivo
- * gerado no disco — o perfil dos municípios era montado com todos esses
- * campos em null. Enquanto o arquivo for placeholder ("pendente"), o motor
- * simplesmente não oferece esses indicadores; nenhum deles entra zerado.
+ * Os quatro snapshots territoriais. Sem o socioeconômico, renda, PIB,
+ * densidade, saneamento, escolarização e população ficam em null no perfil.
+ * Enquanto o arquivo for "pendente", o motor não oferece esses indicadores;
+ * nenhum deles entra zerado.
  */
 const indicatorSource: StatsIndicatorSource = {
   electorate: electorateJson as unknown as StatsIndicatorSource["electorate"],
@@ -111,11 +107,9 @@ const RANKING_SIZE = 15;
 
 /*
  * Cores das duas categorias da trajetória (municipal × federal/estadual),
- * validadas com o validador da skill de dataviz sobre a superfície BRANCA
- * da janela: CVD ΔE 26,9 (deutan) e visão normal ΔE 33,7 — muito acima dos
- * pisos 8/15 — e ambas ≥ 3:1 de contraste sobre o branco. A identidade nunca
- * é só cor: o cargo está escrito sob cada barra e a legenda acompanha o
- * gráfico.
+ * validadas sobre a superfície BRANCA da janela: ΔE 26,9 em deutan e 33,7 em
+ * visão normal (pisos 8/15), ambas >= 3:1 de contraste. Cor não é a única
+ * identidade: o cargo está escrito sob cada barra e há legenda.
  */
 const COR_MUNICIPAL = "#2a78d6";
 const COR_FEDERAL = "#c1121f";
@@ -147,12 +141,8 @@ function columnPath(x: number, y: number, width: number, height: number) {
 type StatsView = "overview" | string;
 
 /**
- * Os formatos de entrega da barra de exportação.
- *
- * O PDF tem duas versões e elas convivem: a completa é o documento inteiro,
- * com um capítulo por indicador; a resumida é o mesmo dado em oito ou nove
- * páginas, para levar a uma reunião curta. Nenhuma substitui a outra, e o
- * arquivo gerado diz no nome e na capa qual delas é.
+ * Formatos da barra de exportação. As duas versões de PDF convivem: completa
+ * (um capítulo por indicador) e resumida (o mesmo dado em 8 ou 9 páginas).
  */
 type FormatoExport = "excel" | "pdfResumido" | "pdfCompleto";
 
@@ -168,27 +158,18 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
     useState<CandidateRankingMetricId>("votos");
   const [indicatorId, setIndicatorId] = useState<StatsIndicatorId>("female");
   const [exportMessage, setExportMessage] = useState("");
-  /* Qual formato está sendo gerado agora: as bibliotecas de .xlsx e .pdf são
-     carregadas por import dinâmico, então o primeiro clique tem uma espera
-     real de rede e precisa aparecer no botão. O PDF tem DOIS botões, e o
-     estado guarda qual deles está rodando: os dois demoram, e "Gerando…" no
-     botão errado é pior do que nenhum aviso. */
+  /* Formato sendo gerado agora. As bibliotecas de .xlsx e .pdf vêm por import
+     dinâmico, então o primeiro clique espera a rede e isso precisa aparecer no
+     botão certo: são dois botões de PDF. */
   const [exportando, setExportando] = useState<FormatoExport | null>(null);
   /**
-   * Anexo municipal do PDF — DESLIGADO por padrão, e é assim que ele tem de
-   * chegar na mão de quem clica: o relatório é documento de leitura, e a base
-   * municipal inteira já sai completa no Excel e no CSV. Quem precisa dela
-   * impressa liga a opção aqui.
-   *
-   * A opção vale para a versão COMPLETA. Anexar centenas de linhas de tabela
-   * a um resumo de oito páginas desmontaria a única coisa que a versão
-   * resumida promete, que é caber numa leitura curta.
+   * Anexo municipal do PDF, DESLIGADO por padrão (a base inteira já sai no
+   * Excel e no CSV). Vale só para a versão COMPLETA.
    */
   const [comAnexo, setComAnexo] = useState(false);
   const conteudoRef = useRef<HTMLDivElement | null>(null);
-  /* Recortes comparados na visão Geral, guardados POR GRUPO: trocar de
-     municipal para federal e voltar não deve perder a seleção anterior — e os
-     ids de bairro e de município nem sequer são do mesmo universo. */
+  /* Recortes comparados na visão Geral, guardados POR GRUPO: ir e voltar entre
+     municipal e federal preserva a seleção, e os ids não são do mesmo universo. */
   const [recortes, setRecortes] = useState<Record<GrowthGroupId, string[]>>({
     municipais: [],
     federaisEstaduais: [],
@@ -265,11 +246,9 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
   );
 
   /*
-   * O universo COMPLETO do relatório, reconstruído do zero a partir do pleito
-   * e dos snapshots. Repare que `indicatorId` e `rankingMetric` NÃO estão nas
-   * dependências: o que está selecionado na tela não pode alterar uma linha
-   * deste conjunto. Era exatamente esse o defeito antigo — o PDF herdava o
-   * scatter de um indicador só e saía parcial com cara de completo.
+   * Universo COMPLETO do relatório, montado do pleito e dos snapshots.
+   * `indicatorId` e `rankingMetric` NÃO entram nas dependências: o que está
+   * selecionado na tela não pode alterar uma linha deste conjunto.
    */
   const reportDataset = useMemo(
     () => (contest ? buildReportDataset({ contest, source: indicatorSource }) : null),
@@ -279,9 +258,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
   const anunciarExport = (linhas: number) =>
     setExportMessage(`${formatInteger(linhas)} linhas exportadas em CSV.`);
 
-  /* Título do gráfico embutido no PDF, por visão. O texto alternativo do
-     próprio SVG vira a legenda: ele já descreve o gráfico para leitor de tela
-     e serve igualmente bem a quem lê o relatório impresso. */
+  /* Título do gráfico embutido no PDF, por visão. O aria-label do SVG vira a
+     legenda, servindo tanto ao leitor de tela quanto ao relatório impresso. */
   const tituloGrafico = grupoGeral
     ? "Votos por eleição"
     : contest
@@ -289,9 +267,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
       : "Trajetória completa";
 
   /**
-   * Monta o relatório do RECORTE VISÍVEL — o que estiver na tela é o que vai
-   * para o arquivo. Nenhuma visão exporta dados de outra: quem está olhando um
-   * pleito recebe aquele pleito, não a carreira inteira.
+   * Monta o relatório do RECORTE VISÍVEL. Nenhuma visão exporta dados de
+   * outra: quem olha um pleito recebe aquele pleito, não a carreira inteira.
    */
   const montarRelatorio = async (
     comImagens: boolean,
@@ -299,11 +276,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
   ): Promise<ReportDocument | null> => {
     const generatedAt = new Date();
     const images: ReportImage[] = [];
-    // O relatório de um PLEITO não rasteriza mais o gráfico da tela: o PDF
-    // desenha os seus próprios gráficos em vetor, com escala, legenda e
-    // descrição textual. Rasterizar por cima disso só acrescentaria um PNG
-    // redundante — e páginas em imagem, que era justamente o que se queria
-    // evitar. As demais visões continuam levando o gráfico da tela.
+    // O relatório de um PLEITO não rasteriza o gráfico da tela: o PDF desenha
+    // os próprios gráficos em vetor. As demais visões levam o gráfico da tela.
     const rasterizar = comImagens && !(contest && reportDataset);
     if (rasterizar) {
       const graficos =
@@ -331,9 +305,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
         dataset,
         contest,
         reportDataset,
-        // O filtro da tela chega ao relatório apenas como DESTAQUE: ele
-        // decide a ordem dos capítulos e qual indicador ganha as tabelas de
-        // detalhe. Todo indicador com dado entra no arquivo de qualquer jeito.
+        // O filtro da tela é só DESTAQUE: define a ordem dos capítulos e quem
+        // ganha tabela de detalhe. Todo indicador com dado entra no arquivo.
         activeViewFilter: { featuredIndicatorId: indicatorId },
         generatedAt,
         images,
@@ -359,8 +332,7 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
         : `Gerando o relatório em PDF (versão ${resumido ? "resumida" : "completa"})…`,
     );
     try {
-      // O Excel não embute imagem (a planilha é para trabalhar os números);
-      // rasterizar o gráfico à toa custaria segundos no clique.
+      // O Excel não embute imagem: rasterizar à toa custaria segundos no clique.
       const relatorio = await montarRelatorio(
         formato !== "excel",
         resumido ? "resumido" : "completo",
@@ -373,9 +345,7 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
         formato === "excel"
           ? await exportReportAsExcel(relatorio)
           : await exportReportAsPdf(relatorio, {
-              // O anexo municipal é da versão completa: a resumida existe
-              // para caber numa leitura curta, e centenas de linhas de tabela
-              // desmontariam exatamente isso.
+              // O anexo municipal é só da versão completa.
               incluirAnexoMunicipal: comAnexo && !resumido,
             });
       setExportMessage(
@@ -386,8 +356,7 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
           : "Este recorte não tem nenhuma tabela com linhas para exportar.",
       );
     } catch {
-      // Falha de rede no import dinâmico ou de memória na geração: a janela
-      // segue viva e a pessoa sabe o que aconteceu.
+      // Falha no import dinâmico ou na geração: a janela segue viva.
       setExportMessage(
         "Não foi possível gerar o arquivo. Tente novamente em instantes.",
       );
@@ -448,8 +417,7 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
               <span>Visão geral</span>
             </button>
 
-            {/* Grupos derivados do dado: uma eleição nova no JSON aparece no
-                grupo certo sem tocar em código. */}
+            {/* Grupos derivados do dado: eleição nova no JSON cai no grupo certo. */}
             {groups.municipais.length > 0 && (
               <>
                 <span className="stats-nav__group">
@@ -586,9 +554,8 @@ export function StatsWindow({ onClose }: { onClose: () => void }) {
 }
 
 /**
- * Exportação do recorte visível em arquivo de entrega: planilha formatada e
- * relatório. O CSV continua onde sempre esteve — no cabeçalho de cada seção —
- * porque é outro público: quem vai cruzar os números em outra ferramenta.
+ * Barra de exportação do recorte visível: Excel e PDF (resumido e completo).
+ * O CSV fica no cabeçalho de cada seção.
  */
 function BarraRelatorio({
   exportando,
@@ -603,15 +570,6 @@ function BarraRelatorio({
 }) {
   return (
     <div className="stats-report-bar">
-      <p>
-        <strong>Exportar este recorte</strong>
-        <span>
-          Planilha com capa de procedência, uma aba por conjunto e filtros
-          prontos; relatório em PDF em duas versões — a resumida para levar a
-          uma reunião curta, a completa com um capítulo por indicador. As duas
-          saem do mesmo dado e trazem a tabela com todos os indicadores.
-        </span>
-      </p>
       <div className="stats-report-bar__actions">
         <label className="stats-report-option">
           <input
@@ -636,10 +594,8 @@ function BarraRelatorio({
           <FileSpreadsheet size={15} aria-hidden />
           {exportando === "excel" ? "Gerando…" : ROTULO_FORMATO.excel}
         </button>
-        {/* Duas versões, dois botões — e não um botão com um seletor
-            escondido: quem clica precisa ver, sem abrir nada, que existe uma
-            resumida e uma completa, e o que cada uma é. O título de cada botão
-            diz o tamanho aproximado para a escolha não depender de tentativa. */}
+        {/* Duas versões, dois botões visíveis; o title de cada um diz o
+            tamanho aproximado. */}
         <button
           type="button"
           className="stats-report-button stats-report-button--pdf"
@@ -697,9 +653,9 @@ function NavItem({
 }
 
 /**
- * Fecha cada grupo da navegação: a leitura que atravessa TODAS as eleições
- * daquele universo, em vez de uma eleição por vez. Só aparece com dois pleitos
- * ou mais — com um só não existe crescimento para comparar.
+ * Fecha cada grupo da navegação com a leitura que atravessa TODAS as eleições
+ * do universo. Só aparece com dois pleitos ou mais (sem isso não há
+ * crescimento a comparar).
  */
 function NavGeral({
   id,
@@ -990,9 +946,8 @@ function ElectionView({
         cardClassName="stats-card"
       />
 
-      {/* Ranking de municípios num pleito de uma cidade só seria uma tabela de
-          UMA linha repetindo o cartão logo acima. Onde a disputa é municipal, o
-          recorte que informa alguma coisa é o de bairros. */}
+      {/* Em pleito de uma cidade só, o ranking de municípios teria uma linha;
+          o recorte útil ali é o de bairros. */}
       {escopo ? (
         <div className="stats-panel">
           <div className="stats-panel__heading">
@@ -1084,9 +1039,8 @@ function ElectionView({
       </div>
       )}
 
-      {/* Correlação entre municípios só faz sentido com cobertura estadual:
-          um pleito de Prefeita de Goiânia tem UM município — não existe
-          dispersão nem Pearson possível ali, e nada é fabricado no lugar. */}
+      {/* Correlação entre municípios exige cobertura estadual: com UM município
+          não há dispersão nem Pearson, e nada é fabricado no lugar. */}
       {municipal ? (
         <div className="stats-panel">
           <div className="stats-panel__heading">
@@ -1117,9 +1071,8 @@ function ElectionView({
 }
 
 /**
- * Tradução do coeficiente de Pearson para linguagem de campanha: a força em
- * palavras + a direção. O número exato continua ao lado — isto é legenda,
- * não substituto.
+ * Traduz o coeficiente de Pearson em força e direção. É legenda do número
+ * exato exibido ao lado, não substituto dele.
  */
 function descreverPearson(r: number): string {
   const forca = Math.abs(r);
@@ -1147,8 +1100,8 @@ function ScatterSection({
   const { indicator, points } = scatter;
   const semDado = scatter.semIndicador + scatter.semPercentual;
 
-  // Escalas: X cobre o intervalo observado com folga de 4%; Y parte do zero —
-  // % dos válidos é proporção e cortar a base exageraria diferenças.
+  // Escalas: X cobre o intervalo observado com folga de 4%; Y parte do zero,
+  // porque % dos válidos é proporção e cortar a base exageraria diferenças.
   const xs = points.map((p) => p.x);
   const xMinRaw = xs.length > 0 ? Math.min(...xs) : 0;
   const xMaxRaw = xs.length > 0 ? Math.max(...xs) : 1;
@@ -1283,8 +1236,7 @@ function ScatterSection({
         </svg>
       )}
 
-      {/* Legenda do gráfico: a contagem de municípios faz parte dela (nada
-          de número solto flutuando no canto). */}
+      {/* Legenda do gráfico, incluindo a contagem de municípios. */}
       {points.length > 0 && (
         <p className="stats-chart-caption">
           Cada ponto é um município de Goiás · {formatInteger(points.length)}{" "}

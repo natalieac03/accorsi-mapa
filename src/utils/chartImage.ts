@@ -3,28 +3,19 @@ import type { ReportImage } from "./reportModel.ts";
 /**
  * Rasterização de gráficos e mapas para o PDF.
  *
- * O PDF do jsPDF aceita imagem, não SVG. Os gráficos da janela de Estatísticas
- * são SVG desenhado à mão, com a aparência vinda de CLASSES CSS (`.stats-chart-tick`,
- * `.stats-traj-fill`…). Se serializássemos o SVG cru, o navegador o
- * rasterizaria fora do documento, sem a folha de estilo — e o gráfico sairia
- * preto sobre branco, sem tipografia. Por isso as propriedades computadas são
- * copiadas para atributos de apresentação no CLONE antes de serializar.
- *
- * Tudo aqui depende de DOM e canvas: não é chamado nos testes de modelo, que é
- * justamente por que a montagem do relatório não mora neste arquivo.
- *
- * ONDE ISTO NÃO É MAIS USADO: o relatório de um PLEITO. Os gráficos daquele
- * documento são desenhados em VETOR pelo próprio PDF (`pdfDraw.ts`), com eixo
- * rotulado, legenda e descrição textual — texto pesquisável, arquivo leve e
- * ampliação sem serrilhado. Rasterizar o SVG da tela por cima disso só
- * acrescentaria um PNG redundante. O que continua passando por aqui é o mapa
- * e os gráficos das visões que ainda não têm equivalente vetorial.
+ * jsPDF aceita imagem, não SVG, e a aparência dos gráficos vem de CLASSES CSS
+ * (`.stats-chart-tick`, `.stats-traj-fill`): serializar o SVG cru rasterizaria
+ * fora do documento, sem a folha de estilo, preto sobre branco. Por isso as
+ * propriedades computadas são copiadas para atributos de apresentação no CLONE
+ * antes de serializar. Depende de DOM e canvas, logo fora dos testes de modelo.
+ * O relatório de um pleito não passa por aqui: seus gráficos são vetor
+ * desenhado em `pdfDraw.ts`.
  */
 
 /**
- * Propriedades que definem a aparência de uma marca ou de um rótulo. A lista é
- * curta de propósito: copiar todo o `getComputedStyle` produziria um SVG com
- * centenas de atributos por nó e travaria o navegador em gráficos densos.
+ * Propriedades que definem a aparência de uma marca ou rótulo. Lista curta de
+ * propósito: copiar todo o `getComputedStyle` produziria centenas de atributos
+ * por nó e travaria o navegador em gráficos densos.
  */
 const PROPRIEDADES = [
   "fill",
@@ -70,10 +61,9 @@ function copiarEstilos(origem: Element, destino: Element) {
 /**
  * Converte um `<svg>` da tela em PNG (data URL) pronto para o PDF.
  *
- * `scale` multiplica a resolução: 2× deixa o texto do gráfico nítido quando o
- * PDF é impresso ou ampliado. Devolve `null` quando o navegador não conseguiu
- * decodificar a imagem — o relatório então sai sem o gráfico, nunca com um
- * retângulo vazio no lugar.
+ * `scale` multiplica a resolução: 2× mantém o texto nítido ao imprimir ou
+ * ampliar. Devolve `null` se o navegador não decodificar a imagem; o relatório
+ * sai sem o gráfico, nunca com um retângulo vazio no lugar.
  */
 export async function svgToReportImage(
   svg: SVGSVGElement,

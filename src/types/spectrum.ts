@@ -89,10 +89,7 @@ export type SpectrumBandMode = "absolute" | "quantile";
 export type SpectrumState = {
   contestId: string;
   metricId: SpectrumMetricId;
-  /**
-   * Pleito usado como base do deslocamento do índice. Nunca aponta para o
-   * próprio pleito analisado; `null` desliga a comparação.
-   */
+  /** Base do deslocamento do índice, nunca o próprio pleito; `null` desliga a comparação. */
   comparisonContestId: string | null;
   bandMode: SpectrumBandMode;
   activeBands: AnalysisBand[];
@@ -114,9 +111,9 @@ export type SpectrumMunicipalityItem = {
   /** índice 0–10 do município no pleito de comparação; null sem comparação ou sem índice lá */
   comparisonIndex: number | null;
   /**
-   * Deslocamento em pontos da escala 0–10 (índice atual − índice comparado).
-   * Positivo = moveu para a direita. Null quando falta índice em qualquer um
-   * dos dois pleitos — nunca convertido em zero.
+   * Deslocamento em pontos da escala 0–10 (índice atual − índice comparado);
+   * positivo = moveu para a direita. Null quando falta índice em um dos dois
+   * pleitos, nunca zero.
    */
   shift: number | null;
   value: number | null;

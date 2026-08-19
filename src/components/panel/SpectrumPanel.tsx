@@ -96,8 +96,8 @@ export function SpectrumPanel({
   const [showAllUnscored, setShowAllUnscored] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
 
-  // A seleção crua fica visível mesmo quando o modelo cai para o índice
-  // (métrica efetiva sem comparação), como elections faz com o swing.
+  // A seleção crua continua visível quando o modelo cai para o índice (métrica
+  // efetiva sem comparação), como elections faz com o swing.
   const metric = SPECTRUM_METRICS.find((item) => item.id === state.metricId);
   const allBandsActive = state.activeBands.length === ALL_ANALYSIS_BANDS.length;
   const visibleRanking = showAllRanking
@@ -158,9 +158,8 @@ export function SpectrumPanel({
     );
   };
 
-  /* O mesmo desenho do PNG do mapa, reaproveitado como figura do relatório —
-     sem o mapa, o PDF perderia justamente o que se olha primeiro na reunião.
-     Só o PDF embute imagem; a planilha é para trabalhar os números. */
+  /* O desenho do PNG do mapa, reaproveitado como figura do relatório. Só o PDF
+     embute imagem; a planilha é para trabalhar os números. */
   const imagensDoMapa = (formato: ReportFormat) => {
     if (formato !== "pdf" || !mapShapes || mapShapes.length === 0) return [];
     const exportData = buildSpectrumMapExport(model);

@@ -11,16 +11,13 @@ import { STATE_UF } from "./state.ts";
 /**
  * CARREGAMENTO SOB DEMANDA dos arquivos da camada submunicipal.
  *
- * Os arquivos de locais e de votos por local somam vários MB e NÃO podem
- * entrar no bundle principal. `import.meta.glob` (sem `eager`) devolve um
- * mapa de carregadores preguiçosos: cada JSON vira um chunk próprio, buscado
- * só quando a camada é ativada (locais) ou quando aquele pleito é escolhido
- * (votos). O resultado fica em cache de módulo, então trocar de pleito e
- * voltar não refaz o download.
+ * Os arquivos de locais e de votos somam vários MB e não podem entrar no
+ * bundle principal: `import.meta.glob` sem `eager` gera um chunk por JSON,
+ * buscado só quando a camada é ativada (locais) ou o pleito é escolhido
+ * (votos), com cache de módulo.
  *
- * Quando o ETL ainda não rodou, o glob simplesmente não casa com nenhum
- * arquivo (ou casa com o placeholder vazio) e os carregadores devolvem
- * `null` — a camada informa a pendência e nunca quebra.
+ * Sem ETL rodado, o glob não casa com nenhum arquivo (ou casa com o
+ * placeholder vazio) e os carregadores devolvem `null`.
  */
 type JsonLoader = () => Promise<unknown>;
 
@@ -33,13 +30,10 @@ const votesModules = import.meta.glob("../data/polling/votes-*.json", {
 }) as Record<string, JsonLoader>;
 
 /**
- * GANCHO DE MALHA DE BAIRROS (hoje sempre falso, de propósito).
- *
- * Não existe polígono de bairro no projeto e não inventamos malha. Se um dia
- * um `src/data/neighborhoods-{ibge}.geojson` for adicionado, este glob passa
- * a encontrá-lo e a camada pode pintar o POLÍGONO do bairro em vez da bolha
- * agregada; enquanto o arquivo não existe, o modo "Bairros" desenha uma bolha
- * por bairro no centroide dos locais e diz isso na interface.
+ * GANCHO DE MALHA DE BAIRROS (hoje sempre falso). Não existe polígono de
+ * bairro no projeto. Se um `src/data/neighborhoods-{ibge}.geojson` for
+ * adicionado, este glob passa a encontrá-lo e a camada pode pintar o polígono
+ * em vez da bolha agregada.
  */
 const neighborhoodMeshModules = import.meta.glob(
   "../data/neighborhoods-*.geojson",

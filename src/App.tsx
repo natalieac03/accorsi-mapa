@@ -8,12 +8,9 @@ import { CENTRO_DO_ESTADO, LIMITES_DO_ESTADO } from "./config/map";
 import { pedirAbrirAba } from "./utils/uiBus";
 
 /**
- * A camada territorial carrega junto com ela mais de 1,4 MB de JSON
- * (eleitorado, histórico eleitoral, socioeconômico, faixas etárias, espectro
- * partidário) e monta o dataset consolidado ainda em escopo de módulo. Sendo
- * um import estático, tudo isso era baixado e parseado por quem só tinha
- * chegado à TELA DE LOGIN. Com `lazy`, esse peso vira um chunk separado,
- * pedido apenas depois que a sessão é validada.
+ * Lazy: a camada territorial arrasta mais de 1,4 MB de JSON e monta o dataset
+ * em escopo de módulo. Como import estático, isso era baixado já na tela de
+ * login; agora vira chunk pedido só depois da sessão validada.
  */
 const MunicipalityLayer = lazy(() =>
   import("./components/MunicipalityLayer").then((module) => ({
@@ -21,11 +18,7 @@ const MunicipalityLayer = lazy(() =>
   })),
 );
 
-/**
- * Janela "Estatísticas" (overlay de tela inteira): também lazy, pelo mesmo
- * motivo — ela importa os snapshots da candidata e do eleitorado, e esse peso
- * só deve ser baixado quando alguém abre a janela pelo menu.
- */
+/** Overlay "Estatísticas", lazy pelo mesmo motivo: importa os snapshots da candidata e do eleitorado. */
 const StatsWindow = lazy(() =>
   import("./components/stats/StatsWindow").then((module) => ({
     default: module.StatsWindow,
@@ -34,8 +27,7 @@ const StatsWindow = lazy(() =>
 
 export default function App() {
   const auth = useAuth();
-  // A janela de estatísticas cobre o app inteiro, então o estado mora aqui —
-  // diferente das abas do painel, que são pedidas via uiBus.
+  // Cobre o app inteiro, então o estado mora aqui (as abas do painel vão pelo uiBus).
   const [estatisticasAbertas, setEstatisticasAbertas] = useState(false);
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID";
@@ -64,8 +56,7 @@ export default function App() {
       <div className="app">
         <header className="header">
           <div className="header-left">
-            {/* Menu "três linhas" ao lado da marca: reúne as áreas que não
-                cabem (nem precisam morar) na fileira de abas do painel. */}
+            {/* Áreas que não cabem na fileira de abas do painel. */}
             <HeaderMenu
               onAbrirEstatisticas={() => setEstatisticasAbertas(true)}
             />
@@ -133,8 +124,8 @@ export default function App() {
 }
 
 /**
- * Menu do cabeçalho. Cada item abre uma aba do painel lateral via uiBus — o
- * painel pode nem ter montado ainda (é lazy), e o bus segura o pedido.
+ * Menu do cabeçalho. Abre abas do painel via uiBus, que segura o pedido
+ * enquanto o painel (lazy) ainda não montou.
  */
 function HeaderMenu({
   onAbrirEstatisticas,

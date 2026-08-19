@@ -20,26 +20,20 @@ import type { ReportOmission } from "./reportModel.ts";
 import { STATE_LABEL } from "./state.ts";
 
 /**
- * MOTOR DE ANÁLISE do relatório — a estatística e o texto que saem do dado.
- *
- * Roda sobre o `reportDataset` COMPLETO (reportDataset.ts) e nunca sobre o
- * recorte da tela: o que está selecionado na interface chega aqui só como
- * `activeViewFilter`, e a única coisa que ele faz é escolher qual indicador
- * vem primeiro e qual recebe destaque.
- *
- * Três regras governam tudo o que este arquivo escreve:
+ * MOTOR DE ANÁLISE do relatório: a estatística e o texto que saem do dado.
+ * Roda sobre o `reportDataset` COMPLETO (reportDataset.ts), nunca sobre o
+ * recorte da tela: `activeViewFilter` só escolhe qual indicador vem primeiro e
+ * qual recebe destaque. Três regras:
  *
  *   1. VOCABULÁRIO. Nada aqui diz causa, impacto, influência, preferência,
- *      determinou ou provocou. O que existe entre um indicador municipal e um
- *      percentual de votos é ASSOCIAÇÃO — e a associação é entre CIDADES, não
- *      entre pessoas. Há um teste que varre todo texto gerado e falha se uma
- *      dessas palavras aparecer;
+ *      determinou ou provocou. Entre indicador municipal e percentual de votos
+ *      há ASSOCIAÇÃO, e entre CIDADES, não entre pessoas. Um teste varre todo
+ *      texto gerado e falha se uma dessas palavras aparecer;
  *   2. AUSÊNCIA É AUSÊNCIA. Município sem denominador não entra valendo zero:
  *      fica fora, contado e declarado. Indicador sem dado suficiente vira
- *      omissão com motivo, não some da lista;
- *   3. CRITÉRIO DECLARADO. Todo corte — o que é associação "forte", o que é
- *      município atípico, onde ficam os quadrantes — está escrito no código,
- *      exposto no tipo e publicado no relatório. Nenhum número mágico.
+ *      omissão com motivo;
+ *   3. CRITÉRIO DECLARADO. Todo corte está no código, no tipo e no relatório.
+ *      Nenhum número mágico.
  */
 
 /* -------------------------------------------------------------------------
@@ -51,7 +45,7 @@ export const RESSALVA_CAUSALIDADE =
   "Correlação não implica causalidade. Outros fatores territoriais podem " +
   "estar associados simultaneamente ao desempenho eleitoral.";
 
-/** A falácia ecológica dita por extenso: o dado é do município, não da pessoa. */
+/** Falácia ecológica: o dado é do município, não da pessoa. */
 export const RESSALVA_DADO_AGREGADO =
   "Os dados representam características agregadas dos municípios. Eles " +
   "permitem identificar associações territoriais, mas não revelam o perfil " +
@@ -67,7 +61,7 @@ export const RESSALVAS_OBRIGATORIAS = [
  * Aritmética de apoio
  * ------------------------------------------------------------------------- */
 
-/** Mediana de uma amostra; null com amostra vazia (não existe mediana de nada). */
+/** Mediana da amostra; null com amostra vazia. */
 export function mediana(values: readonly number[]): number | null {
   if (values.length === 0) return null;
   const ordenado = [...values].sort((a, b) => a - b);
@@ -105,7 +99,7 @@ function quantil(values: readonly number[], p: number): number | null {
   return ordenado[base] + resto * (proximo - ordenado[base]);
 }
 
-/** Amplitude interquartil (Q3 - Q1) — dispersão robusta a valor extremo. */
+/** Amplitude interquartil (Q3 - Q1): dispersão robusta a valor extremo. */
 function amplitudeInterquartil(values: readonly number[]): number | null {
   const q1 = quantil(values, 0.25);
   const q3 = quantil(values, 0.75);
@@ -114,12 +108,10 @@ function amplitudeInterquartil(values: readonly number[]): number | null {
 }
 
 /**
- * Postos com tratamento de EMPATE por posto médio.
- *
- * Empate é a regra, não a exceção, nos indicadores deste projeto: taxas
- * arredondadas a uma casa repetem valor em dezenas de municípios. Sem posto
- * médio, a ordem de leitura do arquivo decidiria quem fica na frente — e o
- * coeficiente mudaria conforme o JSON fosse regravado.
+ * Postos com tratamento de EMPATE por posto médio. Taxas arredondadas a uma
+ * casa repetem valor em dezenas de municípios; sem posto médio, a ordem de
+ * leitura do arquivo decidiria os postos e o coeficiente mudaria a cada
+ * regravação do JSON.
  */
 export function postosComEmpate(values: readonly number[]): number[] {
   const ordem = values
@@ -142,9 +134,8 @@ export function postosComEmpate(values: readonly number[]): number[] {
 
 /**
  * Coeficiente de Spearman: o Pearson calculado sobre os POSTOS. Com postos
- * médios nos empates, esta é a definição correta (a fórmula abreviada
- * 1 - 6Σd²/n(n²-1) só vale sem empate, e produziria um número errado aqui).
- * null com menos de 2 pontos ou sem variação de postos em algum eixo.
+ * médios nos empates, a fórmula abreviada 1 - 6Σd²/n(n²-1) não vale (ela exige
+ * ausência de empate). null com menos de 2 pontos ou sem variação de postos.
  */
 export function spearman(
   points: ReadonlyArray<{ x: number; y: number }>,
@@ -185,16 +176,14 @@ export type CorrelationResult = {
 
 /** Nível de confiança dos intervalos publicados. */
 const NIVEL_CONFIANCA = 0.95;
-/** Quantil 0,975 da normal padrão — o 1,96 dos intervalos de 95%. */
+/** Quantil 0,975 da normal padrão: o 1,96 dos intervalos de 95%. */
 const Z_975 = 1.959963985;
 
 /**
- * Intervalo de confiança pela transformação z de Fisher.
- *
- * "Quando fizer sentido" é literal: com menos de 4 municípios não existe erro
- * padrão (o denominador n-3 zera ou fica negativo), e com |coeficiente| = 1 a
- * transformação diverge. Nesses casos o intervalo é null, e o relatório
- * publica o coeficiente sem intervalo em vez de publicar um intervalo falso.
+ * Intervalo de confiança pela transformação z de Fisher. null com menos de 4
+ * municípios (o denominador n-3 zera ou fica negativo) e com |coeficiente| = 1
+ * (a transformação diverge): nesses casos o relatório publica o coeficiente sem
+ * intervalo, nunca um intervalo falso.
  */
 function intervaloFisher(
   coeficiente: number | null,
@@ -234,24 +223,19 @@ export type AssociationClassification = {
 };
 
 /**
- * CRITÉRIO DE CORTE DA CLASSIFICAÇÃO — declarado aqui e publicado no relatório.
+ * CRITÉRIO DE CORTE DA CLASSIFICAÇÃO, publicado no relatório.
  *
- * Classifica pelo SPEARMAN, não pelo Pearson: os indicadores deste catálogo
- * incluem contagens muito assimétricas (eleitorado, população, PIB per capita)
- * em que uma única capital domina o coeficiente linear. O coeficiente de
- * postos responde à pergunta que o relatório faz — "as cidades com mais X
- * aparecem com percentual mais alto?" — sem depender da forma da distribuição.
+ * Classifica pelo SPEARMAN, não pelo Pearson: o catálogo tem contagens muito
+ * assimétricas (eleitorado, população, PIB per capita) em que uma única capital
+ * domina o coeficiente linear.
  *
- * Os cortes, sobre o módulo do coeficiente:
+ * Cortes sobre o módulo do coeficiente, convencionais em leitura exploratória
+ * de ciências sociais:
  *
  *   |ρ| < 0,20  ->  sem associação clara
  *   0,20 a 0,40 ->  fraca
  *   0,40 a 0,60 ->  moderada
  *   >= 0,60     ->  forte
- *
- * São os cortes convencionais de leitura exploratória em ciências sociais.
- * Abaixo de 0,20 a ordenação dos municípios por um eixo quase não informa
- * sobre o outro, e chamar aquilo de "associação fraca" já seria dizer demais.
  */
 const CORTE_SEM_ASSOCIACAO = 0.2;
 const CORTE_MODERADA = 0.4;
@@ -336,17 +320,11 @@ export type GroupComparison = {
 
 /**
  * CRITÉRIO DO CORTE DE GRUPOS: a MEDIANA do indicador entre os municípios
- * analisados.
- *
- * Escolhida em vez da média porque metade do catálogo é contagem assimétrica
- * (eleitorado, população, PIB per capita): a média fica acima do que quase
- * todo município tem, e o grupo "acima da média" viria com meia dúzia de
- * cidades. A mediana parte o universo ao meio por construção, o que é o que
- * torna os dois grupos comparáveis.
- *
- * Município com valor EXATAMENTE igual à mediana entra no grupo "igual ou
- * acima" — a regra é declarada porque, com taxas arredondadas a uma casa, o
- * empate na mediana é comum e o silêncio aqui mudaria a contagem dos grupos.
+ * analisados. Mediana e não média porque metade do catálogo é contagem
+ * assimétrica (eleitorado, população, PIB per capita), em que "acima da média"
+ * viria com meia dúzia de cidades. Município com valor EXATAMENTE igual à
+ * mediana entra no grupo "igual ou acima": com taxas arredondadas a uma casa, o
+ * empate na mediana é comum.
  */
 const CRITERIO_GRUPOS =
   "Corte pela mediana do indicador entre os municípios analisados; " +
@@ -403,11 +381,8 @@ export type QuadrantMunicipality = {
 export type Quadrant = {
   id: QuadrantId;
   /**
-   * Nome NEUTRO, descritivo do corte — "Indicador acima da mediana ·
-   * percentual dos válidos acima da mediana". Nenhum quadrante se chama
-   * oportunidade, ameaça ou prioridade: isso é decisão de campanha, não
-   * leitura de dado, e um rótulo assim vira estratégia sem que ninguém tenha
-   * decidido nada.
+   * Nome NEUTRO, descritivo do corte. Nenhum quadrante se chama oportunidade,
+   * ameaça ou prioridade: isso é decisão de campanha, não leitura de dado.
    */
   label: string;
   municipios: number;
@@ -448,7 +423,7 @@ export type OutlierMunicipality = {
   residuo: number;
   /** Resíduo dividido pelo desvio padrão dos resíduos. */
   residuoPadronizado: number;
-  /** "acima da tendência" | "abaixo da tendência" — descritivo, sem juízo. */
+  /** "acima da tendência" | "abaixo da tendência": descritivo, sem juízo. */
   sentido: "acima da tendência" | "abaixo da tendência";
   votos: number;
 };
@@ -462,20 +437,15 @@ export type OutlierAnalysis = {
 };
 
 /**
- * CRITÉRIO DE ATÍPICO: resíduo padronizado com módulo acima de 2.
- *
- * A reta é a de mínimos quadrados do percentual dos válidos sobre o eixo do
- * indicador (log10 quando o indicador pede escala log). O resíduo é a
- * distância vertical até essa reta, dividida pelo desvio padrão dos resíduos.
- * O corte em 2 é a convenção de leitura exploratória: sob dispersão
- * aproximadamente normal, cerca de 5% dos municípios ficariam além dele — o
- * bastante para a lista ser curta e nunca vazia por definição.
- *
- * O que "atípico" quer dizer aqui: o município se afasta da tendência do
- * conjunto. Nada além disso — não é anomalia de apuração nem sinal de nada.
+ * CRITÉRIO DE ATÍPICO: resíduo padronizado com módulo acima de 2. A reta é a de
+ * mínimos quadrados do percentual dos válidos sobre o eixo do indicador (log10
+ * quando o indicador pede escala log), e o resíduo é a distância vertical até
+ * ela dividida pelo desvio padrão dos resíduos. Sob dispersão aproximadamente
+ * normal, cerca de 5% dos municípios ficam além do corte. "Atípico" aqui é só
+ * afastamento da tendência do conjunto: não é anomalia de apuração.
  */
 const LIMITE_RESIDUO_PADRONIZADO = 2;
-/** Teto da lista: um relatório com 40 atípicos não tem atípico nenhum. */
+/** Teto da lista de atípicos. */
 const MAX_ATIPICOS = 10;
 
 const CRITERIO_ATIPICOS =
@@ -515,10 +485,9 @@ export type ConcentrationAnalysis = {
 };
 
 /**
- * Curva acumulada sobre TODOS os municípios com voto apurado — inclusive os
- * que ficaram fora da análise de associação por não terem denominador. Tirar
- * um município daqui mudaria o total de votos da candidatura, que é dado
- * apurado e não depende de denominador nenhum.
+ * Curva acumulada sobre TODOS os municípios com voto apurado, inclusive os que
+ * ficaram fora da análise de associação por não terem denominador: o total de
+ * votos da candidatura é dado apurado e não depende de denominador.
  */
 export function buildConcentration(
   dataset: ReportDataset,
@@ -582,25 +551,18 @@ export type IndicatorAnalysis = {
   interpretacao: string;
   /** Compatibilidade entre o ano da eleição e o ano do indicador. */
   compatibilidade: TemporalCompatibility;
-  /**
-   * Ressalvas que acompanham esta análise: as duas obrigatórias, a limitação
-   * conhecida do indicador e o aviso temporal, quando existe.
-   */
+  /** As duas obrigatórias, a limitação do indicador e o aviso temporal. */
   ressalvas: string[];
 };
 
-/**
- * "1 município" / "12 municípios". O texto é gerado, e um recorte com um
- * município só não pode sair escrito como se tivesse vários.
- */
+/** "1 município" / "12 municípios": concordância do texto gerado. */
 function contarMunicipios(quantidade: number): string {
   return `${formatInteger(quantidade)} ${quantidade === 1 ? "município" : "municípios"}`;
 }
 
 /**
- * Coeficiente em pt-BR com 2 casas — precisão declarada, não herdada.
- * Exportada porque quem renderiza o relatório precisa escrever o mesmo
- * número do mesmo jeito que o texto de interpretação já escreveu.
+ * Coeficiente em pt-BR com 2 casas. Exportada para quem renderiza o relatório
+ * escrever o mesmo número do mesmo jeito que o texto de interpretação.
  */
 export function formatAssociationCoefficient(valor: number): string {
   return valor.toFixed(2).replace(".", ",");
@@ -618,11 +580,9 @@ type Par = {
 };
 
 /**
- * Pares completos do universo analítico para um indicador.
- *
- * Com escala log, município com valor menor ou igual a zero fica fora: log10
- * de zero não existe. É exclusão declarada (entra em `semPar`), nunca um
- * ponto empurrado para perto de zero.
+ * Pares completos do universo analítico para um indicador. Com escala log,
+ * município com valor menor ou igual a zero fica fora (log10 de zero não
+ * existe): exclusão declarada, entra em `semPar`.
  */
 function montarPares(
   dataset: ReportDataset,
@@ -801,8 +761,7 @@ function encontrarAtipicos(pares: readonly Par[]): OutlierAnalysis {
     sxy += (par.eixo - mediaX) * (par.y - mediaY);
     sxx += (par.eixo - mediaX) ** 2;
   }
-  // Eixo sem variação: a reta não existe (divisão por zero), e sem reta não
-  // existe distância até ela.
+  // Eixo sem variação: a reta não existe (divisão por zero).
   if (sxx === 0) return vazio;
 
   const inclinacao = sxy / sxx;
@@ -853,12 +812,8 @@ function encontrarAtipicos(pares: readonly Par[]): OutlierAnalysis {
 }
 
 /**
- * A frase de interpretação — curta, gerada só do que foi apurado.
- *
- * Ela descreve a associação e o contraste entre os dois grupos, e para por
- * aí. Não diz por que os números são o que são: essa pergunta não tem
- * resposta neste dado, e a ressalva de causalidade acompanha a frase
- * justamente para que ninguém a leia como se tivesse.
+ * Frase de interpretação, gerada só do que foi apurado: descreve a associação e
+ * o contraste entre os dois grupos, e não diz por que os números são o que são.
  */
 function escreverInterpretacao(
   indicator: IndicatorMetadata,
@@ -884,11 +839,8 @@ function escreverInterpretacao(
       `${classificacao.label}.`,
   );
 
-  // A frase é montada com "valor mais alto de <indicador>" de propósito: os
-  // rótulos do catálogo têm gêneros diferentes ("eleitorado total",
-  // "penetração eleitoral"), e concordar adjetivo com cada um exigiria uma
-  // tabela de gênero por indicador — que ficaria errada no primeiro
-  // indicador novo que alguém acrescentasse ao catálogo.
+  // "valor mais alto de <indicador>" evita concordar adjetivo com o gênero do
+  // rótulo, que varia por indicador do catálogo.
   if (classificacao.direction === "sem associação clara") {
     partes.push(
       `Municípios com valor mais alto de ${nome.toLowerCase()} não aparecem, ` +
@@ -931,11 +883,8 @@ function escreverInterpretacao(
 }
 
 /**
- * Análise completa de UM indicador contra a métrica eleitoral principal.
- *
- * Exportada isolada porque é a unidade que o renderizador pede: um capítulo
- * do relatório por indicador, todos montados do mesmo jeito, sem que nenhum
- * dependa do que está selecionado na tela.
+ * Análise completa de UM indicador contra a métrica eleitoral principal. Um
+ * capítulo do relatório, sem depender do que está selecionado na tela.
  */
 export function analyzeIndicator(input: {
   dataset: ReportDataset;
@@ -990,13 +939,7 @@ export type ExecutiveSummary = {
 /** Teto duro do resumo: quatro frases. */
 const MAX_FRASES_RESUMO = 4;
 
-/**
- * O resumo executivo — só número apurado, nenhuma leitura política.
- *
- * Nada aqui diz se o resultado foi bom, se a candidatura cresceu onde
- * precisava ou onde vale investir. Isso é decisão de quem lê; o relatório
- * entrega o que foi contado.
- */
+/** Resumo executivo: só número apurado, nenhuma leitura política. */
 export function buildExecutiveSummary(input: {
   dataset: ReportDataset;
   concentracao: ConcentrationAnalysis;
@@ -1015,9 +958,8 @@ export function buildExecutiveSummary(input: {
       `${contarMunicipios(dataset.municipios.length)} de ${STATE_LABEL}.`,
   );
 
-  // Os cortes da concentração são escritos com o número REAL de municípios
-  // do recorte: dizer "os 20 primeiros" num pleito de 8 municípios seria uma
-  // frase falsa gerada por descuido de gabarito.
+  // Cortes escritos com o número REAL de municípios do recorte: "os 20
+  // primeiros" num pleito de 8 municípios seria frase falsa.
   const totalMunicipios = dataset.municipios.length;
   if (
     totalMunicipios > 1 &&
@@ -1092,12 +1034,9 @@ export type ReportAnalysis = {
 };
 
 /**
- * A análise completa do pleito.
- *
- * `activeViewFilter` é o ÚNICO ponto de entrada do estado da interface, e
- * chega até aqui só para escolher a ordem e o destaque. Trocar o filtro
- * reordena `indicadores` e move o `destaque`; não acrescenta nem remove
- * nenhum indicador, nenhum município e nenhum número.
+ * A análise completa do pleito. `activeViewFilter` é o ÚNICO ponto de entrada
+ * do estado da interface e só escolhe ordem e destaque: não acrescenta nem
+ * remove indicador, município ou número.
  */
 export function buildReportAnalysis(input: {
   dataset: ReportDataset;
@@ -1141,9 +1080,9 @@ export function buildReportAnalysis(input: {
 }
 
 /**
- * Todo texto gerado por esta análise, em uma lista — é o que o teste de
- * vocabulário varre. Ter a coleta aqui (e não no teste) garante que um campo
- * de texto novo entre na varredura junto com o campo, e não meses depois.
+ * Todo texto gerado por esta análise, em uma lista: é o que o teste de
+ * vocabulário varre. A coleta fica aqui (e não no teste) para que campo de
+ * texto novo entre na varredura junto com o campo.
  */
 export function collectAnalysisTexts(analysis: ReportAnalysis): string[] {
   const textos: string[] = [

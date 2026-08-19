@@ -132,6 +132,50 @@ railway variable set --service web API_UPSTREAM='${{api.RAILWAY_PRIVATE_DOMAIN}}
 `API_UPSTREAM` usa a porta 8000 porque foi isso que fixamos com
 `PORT=8000` no serviço `api` no passo 6 — os dois valores precisam bater.
 
+## 7b. Ligar e desligar a tela de login (modo demonstração)
+
+Para mostrar a plataforma rápido, sem criar usuário e sem digitar senha,
+existe um par de variáveis. **As duas precisam ter o mesmo valor.**
+
+| Variável | Serviço | O que faz |
+|---|---|---|
+| `VITE_AUTH_REQUIRED` | `web` | `false` pula a tela de login e mostra o selo "Modo local" no lugar do menu de usuário |
+| `AUTH_REQUIRED` | `api` | `false` faz a API aceitar requisição sem cookie de sessão, valendo como o usuário `demonstracao@local` |
+
+Ligar a demonstração (sem login):
+
+```bash
+railway variable set --service web VITE_AUTH_REQUIRED=false
+railway variable set --service api AUTH_REQUIRED=false
+railway up --service web
+```
+
+Voltar ao normal (com login):
+
+```bash
+railway variable set --service web VITE_AUTH_REQUIRED=true
+railway variable set --service api AUTH_REQUIRED=true
+railway up --service web
+```
+
+O `railway up --service web` é obrigatório porque variável `VITE_` é lida
+pelo Vite na hora do build e fica gravada dentro do JavaScript publicado.
+Trocar a variável sem rebuildar não muda nada na tela. Já o `AUTH_REQUIRED`
+do `api` é lido em tempo de execução: o Railway reinicia o serviço sozinho ao
+salvar a variável, sem rebuild.
+
+Três coisas para saber antes de usar:
+
+1. **Trocar só a do `web` quebra o painel.** A tela de login some, mas toda
+   chamada de API volta 401, e cadastro de apoiadores e agente param.
+2. **Com `AUTH_REQUIRED=false` a instalação fica pública.** Qualquer pessoa
+   com o endereço vê os dados e consegue criar, editar e apagar cadastro de
+   apoiador. Deixe ligado só durante a demonstração.
+3. **O usuário de demonstração tem perfil `coordinator`**, então não
+   administra usuários nem lê o log de auditoria. A conta é criada sozinha no
+   primeiro acesso, com senha impossível de casar: ela não serve para entrar
+   pela tela de login depois que o modo for desligado.
+
 ## 8. Domínio público — só o `web`
 
 ```bash

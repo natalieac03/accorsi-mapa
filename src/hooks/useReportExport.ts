@@ -9,18 +9,10 @@ export type ReportFormat = "excel" | "pdf";
  * Geração dos arquivos de entrega (.xlsx e .pdf) a partir de um documento
  * montado pelo painel.
  *
- * O que este hook resolve, e por isso não vive copiado em cada painel:
- *
- * - as duas bibliotecas entram por import dinâmico, então o PRIMEIRO clique
- *   espera por rede. Sem um estado de "gerando", o botão parece quebrado e a
- *   pessoa clica três vezes;
- * - clique duplo não pode disparar duas gerações concorrentes (duas abas de
- *   download e o dobro de memória em um recorte grande);
- * - qualquer falha (rede caída no meio do import, recorte gigante) precisa
- *   virar mensagem no aviso acessível do painel, nunca uma tela travada.
- *
- * `build` recebe o formato porque o PDF embute a imagem do mapa e o Excel não:
- * rasterizar o mapa para uma planilha custaria segundos por nada.
+ * As bibliotecas entram por import dinâmico, então o primeiro clique espera por
+ * rede: daí o estado "gerando", que também bloqueia gerações concorrentes.
+ * Falhas viram mensagem no aviso do painel. `build` recebe o formato porque o
+ * PDF embute a imagem do mapa e o Excel não.
  */
 export function useReportExport(
   build: (formato: ReportFormat) => ReportDocument | null,

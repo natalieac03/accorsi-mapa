@@ -98,10 +98,8 @@ export function ElectionHistoryPanel({
     [dataset.contests],
   );
   /* Montagem do relatório do recorte. Fica ANTES do early return do histórico
-     pendente porque a ordem dos hooks não pode variar entre renderizações; com
-     o modelo ausente o construtor devolve null e nem existem botões na tela.
-     Só o PDF embute a imagem do mapa: a planilha é para trabalhar os números,
-     e rasterizar o mapa à toa custaria segundos no clique. */
+     pendente: a ordem dos hooks não pode variar entre renderizações. Sem
+     modelo o construtor devolve null. Só o PDF embute a imagem do mapa. */
   const { exportando, exportar } = useReportExport(
     (formato) => {
       if (model === null) return null;
@@ -125,8 +123,8 @@ export function ElectionHistoryPanel({
     setExportMessage,
   );
 
-  // Histórico ainda não gerado: o painel declara a ausência e diz o que rodar.
-  // Nada de pleito, candidato ou percentual inventado para preencher a tela.
+  // Histórico não gerado: o painel declara a ausência e diz o que rodar, sem
+  // inventar pleito, candidato ou percentual.
   if (model === null) {
     return (
       <div
@@ -231,8 +229,7 @@ export function ElectionHistoryPanel({
         </button>
       </div>
 
-      {/* Sem anos fixos no texto: a lista vem do próprio snapshot, então citar
-          anos aqui envelhece mal a cada eleição nova ou ano removido. */}
+      {/* Sem anos fixos no texto: a lista vem do próprio snapshot. */}
       <p className="workspace-description">
         Consulte Presidente e Governador, compare participações municipais e
         abra qualquer território pelo ranking. Eleições municipais (Prefeito e

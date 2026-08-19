@@ -183,9 +183,8 @@ export function toggleRegistrationBand(
 }
 
 function endOfReferenceDay(referenceDate: string) {
-  // No timezone suffix: the cutoff is the end of the LOCAL day, so a record
-  // created at 21h in Brasília still belongs to the current day (the old
-  // "T23:59:59.999Z" cutoff ended the day at 20:59 local time).
+  // Sem sufixo de fuso: o corte é o fim do dia LOCAL, então registro criado às
+  // 21h em Brasília ainda é do dia corrente (com "Z" o dia acabaria às 20:59).
   const date = new Date(`${referenceDate}T23:59:59.999`);
   return Number.isNaN(date.getTime()) ? new Date() : date;
 }
@@ -200,10 +199,9 @@ function resolveReferenceDay(
   referenceDate: string,
   records: CampaignRegistration[],
 ) {
-  // The effective reference is the latest of the snapshot reference date and
-  // the newest record present in the data. Without this, a record created
-  // after the snapshot reference (e.g. added through the form today) would
-  // get a negative age and silently disappear from every count.
+  // Referência efetiva: a mais recente entre a data do snapshot e o registro
+  // mais novo do dado. Sem isso, registro criado depois do snapshot teria idade
+  // negativa e sumiria em silêncio de todas as contagens.
   let reference = endOfReferenceDay(referenceDate);
   for (const record of records) {
     const createdAt = new Date(record.createdAt);
@@ -345,11 +343,10 @@ export function buildRegistrationModel(
     baseFilteredRecords.filter((record) => record.followUpStatus !== "revoked"),
     privacyThreshold,
   );
-  // The geography filter derives from the RECORDS with normalized comparison,
-  // never from the cluster list (which is truncated for privacy and only
-  // feeds the map bubbles). A selection that matches nothing yields an empty
-  // list — an explicit state the UI reports — instead of silently showing
-  // every record of the municipality.
+  // O filtro de geografia vem dos REGISTROS com comparação normalizada, nunca
+  // da lista de clusters (truncada por privacidade, só alimenta as bolhas do
+  // mapa). Seleção sem correspondência dá lista vazia, estado explícito na
+  // interface, em vez de mostrar todos os registros do município.
   const neighborhoodKey = state.neighborhood
     ? normalizeNeighborhoodKey(state.neighborhood)
     : null;
@@ -579,8 +576,8 @@ function parseDelimitedLine(line: string) {
 
 function parseOptionalCoordinate(value: string) {
   if (!value) return null;
-  // Files exported by older versions of the model carry the CSV-injection
-  // apostrophe before negative coordinates; accept them defensively.
+  // Arquivos exportados por versões antigas trazem o apóstrofo anti-injeção
+  // antes de coordenada negativa; aceita defensivamente.
   const cleaned = value.replace(/^'/, "").replace(",", ".");
   if (!cleaned) return null;
   const parsed = Number(cleaned);

@@ -119,12 +119,11 @@ export function PollingPlacesPanel({
 }: PollingPlacesPanelProps) {
   const [showAllRanking, setShowAllRanking] = useState(false);
   const [exportMessage, setExportMessage] = useState("");
-  // Última sigla olhada, para o alternador devolver a MESMA medida quando se
-  // volta do índice. Se ela não tiver voto no pleito atual, o modelo cai
-  // sozinho na mais votada — aqui não se inventa sigla nenhuma.
+  // Última sigla olhada, para o alternador devolver a MESMA medida ao voltar do
+  // índice. Sem voto no pleito atual, o modelo cai na mais votada.
   const [lastPartyCode, setLastPartyCode] = useState("");
-  // Último pleito DELA olhado, pelo mesmo motivo: voltar para a medida da
-  // candidata devolve o pleito que estava aberto, não o mais recente à força.
+  // Último pleito DELA olhado: voltar à medida da candidata devolve o pleito
+  // que estava aberto, não o mais recente.
   const [lastCandidateContestId, setLastCandidateContestId] = useState("");
 
   const loading = placesStatus === "loading" || votesStatus === "loading";
@@ -140,9 +139,8 @@ export function PollingPlacesPanel({
   const unitLabel = getPollingUnitLabel(model.viewMode);
   const viewMode = POLLING_VIEW_MODES.find((item) => item.id === model.viewMode);
   const scopeName = model.municipalityName ?? STATE_LABEL;
-  // A medida é escolha de quem olha e vale para todo pleito: o índice
-  // ideológico é o padrão, o percentual de uma sigla é a outra opção do
-  // alternador. Escolher uma sigla É escolher a segunda medida.
+  // Índice ideológico é a medida padrão; escolher uma sigla É escolher a
+  // segunda medida (percentual dela).
   const isPartyShare = model.metric === "votoPartido";
   // A terceira medida: os votos nominais DELA, com lista de pleitos própria.
   const isCandidate = model.metric === "votosCandidata";
@@ -157,11 +155,10 @@ export function PollingPlacesPanel({
     labelOptions,
   );
   const bandColors = getPollingMetricColors(model.metric);
-  // Sem nenhuma sigla com voto apurado não há percentual possível: o botão
-  // fica desabilitado em vez de levar a uma tela vazia.
+  // Sem sigla com voto apurado não há percentual: o botão fica desabilitado.
   const canUsePartyShare = model.partyOptions.length > 0;
-  // Nada de dado sintético: sem trajetória gerada, ou sem nenhum pleito dela
-  // com cadastro de locais, a medida não é oferecida — e a tela diz por quê.
+  // Sem trajetória gerada ou sem pleito dela com cadastro de locais, a medida
+  // não é oferecida e a tela diz por quê. Nada de dado sintético.
   const canUseCandidate = model.candidateOptions.length > 0;
   const candidateUnavailableReason =
     model.candidateAvailability === "pendente"
@@ -169,15 +166,14 @@ export function PollingPlacesPanel({
       : model.candidateAvailability === "sem-recorte"
         ? " Nenhum pleito da candidata tem cadastro de locais de votação publicado pelo TSE: a medida de votos dela fica indisponível."
         : "";
-  // Voto absoluto não tem teto fixo: a barrinha do ranking é relativa ao maior
+  // Voto absoluto não tem teto fixo: a barra do ranking é relativa ao maior
   // valor do recorte.
   const rankingMaximum = getPollingMaximumValue(model);
 
   const handleMetricChange = (metric: PollingMetric) => {
     if (metric === model.metric) return;
-    // Sair da medida da candidata é sempre apagar o pleito dela; entrar é
-    // sempre apagar a sigla. As três medidas nunca ficam ligadas ao mesmo
-    // tempo, e cada saída guarda a escolha para a volta.
+    // Sair da medida da candidata apaga o pleito dela; entrar apaga a sigla. As
+    // três medidas nunca ficam ligadas juntas, e cada saída guarda a escolha.
     if (model.candidate) setLastCandidateContestId(model.candidate.contestId);
     if (model.partyCode) setLastPartyCode(model.partyCode);
     if (metric === "votosCandidata") {
@@ -225,9 +221,8 @@ export function PollingPlacesPanel({
     );
   };
 
-  /* O mesmo desenho do PNG do mapa, reaproveitado como figura do relatório —
-     sem o mapa, o PDF perderia justamente o que se olha primeiro na reunião.
-     Só o PDF embute imagem; a planilha é para trabalhar os números. */
+  /* O desenho do PNG do mapa, reaproveitado como figura do relatório. Só o PDF
+     embute imagem; a planilha é para trabalhar os números. */
   const imagensDoMapa = (formato: ReportFormat) => {
     if (formato !== "pdf" || !mapShapes || mapShapes.length === 0) return [];
     const exportData = buildPollingMapExport(model);
@@ -308,10 +303,9 @@ export function PollingPlacesPanel({
         </div>
       )}
 
-      {/* CADA MEDIDA TEM SUA LISTA DE PLEITOS. As duas primeiras leem os
-          arquivos de votos por local do espectro; a da candidata lê a
-          trajetória dela, que quase não coincide (2016-11-1, 2018-7-1,
-          2020-11-1, 2022-6-1, 2024-11-1). Misturar as listas mostraria "sem
+      {/* CADA MEDIDA TEM SUA LISTA DE PLEITOS: as duas primeiras leem os votos
+          por local do espectro, a da candidata lê a trajetória dela (2016-11-1,
+          2018-7-1, 2020-11-1, 2022-6-1, 2024-11-1). Misturar mostraria "sem
           dado" em eleição que ela nem disputou. */}
       {isCandidate ? (
         <label className="analysis-metric-control">
@@ -443,10 +437,9 @@ export function PollingPlacesPanel({
             role="group"
             aria-label="Escala do voto da candidata"
           >
-            {/* A MESMA medida em duas escalas. A área da bolha já codifica o
-                eleitorado, então a densidade é o que permite comparar um
-                colégio grande com um pequeno; e como é o valor da medida que
-                muda, cor, faixa, ranking e CSV mudam juntos. */}
+            {/* A MESMA medida em duas escalas: a densidade permite comparar
+                colégio grande com pequeno. Como muda o valor da medida, cor,
+                faixa, ranking e CSV mudam juntos. */}
             <button
               type="button"
               className={!model.candidateRate ? "registration-filter--active" : ""}
@@ -540,9 +533,8 @@ export function PollingPlacesPanel({
         {isCandidate ? (
           <>
             <div>
-              {/* Num pleito municipal sem filtro de cidade, o número somado é
-                  todo da cidade que ela disputou: rotulá-lo com o estado faria
-                  parecer que ela teve voto no estado inteiro. */}
+              {/* Em pleito municipal sem filtro de cidade, o total é todo da
+                  cidade disputada; rotular com o estado enganaria. */}
               <span>
                 {candidateName || "Candidata"} em{" "}
                 {model.candidate?.municipal && !model.municipalityId
@@ -630,14 +622,12 @@ export function PollingPlacesPanel({
         </div>
       </section>
 
-      {/* A medida da candidata não depende do arquivo de votos por sigla: com
-          os locais carregados ela já tem o que dizer. */}
+      {/* A medida da candidata não depende do arquivo de votos por sigla. */}
       {(dataReady || (isCandidate && placesStatus === "ready")) && (
         <p className="analysis-note">{describePollingScope(model)}</p>
       )}
 
-      {/* Blocos são leitura do espectro: não aparecem na tela de percentual
-          nem na de voto da candidata. */}
+      {/* Blocos são leitura do espectro: fora do percentual e do voto dela. */}
       {dataReady && !isPartyShare && !isCandidate && model.summary.index !== null && (
         <section className="insight-section" aria-label="Blocos no recorte">
           <div className="section-heading-inline">
@@ -787,9 +777,9 @@ export function PollingPlacesPanel({
                     {unit.kind === "place"
                       ? `${unit.neighborhood} · ${unit.municipalityName} · ${formatInteger(unit.electorate)} eleitores`
                       : `${unit.municipalityName} · ${formatInteger(unit.placeCount)} locais · ${formatInteger(unit.electorate)} eleitores`}
-                    {/* A outra escala da mesma medida anda junto: voto absoluto
-                        sem densidade esconde o colégio pequeno que votou muito
-                        nela, e densidade sem voto absoluto esconde o tamanho. */}
+                    {/* As duas escalas andam juntas: voto absoluto esconde o
+                        colégio pequeno que votou muito nela, densidade esconde
+                        o tamanho. */}
                     {isCandidate
                       ? model.candidateRate
                         ? ` · ${unit.candidateVotes === null ? "fora da disputa" : `${formatInteger(unit.candidateVotes)} votos`}`
@@ -899,10 +889,9 @@ export function PollingPlacesPanel({
                   candidata aqui" são coisas diferentes e aparecem diferentes.
                 </strong>
               </div>
-              {/* O número de confiança do recorte: places-go.json foi montado
-                  com os cadastros de 2022 e 2024, e o TSE renumera locais entre
-                  eleições. Quando nada se perde, a tela também diz — é a mesma
-                  informação com o sinal trocado. */}
+              {/* Confiança do recorte: places-go.json vem dos cadastros de 2022
+                  e 2024 e o TSE renumera locais entre eleições. Quando nada se
+                  perde, a tela também diz. */}
               <div>
                 {model.candidate.unmatchedPlaceCount > 0 ? (
                   <strong>

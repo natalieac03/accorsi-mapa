@@ -1,16 +1,11 @@
 /**
  * Configuração do estado atendido por esta instalação.
  *
- * Este arquivo é a ÚNICA fonte da verdade sobre "que estado é este". Ele existe
- * porque a plataforma nasceu no Rio Grande do Sul e foi levada para Goiás: sem
- * um ponto único, a sigla, a contagem de municípios e os limites do mapa ficam
- * espalhados por dezenas de arquivos, e a troca vira caça a bug silencioso —
- * um `246` esquecido num validador não quebra a tela, só rejeita o dado inteiro
- * com uma mensagem confusa.
- *
- * Para levar esta base a outro estado, mude AQUI e rode os scripts de dados.
- * O equivalente em Python vive em `scripts/estado.py` e precisa concordar com
- * este arquivo — há um teste garantindo isso.
+ * Fonte única da verdade sobre "que estado é este": sigla, contagem de
+ * municípios e limites do mapa saem daqui. Um valor divergente em outro arquivo
+ * (um `246` esquecido num validador) não quebra a tela, apenas rejeita a base
+ * inteira com mensagem confusa. Para trocar de estado, mude AQUI e rode os
+ * scripts de dados; `scripts/estado.py` precisa concordar, e um teste cobre isso.
  */
 
 export const ESTADO = {
@@ -20,16 +15,13 @@ export const ESTADO = {
   /** Código numérico do IBGE. Todo código municipal do estado começa com ele. */
   codigoIbge: "52",
   /**
-   * Municípios esperados. É validação DURA nos scripts de ETL: se a base vier
-   * com outro número, o processamento falha em vez de gerar um mapa incompleto.
+   * Municípios esperados. Validação DURA no ETL: com outro número o
+   * processamento falha em vez de gerar um mapa incompleto.
    */
   municipios: 246,
   /** Centro aproximado para o enquadramento inicial do mapa. */
   centro: { lat: -15.93, lng: -49.6 },
-  /**
-   * Retângulo que contém o estado, com folga. Restringe a navegação do mapa
-   * para a pessoa não se perder fora do território analisado.
-   */
+  /** Retângulo que contém o estado, com folga; restringe a navegação do mapa. */
   limites: {
     north: -12.2,
     south: -19.7,

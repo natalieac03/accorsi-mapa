@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     login_max_attempts: int = Field(default=5, ge=3, le=20)
     login_window_minutes: int = Field(default=15, ge=1, le=120)
 
+    # AUTH_REQUIRED=false abre a API sem login, para demonstração rápida.
+    # Toda requisição passa a valer como o usuário demonstracao@local, perfil
+    # "coordinator": vê tudo e mexe em cadastro, mas não administra usuário
+    # nem lê o log de auditoria.
+    # É o par do VITE_AUTH_REQUIRED do frontend. Os dois precisam ter o mesmo
+    # valor: só no frontend, a tela de login some mas a API responde 401.
+    auth_required: bool = True
+
     # --- Agente de perguntas sobre os dados (relé para o OpenRouter) ---
     # A chave é opcional de propósito: sem ela o app continua subindo normalmente
     # e só a rota /agent/chat responde 503. Nenhum outro recurso depende disso.

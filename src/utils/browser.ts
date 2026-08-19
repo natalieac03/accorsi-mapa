@@ -1,10 +1,7 @@
 /**
- * Dispara o download de um Blob já pronto.
- *
- * Irmão binário do `downloadTextFile`: .xlsx e .pdf saem das bibliotecas como
- * bytes, e passá-los por string corromperia o arquivo (toda sequência inválida
- * de UTF-8 viraria U+FFFD). O caminho do anchor + objectURL é o mesmo, para os
- * dois se comportarem igual em todo navegador que a campanha usa.
+ * Dispara o download de um Blob já pronto. Usar para binários (.xlsx, .pdf):
+ * passar os bytes por string corromperia o arquivo (sequência UTF-8 inválida
+ * vira U+FFFD).
  */
 export function downloadBlobFile(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -14,7 +11,7 @@ export function downloadBlobFile(blob: Blob, filename: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  // Revogar no próximo tick: revogar antes do clique ser processado cancela o
+  // Revoga no próximo tick: revogar antes de o clique ser processado cancela o
   // download em navegadores baseados no Chromium.
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }

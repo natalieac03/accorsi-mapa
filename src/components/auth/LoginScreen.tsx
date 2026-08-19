@@ -4,13 +4,10 @@ import { ApiError } from "../../auth/api";
 import { useAuth } from "../../auth/context";
 
 /**
- * Conta usada no modo demonstração. Quando `VITE_DEMO_EMAIL` está definida, a
- * tela pede APENAS a senha e envia esse e-mail junto.
- *
- * O que este modo NÃO faz: ele não cria atalho no backend. A senha continua
- * sendo conferida contra o hash no banco, com o mesmo bloqueio por tentativas
- * e a mesma sessão assinada. A única diferença é que a pessoa não digita o
- * e-mail — e é por isso que ele pode existir sem abrir buraco de segurança.
+ * Conta usada no modo demonstração. Com `VITE_DEMO_EMAIL` definida, a tela pede
+ * APENAS a senha e envia esse e-mail junto. Não há atalho no backend: a senha
+ * segue conferida contra o hash no banco, com o mesmo bloqueio por tentativas e
+ * a mesma sessão assinada.
  */
 const EMAIL_DEMONSTRACAO = (import.meta.env.VITE_DEMO_EMAIL ?? "").trim();
 const MODO_DEMONSTRACAO = EMAIL_DEMONSTRACAO.length > 0;

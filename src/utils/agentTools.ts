@@ -83,18 +83,12 @@ import {
 import { STATE_UF } from "./state.ts";
 
 /**
- * MOTOR DE CONSULTAS DO AGENTE DE PERGUNTAS.
- *
- * Regra de ouro: o modelo de linguagem NUNCA calcula estatística. Ele escolhe
- * a ferramenta e os argumentos; o cálculo acontece aqui REAPROVEITANDO os
- * motores que desenham o mapa (`buildAnalysisModel`, `buildSpectrumModel`,
- * `buildPollingModel`, `buildElectionModel`, `buildRegistrationModel`). Se o
- * número do chat divergir do número do mapa, é defeito — por isso nada é
- * recalculado por conta própria aqui, nem sequer a ordenação dos rankings.
- *
- * O contrato dos argumentos vem de `shared/agent-tools.json`, o MESMO arquivo
- * lido pelo backend: importá-lo (em vez de redeclarar os esquemas) é o que
- * impede a divergência entre as duas pontas.
+ * Motor de consultas do agente. O modelo NUNCA calcula: escolhe ferramenta e
+ * argumentos, e o cálculo reaproveita os motores do mapa (`buildAnalysisModel`,
+ * `buildSpectrumModel`, `buildPollingModel`, `buildElectionModel`,
+ * `buildRegistrationModel`), sem nada recalculado aqui, nem a ordenação dos
+ * rankings. O contrato dos argumentos vem de `shared/agent-tools.json`, o mesmo
+ * arquivo lido pelo backend.
  */
 
 const contrato = contratoJson as unknown as ContratoFerramentas;
@@ -103,16 +97,15 @@ export const FERRAMENTAS_AGENTE: DefinicaoFerramenta[] = contrato.tools;
 export const VERSAO_CONTRATO_FERRAMENTAS = contrato.schemaVersion;
 
 /**
- * Teto defensivo de linhas por consulta. O retorno é lido por um modelo com
- * janela de contexto finita: acima disso a resposta come o contexto da
- * conversa. Truncar é permitido; truncar em silêncio, nunca.
+ * Teto de linhas por consulta: o retorno é lido por um modelo com janela de
+ * contexto finita. Truncar é permitido; truncar em silêncio, nunca.
  */
 export const LIMITE_MAXIMO_LINHAS = 50;
 const LIMITE_PADRAO_LINHAS = 10;
 
 /**
- * Piso de k-anonimato dos cadastros de apoiadores. Mesmo que a base declare
- * um limiar menor, o agente nunca devolve grupo com menos de 5 pessoas.
+ * Piso de k-anonimato dos cadastros: mesmo que a base declare limiar menor,
+ * nunca sai grupo com menos de 5 pessoas.
  */
 export const K_ANONIMATO_MINIMO = 5;
 
@@ -252,10 +245,9 @@ export type EntradaContextoAgente = {
   /** Votos por partido das eleições municipais; ausente enquanto o ETL não roda. */
   votosPorPartido?: PartyVotesDataset | null;
   /**
-   * Trajetória da candidatura em foco (src/data/candidato/<slug>.json). É o
-   * mesmo arquivo da aba "Accorsi": sem ele o agente não sabe responder nada
-   * sobre a votação dela — e era exatamente essa falta que fazia o modelo
-   * explicar a própria limitação com uma ausência de dado inventada.
+   * Trajetória da candidatura em foco (src/data/candidato/<slug>.json), o
+   * mesmo arquivo da aba "Accorsi": sem ele o agente não responde nada sobre
+   * a votação dela.
    */
   trajetoriaCandidata?: CandidateDataset | null;
   cadastros?: CampaignRegistrationDataset | null;
@@ -266,9 +258,8 @@ export type EntradaContextoAgente = {
 };
 
 /**
- * Monta o contexto do agente a partir dos MESMOS conjuntos que a interface
- * carrega, com as mesmas funções de junção — inclusive a validação de recorte
- * territorial de `buildTerritorialDataset`.
+ * Monta o contexto com os mesmos conjuntos e funções de junção da interface,
+ * inclusive a validação de recorte territorial de `buildTerritorialDataset`.
  */
 export function criarContextoAgente(
   entrada: EntradaContextoAgente,
@@ -294,10 +285,9 @@ export function criarContextoAgente(
       entrada.registroPartidos,
     ),
     trajetoriaCandidata: entrada.trajetoriaCandidata ?? null,
-    // Mesmo índice que a aba "Accorsi" usa no ranking municipal: null enquanto
-    // o eleitorado for placeholder, para a métrica por 1.000 eleitores sumir
-    // inteira em vez de sair com denominador inventado. A conversão em duas
-    // etapas é a mesma que CandidatePanel e StatsWindow fazem: o campo
+    // Mesmo índice do ranking municipal da aba "Accorsi": null enquanto o
+    // eleitorado for placeholder, para a métrica por 1.000 eleitores sumir em
+    // vez de usar denominador inventado. Conversão em duas etapas porque
     // `metadata.status` só existe no placeholder e não está no tipo gerado.
     indiceEleitorado: buildElectorateIndex(
       entrada.eleitorado as unknown as ElectorateSource,
@@ -364,8 +354,8 @@ export type MunicipioResolvido = {
 };
 
 /**
- * Resolve um município por código IBGE, código TSE ou nome (aceitando texto
- * sem acento e parcial, com a mesma busca da barra de pesquisa do mapa).
+ * Resolve município por código IBGE, código TSE ou nome (sem acento e parcial,
+ * com a mesma busca da barra de pesquisa do mapa).
  */
 export function resolverMunicipio(
   contexto: ContextoAgente,
@@ -484,9 +474,9 @@ function arredondar(valor: number | null, casas = 2) {
 type PosicaoIndicador = { valor: number; posicao: number; faixa: number };
 
 /**
- * Posição e faixa de CADA município num indicador, vindas do motor da aba
- * Análise. Fica em cache por conjunto de municípios porque `perfil_municipio`
- * e `comparar_municipios` pedem os 20 indicadores de uma vez.
+ * Posição e faixa de cada município num indicador, vindas do motor da aba
+ * Análise. Cache por conjunto de municípios: `perfil_municipio` e
+ * `comparar_municipios` pedem os 20 indicadores de uma vez.
  */
 const cachePosicoes = new WeakMap<
   object,
@@ -604,9 +594,8 @@ async function executarRankingIndicador(
   const limite = resolverLimite(argumentos.limite);
   const avisos: string[] = [];
 
-  // O ranking é o MESMO da aba Análise: mesmo motor, mesmo estado, mesma
-  // ordenação. Nada é recalculado aqui — é isso que garante que o número do
-  // chat bate com o número do mapa.
+  // Mesmo motor, estado e ordenação da aba Análise. Nada é recalculado aqui:
+  // é o que garante que o número do chat bate com o do mapa.
   const modelo = buildAnalysisModel(
     contexto.municipios,
     {
@@ -900,10 +889,9 @@ const AVISO_LOCAIS_PENDENTES =
   "A camada submunicipal ainda não foi gerada: rode scripts/process_tse_sections.py com os arquivos do TSE para preencher src/data/polling/. Sem ela não existe recorte por bairro nem por local de votação.";
 
 /**
- * Carregamento SOB DEMANDA dos locais de votação. O contexto pode injetar o
- * carregador (é o que a interface faz); sem ele, tentamos o carregador
- * preguiçoso do bundler. Fora do navegador — e enquanto o ETL não rodou — o
- * resultado é `null` e a ferramenta responde com AVISO, nunca com erro.
+ * Carregamento sob demanda dos locais de votação. Sem carregador injetado pelo
+ * contexto, usa o import preguiçoso. Fora do navegador ou com o ETL ainda não
+ * rodado o resultado é `null` e a ferramenta responde com AVISO, nunca erro.
  */
 async function obterLocais(contexto: ContextoAgente) {
   try {
@@ -1034,11 +1022,9 @@ async function executarEspectroSubmunicipal(
       contestId: pleito.id,
       viewMode: unidade === "bairro" ? "neighborhoods" : "places",
       municipalityId: municipio.ibgeCode,
-      // A ferramenta reporta o índice ideológico, nunca o percentual de uma
-      // sigla nem o voto nominal da candidata: sem sigla e sem pleito dela
-      // escolhidos o modelo mede o índice em QUALQUER cargo, inclusive
-      // Presidente e Governador. O voto dela por local tem ferramenta própria
-      // na aba da candidata, com a trajetória inteira por trás.
+      // Reporta o índice ideológico, nunca o percentual de uma sigla nem o
+      // voto nominal da candidata: sem sigla e sem pleito dela, o modelo mede
+      // o índice em QUALQUER cargo, inclusive Presidente e Governador.
       partyCode: null,
       candidateContestId: null,
       candidateRate: false,
@@ -1140,8 +1126,8 @@ const INDICADORES_COMPARACAO: AnalysisMetricId[] = [
 ];
 
 function pleitosOrdenados(eleicoes: ElectionDataset) {
-  // Do mais recente para o mais antigo: ano, depois turno (2º turno é o
-  // resultado final), depois cargo — a mesma leitura do painel de eleições.
+  // Do mais recente para o mais antigo: ano, turno (2º turno é o resultado
+  // final) e cargo, a mesma leitura do painel de eleições.
   return eleicoes.contests.slice().sort(
     (a, b) =>
       b.electionYear - a.electionYear ||
@@ -1173,8 +1159,8 @@ async function executarResultadoEleicao(
 ): Promise<RespostaFerramenta> {
   const avisos: string[] = [];
   const eleicoes = contexto.eleicoes;
-  // Histórico do TSE ainda não gerado: a ferramenta declara a indisponibilidade
-  // em vez de responder com números que não existem.
+  // Histórico do TSE ainda não gerado: declara a indisponibilidade em vez de
+  // responder com números que não existem.
   if (isElectionDatasetPendente(eleicoes)) {
     return {
       ok: false,
@@ -1403,15 +1389,9 @@ async function executarCompararMunicipios(
 // ---------------------------------------------------------------------------
 
 /**
- * Os dois motivos de indisponibilidade da trajetória — e por que eles são
- * textos diferentes.
- *
- * Quando não existe ferramenta (ou dado) para responder, a única saída honesta
- * é dizer QUAL é a falta. Foi a confusão entre "não tenho como consultar" e
- * "o dado não existe" que produziu o pior desfecho já visto nesta base: o
- * modelo afirmou que a votação por bairro não estava gerada enquanto ela
- * estava na tela. Cada motivo abaixo nomeia o arquivo e o comando, para a
- * resposta ao usuário poder ser específica em vez de inventada.
+ * Dois motivos distintos de indisponibilidade da trajetória: "não tenho como
+ * consultar" e "o dado não existe" não podem se confundir. Cada texto nomeia o
+ * arquivo e o comando, para a resposta ser específica em vez de inventada.
  */
 const MOTIVO_TRAJETORIA_PENDENTE =
   "A trajetória da candidata ainda não foi gerada nesta instalação: " +
@@ -1436,13 +1416,10 @@ function pleitosDaCandidataOrdenados(contests: CandidateContest[]) {
 }
 
 /**
- * Casamento de um termo da busca com o rótulo do pleito.
- *
- * O TSE grava o cargo no masculino ("Deputado Federal", "Prefeito") e quem
- * pergunta escreve no feminino ("deputada federal", "prefeita", "senadora").
- * Sem esta tolerância a pergunta natural em pt-BR não encontraria o pleito.
- * Só vale para palavras: em número ("2024") cortar a última letra casaria
- * 2024 com 2020.
+ * Casa termo de busca com rótulo do pleito tolerando o feminino: o TSE grava o
+ * cargo no masculino ("Deputado Federal") e a pergunta vem no feminino
+ * ("deputada federal"). Só vale para palavras: em número ("2024") cortar a
+ * última letra casaria 2024 com 2020.
  */
 function combinaTermoDePleito(rotulo: string, termo: string) {
   if (rotulo.includes(termo)) return true;
@@ -1477,7 +1454,7 @@ export function resolverPleitoDaCandidata(
   );
 }
 
-/** Nome de urna da candidatura, para as mensagens saírem com gente e não com slug. */
+/** Nome de urna da candidatura, usado nas mensagens em vez do slug. */
 function nomeDaCandidata(dataset: CandidateDataset) {
   return (
     dataset.contests[0]?.candidatura.nomeUrna ||
@@ -1544,9 +1521,8 @@ async function executarVotacaoDaCandidata(
 
   // ---- trajetória: uma linha por eleição, em ordem cronológica ------------
   if (recorte === "trajetoria") {
-    // buildTrajectory é o MESMO motor do gráfico da aba "Accorsi": nenhuma
-    // soma acontece aqui, nem poderia — voto de eleições diferentes não se
-    // soma, cada pleito tem eleitorado, cargo e regras próprios.
+    // Mesmo motor do gráfico da aba "Accorsi": nenhuma soma acontece aqui,
+    // porque voto de eleições diferentes não se soma.
     const pontos = buildTrajectory(dataset);
     avisos.push(
       "Votos de eleições diferentes não se somam nem se comparam direto: cada pleito tem cargo, regras e eleitorado próprios. O que se lê entre pleitos é variação.",
@@ -1566,9 +1542,8 @@ async function executarVotacaoDaCandidata(
           turno: ponto.round,
           partido: ponto.partido,
           votos: ponto.votos,
-          // Resultado completo e cru do TSE, traduzido: quem consulta o dado
-          // precisa saber se ela foi eleita. Os rótulos de vitrine (que
-          // omitem derrota) são regra de TELA da aba, não do dado.
+          // Resultado cru do TSE, traduzido: quem consulta precisa saber se
+          // ela foi eleita. Rótulo de vitrine é regra de tela, não do dado.
           resultado: formatResultado(ponto.resultado),
           municipiosComVoto: contest?.municipiosComVoto ?? null,
           posicaoNoPleito: contest?.posicaoNoEstado ?? null,
@@ -1654,8 +1629,8 @@ async function executarVotacaoDaCandidata(
         );
       }
     } else {
-      // Sem pleito pedido, o mais recente COM bairros — não o mais recente da
-      // trajetória, que pode ser uma eleição sem recorte submunicipal.
+      // Sem pleito pedido, o mais recente COM bairros, não o mais recente da
+      // trajetória (que pode não ter recorte submunicipal).
       contest = comBairros[comBairros.length - 1];
     }
 
@@ -1706,7 +1681,7 @@ async function executarVotacaoDaCandidata(
   // ---- município citado sem pleito: os destaques do cartão do mapa --------
   if (municipio && !(typeof argumentos.pleito === "string" && argumentos.pleito.trim())) {
     // Mesmo motor do cartão "Dra. Adriana neste município": a eleição mais
-    // recente de CADA universo. Prefeitura e cadeira são disputas diferentes —
+    // recente de CADA universo. Prefeitura e cadeira são disputas diferentes:
     // saem lado a lado e nunca somadas.
     const destaques = getMunicipioDestaques(dataset, municipio.ibgeCode);
     if (destaques.length === 0) {
@@ -1795,8 +1770,8 @@ async function executarVotacaoDaCandidata(
     );
   }
 
-  // Mesmo ranking da aba "Accorsi", incluindo a regra de que município sem
-  // valor da métrica (denominador ausente) fica FORA — nunca com 0.
+  // Mesmo ranking da aba "Accorsi": município sem valor da métrica
+  // (denominador ausente) fica FORA, nunca com 0.
   const completo = buildMunicipioRanking(
     contest,
     metricaId,
@@ -1867,8 +1842,8 @@ async function executarVotacaoDaCandidata(
     };
   }
 
-  // "menores" inverte a leitura da mesma lista ordenada pelo motor — a posição
-  // devolvida continua sendo a do ranking decrescente.
+  // "menores" só inverte a leitura da lista; a posição devolvida continua
+  // sendo a do ranking decrescente.
   const ordenadas = ordem === "menores" ? [...completo].reverse() : completo;
   const recortadas = truncar(ordenadas, limite, avisos, "municípios");
 
@@ -1904,8 +1879,8 @@ async function executarVotacaoDaCandidata(
 // ---------------------------------------------------------------------------
 
 function limiarPrivacidade(contexto: ContextoAgente) {
-  // O piso é inegociável: mesmo que a base declare um limiar menor, nenhum
-  // grupo com menos de 5 cadastros sai daqui.
+  // Piso inegociável: mesmo com limiar menor na base, nenhum grupo com menos
+  // de 5 cadastros sai daqui.
   return Math.max(
     K_ANONIMATO_MINIMO,
     contexto.cadastrosMetadados?.limiarPrivacidade ?? K_ANONIMATO_MINIMO,
@@ -2101,10 +2076,9 @@ type ExecutorFerramenta = (
 ) => Promise<RespostaFerramenta>;
 
 /**
- * Implementações, indexadas pelo nome declarado em `shared/agent-tools.json`.
- * O teste `agentTools.test.ts` compara as duas listas nos dois sentidos: uma
- * tool declarada sem implementação (ou o contrário) reprova a suíte, que é o
- * que impede a divergência com o backend.
+ * Implementações indexadas pelo nome declarado em `shared/agent-tools.json`.
+ * `agentTools.test.ts` compara as duas listas nos dois sentidos: declarada sem
+ * implementação (ou o contrário) reprova a suíte.
  */
 const EXECUTORES: Record<string, ExecutorFerramenta> = {
   ranking_indicador: executarRankingIndicador,
@@ -2125,9 +2099,8 @@ export function obterDefinicaoFerramenta(nome: string) {
 
 /**
  * Ponto de entrada do tool calling: valida os argumentos contra o esquema do
- * contrato compartilhado e executa. NUNCA lança — argumento inválido, tool
- * desconhecida ou falha inesperada viram `{ ok: false, motivo }`, porque um
- * throw no meio da conversa derrubaria a resposta do modelo.
+ * contrato e executa. NUNCA lança: argumento inválido, tool desconhecida ou
+ * falha inesperada viram `{ ok: false, motivo }`.
  */
 export async function executarFerramenta(
   nome: string,

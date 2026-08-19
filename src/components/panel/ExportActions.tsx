@@ -2,18 +2,10 @@ import { Download, FileSpreadsheet, FileText, ImageDown } from "lucide-react";
 import type { ReportFormat } from "../../hooks/useReportExport";
 
 /**
- * O bloco de exportação dos painéis do mapa.
- *
- * Os quatro formatos convivem porque atendem públicos diferentes, e nenhum
- * substitui o outro:
- *
- * - Excel: pasta de trabalho formatada, com capa de procedência e filtros —
- *   é o que vai para a coordenação de território trabalhar;
- * - PDF: documento de leitura, com capa, números de destaque e o mapa —
- *   é o que vai para a reunião e para a candidata;
- * - CSV: o formato de quem vai cruzar os números em outra ferramenta. Continua
- *   exatamente como estava, com todas as colunas técnicas;
- * - PNG: só o mapa, para colar numa apresentação ou mandar num grupo.
+ * Bloco de exportação dos painéis do mapa. Os quatro formatos atendem públicos
+ * diferentes: Excel (pasta formatada, com capa de procedência e filtros), PDF
+ * (documento de leitura, com capa, destaques e o mapa), CSV (todas as colunas
+ * técnicas, para cruzar em outra ferramenta) e PNG (só o mapa).
  */
 export function ExportActions({
   exportando,

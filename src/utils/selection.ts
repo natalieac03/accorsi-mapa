@@ -102,7 +102,7 @@ export function aggregateTerritorialSelection(
     0,
   );
   // Alfabetização 15+: soma de numerador e denominador dos municípios com
-  // dado — nunca média das taxas municipais; sem cobertura o resultado é null.
+  // dado, nunca média das taxas municipais; sem cobertura o resultado é null.
   const withLiteracy = municipalities.filter(
     (
       municipality,

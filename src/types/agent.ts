@@ -9,14 +9,9 @@ import type { PartySpectrumIndex } from "../utils/spectrum";
 /**
  * CONTRATO DE RETORNO DO MOTOR DE CONSULTAS DO AGENTE.
  *
- * Toda ferramenta devolve a MESMA forma, porque quem lê é um modelo de
- * linguagem: um envelope com os dados, o total disponível, a fonte com o
- * recorte temporal e uma lista de avisos. O modelo nunca calcula nada — ele
- * escolhe a consulta e cita o que vier aqui.
- *
- * Disciplina de dado ausente: valor sem dado é `null`, JAMAIS 0, e a
- * quantidade de linhas sem dado sempre aparece em `avisos`. Truncamento
- * também é sempre declarado em `avisos` — nunca silencioso.
+ * Toda ferramenta devolve a MESMA forma: dados, total disponível, fonte com o
+ * recorte temporal e avisos. Valor sem dado é `null`, JAMAIS 0; linhas sem
+ * dado e truncamento sempre aparecem em `avisos`.
  */
 
 export type OrdemFerramenta = "maiores" | "menores";
@@ -85,10 +80,9 @@ export type ContratoFerramentas = {
 };
 
 /**
- * Tudo que as ferramentas precisam para calcular, já nos mesmos formatos que
- * alimentam o mapa. Os carregadores da camada submunicipal são injetados
- * porque o download é assíncrono e sob demanda: fora do navegador (testes) o
- * contexto simplesmente não os traz e a ferramenta avisa a pendência.
+ * Tudo que as ferramentas precisam para calcular, nos formatos que alimentam o
+ * mapa. Os carregadores submunicipais são injetados por serem assíncronos e
+ * sob demanda: fora do navegador (testes) a ferramenta avisa a pendência.
  */
 export type ContextoAgente = {
   municipios: MunicipalityProfile[];
@@ -101,16 +95,13 @@ export type ContextoAgente = {
   /** Pleitos do espectro, do mais recente para o mais antigo. */
   pleitos: SpectrumSourceContest[];
   /**
-   * Trajetória da candidatura em foco (o mesmo snapshot da aba "Accorsi").
-   * `null` quando o painel não entregou o arquivo — que é diferente de
-   * "trajetória pendente"; a ferramenta distingue os dois casos no motivo,
-   * porque afirmar ausência de dado que existe é o pior desfecho possível.
+   * Trajetória da candidatura em foco (snapshot da aba "Accorsi"). `null` = o
+   * painel não entregou o arquivo, o que difere de "trajetória pendente".
    */
   trajetoriaCandidata: CandidateDataset | null;
   /**
-   * ibge -> eleitorado apto, já pelo motor `buildElectorateIndex`. É `null`
-   * enquanto o snapshot do eleitorado for placeholder: sem ele a métrica
-   * "votos por 1.000 eleitores" não existe (e não vira zero).
+   * ibge -> eleitorado apto (`buildElectorateIndex`). `null` enquanto o
+   * snapshot for placeholder: sem ele não há "votos por 1.000 eleitores".
    */
   indiceEleitorado: ElectorateIndex;
   cadastros: CampaignRegistration[];
@@ -128,8 +119,6 @@ export type ContextoAgente = {
 
 /* --------------------------------------------------------------------------
  * Conversa: tipos da camada de chat (hook useDataAgent + interface).
- * Separados dos tipos de ferramenta acima porque descrevem o TRANSPORTE até o
- * modelo, não o resultado das consultas.
  * ------------------------------------------------------------------------ */
 
 export type ChamadaFerramentaModelo = {
@@ -146,15 +135,13 @@ export type MensagemAgente = {
   tool_call_id?: string | null;
 };
 
-/** O que a interface exibe — sem o vaivém de ferramentas. */
+/** O que a interface exibe, sem o vaivém de ferramentas. */
 export type MensagemChat = {
   autor: "usuario" | "agente";
   texto: string;
   /**
-   * Ferramentas consultadas para produzir a resposta. Continuam registradas
-   * para depuração, mas NÃO são mais desenhadas na conversa: o rodapé
-   * "Consultas usadas: resultado_eleicao, ..." saiu a pedido de quem usa. A
-   * procedência que importa (fonte, pleito e ano) vem no texto da resposta.
+   * Ferramentas consultadas para produzir a resposta. Registradas para
+   * depuração, mas NÃO desenhadas na conversa.
    */
   ferramentas: string[];
 };

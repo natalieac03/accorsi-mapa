@@ -46,10 +46,9 @@ function writePollingState(value: unknown) {
 /**
  * Estado da camada submunicipal + carregamento SOB DEMANDA dos dados.
  *
- * Nada é buscado enquanto `active` for falso: os locais só descem quando a
- * camada é aberta pela primeira vez, e os votos de um pleito só quando aquele
- * pleito é selecionado. `pollingData` mantém o cache em memória, então voltar
- * a um pleito já visto é instantâneo.
+ * Nada é buscado enquanto `active` for falso: os locais descem na primeira
+ * abertura da camada e os votos só quando o pleito é selecionado.
+ * `pollingData` cacheia em memória, então revisitar um pleito é instantâneo.
  */
 export function usePollingPlaces(
   contests: SpectrumSourceContest[],
@@ -77,9 +76,9 @@ export function usePollingPlaces(
   );
   const pollingContestId = contest ? getPollingContestId(contest) : "";
 
-  // O status vive numa referência: se entrasse nas dependências, ligar o
-  // "loading" recriaria o efeito, o cleanup cancelaria a promessa em voo e o
-  // spinner nunca sairia da tela. Ver utils/pollingLoad.ts.
+  // Status em ref: nas dependências, ligar o "loading" recriaria o efeito, o
+  // cleanup cancelaria a promessa em voo e o spinner nunca sairia. Ver
+  // utils/pollingLoad.ts.
   const placesStatusRef = useRef<PollingDataStatus>("idle");
 
   useEffect(() => {
@@ -98,15 +97,12 @@ export function usePollingPlaces(
   const votesStatusRef = useRef<PollingDataStatus>("idle");
   const votesContestRef = useRef("");
 
-  // Os votos por sigla continuam sendo baixados mesmo quando a medida ativa é
-  // a da candidata (que vem da trajetória, já embutida no bundle): é o que
-  // mantém as outras duas medidas a um clique — sem esse arquivo o alternador
-  // não teria sigla nenhuma para oferecer e prenderia quem olha numa medida só.
+  // Os votos por sigla descem mesmo quando a medida ativa é a da candidata: sem
+  // esse arquivo o alternador não teria sigla nenhuma para oferecer.
   useEffect(() => {
     if (!active || placesStatus !== "ready" || !pollingContestId) return;
-    // Trocar de pleito é um pedido novo: o status volta para "idle" antes de
+    // Trocar de pleito é pedido novo: o status volta para "idle" antes de
     // iniciar, senão o resultado do pleito anterior bloquearia o download.
-    // Os votos antigos continuam na tela até os novos chegarem, como antes.
     resetPollingLoadKey(votesStatusRef, votesContestRef, pollingContestId);
     return runPollingLoad(
       votesStatusRef,
@@ -130,11 +126,10 @@ export function usePollingPlaces(
     setState((current) => ({ ...current, viewMode }));
   }, []);
 
-  // A sigla escolhida é a MEDIDA da camada: sigla vazia significa "volte para
-  // o índice ideológico", e por isso é normalizada para null — assim o estado
-  // guardado tem uma forma só para a mesma coisa. A escolha sobrevive à troca
-  // de pleito; quem decide se ela ainda vale é o modelo, que só aceita sigla
-  // com voto apurado no pleito atual.
+  // A sigla é a MEDIDA da camada. Sigla vazia significa "volte ao índice
+  // ideológico" e é normalizada para null (uma forma só no estado guardado). A
+  // escolha sobrevive à troca de pleito; o modelo só aceita sigla com voto
+  // apurado no pleito atual.
   const setPartyCode = useCallback((partyCode: string | null) => {
     const next = partyCode ? partyCode : null;
     setState((current) =>
@@ -142,11 +137,9 @@ export function usePollingPlaces(
     );
   }, []);
 
-  // O pleito DELA é a terceira medida: um id aqui significa "meça os votos da
-  // candidata"; vazio significa "volte para a régua da sigla/índice". Como o
-  // pleito dela e o pleito do espectro são listas diferentes, o `contestId`
-  // acima não é tocado — voltar para o índice devolve o pleito de espectro que
-  // já estava escolhido, sem recarregar arquivo nenhum.
+  // Terceira medida: id significa "meça os votos da candidata", vazio volta à
+  // régua de sigla/índice. Listas distintas, então `contestId` não é tocado e
+  // voltar ao índice reusa o pleito de espectro sem recarregar arquivo.
   const setCandidateContestId = useCallback((contestId: string | null) => {
     const next = contestId ? contestId : null;
     setState((current) =>

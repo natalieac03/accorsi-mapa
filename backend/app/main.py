@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -12,10 +13,20 @@ from .api.routes.health import router as health_router
 from .config import get_settings
 from .middleware import RequestIdMiddleware, SecurityHeadersMiddleware
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    get_settings().validate_runtime_security()
+    settings = get_settings()
+    settings.validate_runtime_security()
+    if not settings.auth_required:
+        # Aviso alto no log: nesse modo qualquer pessoa com o endereço entra.
+        logger.warning(
+            "AUTH_REQUIRED=false: API aberta sem login, valendo como %s. "
+            "Modo de demonstração. Volte para true depois.",
+            "demonstracao@local",
+        )
     yield
 
 

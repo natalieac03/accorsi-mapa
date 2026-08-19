@@ -13,33 +13,24 @@ import type {
 } from "./reportModel.ts";
 
 /**
- * PRIMITIVAS DE DESENHO DO PDF — tipografia, tema visual e gráficos em VETOR.
+ * Primitivas de desenho do PDF: tipografia, tema visual e gráficos em VETOR.
+ * Nenhuma página vira imagem, então o texto segue pesquisável e o arquivo fica
+ * em dezenas de kB em vez de megabytes.
  *
- * Todo gráfico deste relatório é desenhado com linhas, retângulos e texto do
- * próprio jsPDF. Nenhuma página vira imagem: o texto continua pesquisável e
- * selecionável, o arquivo fica em dezenas de kB em vez de megabytes, e a
- * ampliação não pixeliza um nome de município. É por isso que este módulo
- * existe em vez de um `svgToPng` — que era o caminho antigo e transformava
- * gráfico em bitmap opaco.
+ * Disciplinas de desenho:
  *
- * DISCIPLINAS DE DESENHO, todas verificáveis olhando uma página:
- *
- * 1. AUSÊNCIA NÃO É ZERO. Município sem valor não recebe ponto, não recebe
- *    barra e não encosta no eixo: ele é contado e declarado em cinza
- *    (`MISSING_DATA_COLOR`, o mesmo cinza do mapa) ao lado do gráfico;
- * 2. COR SÓ ONDE SIGNIFICA. Uma única matiz — a cor principal configurável —
- *    em três passos de luminosidade. Grupos ordenados (abaixo/acima da
- *    mediana) usam passos diferentes da MESMA rampa, o que sobrevive à
- *    impressão em preto e branco; nada aqui depende de distinguir vermelho de
- *    azul. Os quatro quadrantes têm todos a mesma superfície: o dado ali é a
- *    contagem, e pintar cada célula de uma cor inventaria uma escala;
- * 3. NENHUM EIXO MUDO. Rótulo, unidade e escala saem escritos; escala log é
- *    declarada no eixo, não deduzida;
- * 4. RÓTULO NÃO SE CORTA. Toda etiqueta é MEDIDA (`getTextWidth`) antes de ser
- *    escrita; a que não cabe fora da barra não é escrita por cima dela — o
- *    número segue legível na tabela e na descrição textual;
- * 5. TODO GRÁFICO TEM DESCRIÇÃO. `chart.description` é obrigatório no tipo e
- *    sai impresso abaixo do desenho: o gráfico nunca é a única forma de ler.
+ * 1. AUSÊNCIA NÃO É ZERO: município sem valor não recebe ponto nem barra; é
+ *    contado e declarado em cinza (`MISSING_DATA_COLOR`, o do mapa) ao lado;
+ * 2. uma única matiz (a cor principal configurável) em três passos de
+ *    luminosidade, o que sobrevive à impressão em preto e branco. Os quatro
+ *    quadrantes têm a mesma superfície: o dado ali é a contagem, e uma cor por
+ *    célula inventaria uma escala;
+ * 3. nenhum eixo mudo: rótulo, unidade e escala saem escritos, e escala log é
+ *    declarada no eixo;
+ * 4. toda etiqueta é MEDIDA (`getTextWidth`) antes de ser escrita; a que não
+ *    cabe fora da barra não é escrita por cima dela;
+ * 5. `chart.description` é obrigatório no tipo e sai impresso abaixo do
+ *    desenho: o gráfico nunca é a única forma de ler.
  */
 
 /* -------------------------------------------------------------------------
@@ -77,22 +68,17 @@ const BRANCO: RGB = [255, 255, 255];
 const PRETO: RGB = [0, 0, 0];
 
 /**
- * A cor principal do relatório. Configurável: é o único ponto onde a identidade
- * visual entra, e a rampa dos gráficos é DERIVADA dela, não uma segunda lista
- * de hexadecimais que alguém teria de manter em sincronia.
+ * Cor principal do relatório, configurável. A rampa dos gráficos é DERIVADA
+ * dela, não uma segunda lista de hexadecimais a manter em sincronia.
  */
 export const COR_PRINCIPAL_PADRAO = "#c1121f";
 
 /**
- * Rampa de uma matiz só, em três passos.
- *
- * Os pesos (45% de branco, a própria cor, 35% de preto) foram escolhidos para
- * a rampa passar nos testes de rampa ordinal do validador de paleta com a cor
- * padrão #c1121f: `#dd7d84 → #c1121f → #7d0c14`, luminosidade monótona, ΔL
- * adjacente acima de 0,06 e a ponta clara em 2,86:1 contra o papel branco.
- * Em escala de cinza os três passos ficam em 0,32 / 0,12 / 0,05 de
- * luminância relativa — é o que faz o gráfico sobreviver a uma impressora
- * preto e branco.
+ * Rampa de uma matiz só, em três passos: 45% de branco, a própria cor, 35% de
+ * preto. Com a cor padrão #c1121f dá `#dd7d84 → #c1121f → #7d0c14`,
+ * luminosidade monótona, ΔL adjacente acima de 0,06 e ponta clara em 2,86:1
+ * contra o papel branco; em escala de cinza, 0,32 / 0,12 / 0,05 de luminância
+ * relativa.
  */
 const PESO_CLARO = 0.45;
 const PESO_ESCURO = 0.35;
@@ -109,7 +95,7 @@ export type PdfTheme = {
   tintaSuave: RGB;
   tintaFraca: RGB;
   linha: RGB;
-  /** O cinza de "sem dado" — o mesmo do mapa e das legendas da tela. */
+  /** O cinza de "sem dado", o mesmo do mapa e das legendas da tela. */
   semDado: RGB;
 };
 
@@ -168,12 +154,9 @@ const CP1252_EXTRA = new Set([
 ]);
 
 /**
- * Prepara um texto para as fontes padrão do PDF.
- *
- * Acentuação portuguesa passa intacta (está toda em Latin-1). Símbolos
- * conhecidos viram equivalentes legíveis; o que sobrar fora do cp1252 perde os
- * diacríticos e, em último caso, é descartado — melhor uma palavra sem acento
- * do que um glifo aleatório no meio de um relatório de campanha.
+ * Prepara um texto para as fontes padrão do PDF. Acentuação portuguesa passa
+ * intacta (está toda em Latin-1); símbolo conhecido vira equivalente legível;
+ * o que sobrar fora do cp1252 perde os diacríticos e, em último caso, some.
  */
 export function toPdfText(value: string): string {
   let saida = "";
@@ -220,14 +203,11 @@ export function quebrar(doc: jsPDF, texto: string, largura: number): string[] {
 }
 
 /**
- * Texto girado 90°, centrado no eixo vertical — o título do eixo y.
+ * Texto girado 90°, centrado no eixo vertical (título do eixo y).
  *
- * Não usa `align: "center"` de propósito: com `angle`, o jsPDF aplica o
- * alinhamento ANTES de girar, deslocando o texto meia largura para a
- * esquerda. Num eixo, isso jogava o rótulo para fora da margem da página (e o
- * deslocamento variava com o tamanho do texto, o que fazia o defeito parecer
- * aleatório). Aqui o começo do texto é calculado à mão: ele sobe a partir de
- * `centro + largura/2`, o que o deixa centrado de fato.
+ * Não usa `align: "center"`: com `angle`, o jsPDF alinha ANTES de girar e
+ * desloca o texto meia largura para a esquerda, jogando o rótulo para fora da
+ * margem. O começo é calculado à mão, subindo de `centro + largura/2`.
  */
 export function escreverVertical(
   doc: jsPDF,
@@ -316,9 +296,9 @@ function decimaisDoPasso(passo: number, declarado?: number) {
 }
 
 /**
- * Escala de um eixo. `inicio` é a coordenada do MENOR valor e `fim` a do maior
- * — quem chama passa (base, topo) num eixo vertical e (esquerda, direita) num
- * horizontal. `inverted` troca os dois: é o que põe a 1ª colocação no alto.
+ * Escala de um eixo. `inicio` é a coordenada do MENOR valor e `fim` a do maior:
+ * (base, topo) num eixo vertical, (esquerda, direita) num horizontal.
+ * `inverted` troca os dois, que é o que põe a 1ª colocação no alto.
  */
 function criarEscala(
   valores: readonly number[],
@@ -345,9 +325,8 @@ function criarEscala(
     const maxLog = Math.ceil(Math.max(...(logs.length ? logs : [1])));
     const baixo = minLog;
     const alto = maxLog === minLog ? minLog + 1 : maxLog;
-    // Uma potência de dez abaixo de 1 precisa das casas decimais que ela tem:
-    // 10^-2 formatado como inteiro vira "0", e um eixo que começa em "0" numa
-    // escala logarítmica é uma escala mentindo sobre si mesma.
+    // Potência de dez abaixo de 1 precisa das casas decimais que tem: 10^-2
+    // formatado como inteiro vira "0", e eixo log começando em "0" mente.
     const textoLog = (valor: number, expoente: number) =>
       formatarTick(valor, Math.max(0, -expoente));
     const ticks: Tick[] = [];
@@ -392,8 +371,8 @@ function criarEscala(
   let min = axis.min ?? Math.floor(bruttoMin / passo) * passo;
   let max = axis.max ?? Math.ceil(bruttoMax / passo) * passo;
   if (max === min) max = min + passo;
-  // Percentual nunca é desenhado numa janela estreita que exagere a diferença:
-  // escala enganosa é o defeito mais fácil de cometer aqui.
+  // Limite declarado no eixo prevalece: percentual nunca vai numa janela
+  // estreita que exagere a diferença.
   if (axis.min !== undefined) min = axis.min;
   if (axis.max !== undefined) max = axis.max;
   const decimais = decimaisDoPasso(passo, axis.decimals);
@@ -440,7 +419,7 @@ export type ResumoCaixa = {
   mediana: number;
   q3: number;
   maximo: number;
-  /** Pontos além de 1,5 amplitudes interquartis — desenhados um a um. */
+  /** Pontos além de 1,5 amplitudes interquartis, desenhados um a um. */
   extremos: number[];
 };
 
@@ -537,10 +516,9 @@ function alturaLegenda(chart: ReportChart) {
 }
 
 /**
- * Altura total do bloco do gráfico: título, subtítulo, legenda, desenho,
- * descrição textual e fonte. Medida ANTES de desenhar para o renderizador
- * decidir se a página aguenta o bloco inteiro — gráfico partido no meio ou
- * descrição órfã numa página nova são os dois defeitos que isto evita.
+ * Altura total do bloco do gráfico (título, subtítulo, legenda, desenho,
+ * descrição e fonte). Medida ANTES de desenhar para o renderizador saber se a
+ * página aguenta o bloco inteiro, sem gráfico partido nem descrição órfã.
  */
 export function medirGrafico(
   doc: jsPDF,
@@ -605,9 +583,8 @@ function desenharLegenda(
       tracar(doc, cor, TRACO_DADO);
       doc.line(cursorX, linhaY - 0.8, cursorX + 4.4, linhaY - 0.8);
     } else if (item.kind === "caixaMediana") {
-      // A marca da legenda é a MARCA do gráfico: caixa com o traço claro da
-      // mediana dentro. Uma linha vermelha na legenda para uma mediana branca
-      // no desenho seria uma legenda que não corresponde ao que se vê.
+      // A marca da legenda repete a do gráfico: caixa com o traço claro da
+      // mediana dentro.
       doc.rect(cursorX, linhaY - 2.2, 4.4, 2.6, "F");
       tracar(doc, tema.branco, 0.5);
       doc.line(cursorX + 2.2, linhaY - 2.2, cursorX + 2.2, linhaY + 0.4);
@@ -622,10 +599,9 @@ function desenharLegenda(
 }
 
 /**
- * Moldura do gráfico: grade horizontal, eixos e rótulos de escala.
- *
- * A grade é fio sólido, um passo acima da superfície — nunca tracejada, que
- * lê como "projeção", e nunca escura, que compete com o dado.
+ * Moldura do gráfico: grade horizontal, eixos e rótulos de escala. A grade é
+ * fio sólido um passo acima da superfície: nunca tracejada (lê como
+ * "projeção") nem escura (competiria com o dado).
  */
 function desenharMoldura(
   doc: jsPDF,
@@ -681,8 +657,7 @@ function desenharMoldura(
     for (const tick of input.x.escala.ticks) {
       const x = input.x.escala.para(tick.valor);
       const meia = doc.getTextWidth(tick.texto) / 2;
-      // Rótulo de escala não se sobrepõe: o que não cabe some, e a grade
-      // continua contando a história.
+      // Rótulo de escala não se sobrepõe: o que não cabe some.
       if (x - meia < ultimoFim + 1.2) continue;
       if (x + meia > direita + 2) continue;
       doc.text(tick.texto, x, base + 3.4, { align: "center" });
@@ -787,16 +762,15 @@ function desenharDispersao(
     const cx = escalaX.para(ponto.x);
     const cy = escalaY.para(ponto.y);
     preencher(doc, tema.rampa[0]);
-    // Anel na cor da superfície: é o que mantém dois municípios vizinhos
-    // legíveis onde os pontos se tocam, sem desenhar borda de dado.
+    // Anel claro: mantém legíveis dois municípios vizinhos onde os pontos se
+    // tocam.
     tracar(doc, tema.branco, mini ? 0.15 : 0.3);
     doc.circle(cx, cy, raio(ponto.weight), "FD");
   }
 
   if (!mini) {
     definirTexto(doc, T_MARCA, tema.tinta);
-    // Rótulo direto só onde ele CABE e não encosta em outro: dois nomes de
-    // município sobrepostos são menos legíveis que um nome só.
+    // Rótulo direto só onde CABE e não encosta em outro.
     const ocupados: Array<[number, number, number, number]> = [];
     for (const ponto of spec.points) {
       if (!ponto.callout) continue;
@@ -1177,9 +1151,8 @@ function desenharPareto(
     y: { escala: escalaY, axis: spec.axis },
   });
 
-  // Barras da participação individual e linha do acumulado dividem O MESMO
-  // eixo: as duas são percentagem do mesmo total de votos. Dois eixos y aqui
-  // inventariam uma relação que o dado não tem.
+  // Barras e linha do acumulado dividem O MESMO eixo: as duas são percentagem
+  // do mesmo total de votos, e dois eixos y inventariam uma relação.
   const largura = Math.max(0.35, plot.largura / Math.max(1, total) - 0.15);
   preencher(doc, tema.rampa[0]);
   for (const ponto of spec.points) {
@@ -1201,10 +1174,8 @@ function desenharPareto(
   }
 
   /* Marcos anotados. As etiquetas NÃO ficam ao lado do ponto: os cortes de 5,
-     10 e 20 municípios caem quase no mesmo lugar do eixo, e três etiquetas ali
-     se sobrepõem entre si e por cima da curva. Elas são empilhadas no alto —
-     a região vazia do gráfico —, cada uma ligada ao seu ponto por uma linha de
-     chamada fina. */
+     10 e 20 municípios caem quase no mesmo lugar do eixo e se sobreporiam.
+     Ficam empilhadas fora da curva, ligadas ao ponto por linha de chamada. */
   spec.marcos.forEach((marco, indice) => {
     if (marco.posicao > total) return;
     const x = escalaX.para(marco.posicao);
@@ -1214,14 +1185,12 @@ function desenharPareto(
     definirTexto(doc, T_MARCA, tema.tinta);
     const texto = toPdfText(marco.label);
     const larguraTexto = doc.getTextWidth(texto);
-    // As etiquetas empilham no canto INFERIOR direito — a única região
-    // sistematicamente vazia de uma curva acumulada, que sobe rápido e depois
-    // corre colada no topo.
+    // Empilham no canto INFERIOR direito, a única região sistematicamente
+    // vazia de uma curva acumulada.
     const alvoY = plot.y + plot.altura - 3.4 - indice * 4.2;
     const cabeDireita = x + 2.6 + larguraTexto <= plot.x + plot.largura;
     const alvoX = cabeDireita ? x + 2.6 : x - 2.6 - larguraTexto;
-    // Linha de chamada: liga a etiqueta ao ponto sem que ela precise encostar
-    // nele. Só é desenhada quando há distância suficiente para ela existir.
+    // Linha de chamada, desenhada só quando há distância suficiente.
     if (alvoY - y > 3) {
       tracar(doc, tema.linha, FIO);
       doc.line(cabeDireita ? x + 1.2 : x - 1.2, alvoY - 1, x, y + 1.6);
@@ -1362,9 +1331,9 @@ function desenharMultiplos(
  * ------------------------------------------------------------------------- */
 
 /**
- * Desenha o bloco completo — título, subtítulo, legenda, gráfico, descrição
- * textual, contagem de sem-dado e fonte — e devolve a altura consumida, que é
- * a mesma que `medirGrafico` prometeu.
+ * Desenha o bloco completo (título, subtítulo, legenda, gráfico, descrição,
+ * contagem de sem-dado e fonte) e devolve a altura consumida, a mesma que
+ * `medirGrafico` prometeu.
  */
 export function desenharGrafico(
   doc: jsPDF,

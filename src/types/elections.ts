@@ -65,7 +65,7 @@ export type ElectionMetricId = "share" | "votes" | "swing";
 
 /**
  * Estado da camada de eleições. Com o snapshot ainda pendente (nenhum pleito)
- * os identificadores ficam VAZIOS — nunca apontando para um pleito inventado.
+ * os identificadores ficam VAZIOS, nunca apontando para um pleito inventado.
  */
 export type ElectionState = {
   contestId: string;
@@ -95,9 +95,9 @@ export type ElectionModel = {
   contest: ElectionContest;
   candidate: ElectionCandidate;
   comparisonContest: ElectionContest;
-  /** Null when the compared contest has no equivalent candidacy. */
+  /** Null quando o pleito comparado não tem candidatura equivalente. */
   comparisonCandidate: ElectionCandidate | null;
-  /** Effective metric: falls back to "share" when swing is unavailable. */
+  /** Métrica efetiva: cai em "share" quando o swing não está disponível. */
   metricId: ElectionMetricId;
   metricLabel: string;
   metricShortLabel: string;

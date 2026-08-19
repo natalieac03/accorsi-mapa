@@ -2,15 +2,9 @@ import { BadgeDollarSign, PlugZap, TriangleAlert } from "lucide-react";
 
 /**
  * Aba "Anúncios": espaço reservado para o módulo de mídia paga (Meta Ads e
- * qualquer outro impulsionamento).
- *
- * O painel não recebe props porque ainda não existe fonte de dado alguma —
- * quando a exportação do gerenciador de anúncios entrar na plataforma, ele
- * passa a receber modelo e estado como os painéis irmãos.
- *
- * Regra desta base: nada é inventado para preencher tela. Por isso não há aqui
- * nenhum número, gráfico ou barra de exemplo — só a explicação do que o painel
- * vai mostrar e do que precisa chegar para isso acontecer.
+ * outros impulsionamentos). Sem props porque não há fonte de dado conectada;
+ * ela recebe modelo e estado como os painéis irmãos quando a exportação do
+ * gerenciador entrar. Regra da base: nada de número ou gráfico de exemplo.
  */
 export function PaidMediaPanel() {
   return (

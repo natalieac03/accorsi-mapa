@@ -117,7 +117,7 @@ type MunicipalityPanelProps = {
   pollingVotesStatus: PollingDataStatus;
   pollingPlacesMetadata: PollingPlacesMetadata | null;
   pollingOpenRequest: number;
-  /** pleito e métrica da aba dela — o mesmo par que pinta a camada do mapa */
+  /** pleito e métrica da aba dela: o mesmo par que pinta a camada do mapa */
   candidateState: CandidateLayerState;
   /** null quando a trajetória ainda é placeholder: a camada não é oferecida */
   candidateModel: CandidateLayerModel | null;
@@ -212,8 +212,7 @@ const tabs: SidebarTabDefinition[] = [
   { id: "elections", label: "Eleições", icon: Vote },
   { id: "candidate", label: "Accorsi", icon: TrendingUp },
   { id: "registrations", label: "Cadastros", icon: UsersRound },
-  // Anúncios e Redes ficam junto de Cadastros porque são as três abas de
-  // operação da campanha; as duas ainda não têm dado e dizem isso na cara.
+  // Anúncios e Redes ficam junto de Cadastros: são as abas de operação.
   { id: "ads", label: "Anúncios", icon: BadgeDollarSign },
   { id: "social", label: "Redes", icon: Share2 },
   { id: "spectrum", label: "Espectro", icon: Scale },
@@ -225,15 +224,13 @@ const tabs: SidebarTabDefinition[] = [
 // A aba "history" não tem botão na fileira do painel: ela é aberta pelo menu
 // "três linhas" do cabeçalho (ao lado da marca), que chega aqui pelo uiBus.
 
-// Fontes de seleção que representam ação direta no mapa ou na busca. Só elas
-// contam para a adição automática à comparação: fontes vindas de listas dos
-// próprios painéis (workspace, analysis, selection…) trocam de aba de
-// propósito e não devem ser interceptadas. "registration" e "polling" entram
-// porque o clique no mapa usa essas fontes quando essas camadas estão ativas.
+// Fontes de ação direta no mapa ou na busca. Só elas contam para a adição
+// automática à comparação; fontes de listas dos painéis (workspace, analysis,
+// selection) trocam de aba de propósito. "registration" e "polling" entram
+// porque o clique no mapa usa essas fontes com essas camadas ativas.
 /**
- * Abas que trazem a PRÓPRIA camada para o mapa ao serem abertas. Serve para
- * saber quando sair da aba dela deve devolver o mapa à camada padrão: indo
- * para uma destas, quem manda é a camada da aba de destino.
+ * Abas que trazem a PRÓPRIA camada ao mapa. Indo para uma destas, quem manda
+ * é a camada da aba de destino, então sair da aba dela não reseta o mapa.
  */
 const TABS_COM_CAMADA: ReadonlySet<SidebarTab> = new Set([
   "analysis",
@@ -348,20 +345,17 @@ export function MunicipalityPanel({
 }: MunicipalityPanelProps) {
   const [activeTab, setActiveTab] = useState<SidebarTab>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Histórico do TSE ainda não gerado: a aba continua acessível (é onde a
-  // pessoa lê o porquê e o que rodar), mas não pede a camada de eleições ao
-  // mapa — camada sem dado não é camada.
+  // Histórico do TSE não gerado: a aba segue acessível, mas não pede a camada
+  // de eleições ao mapa.
   const electionsPendente = electionModel === null;
-  // Trajetória ainda não gerada: a aba dela continua acessível (é onde a
-  // pessoa lê o que rodar), mas não pede a camada dela ao mapa.
+  // Trajetória não gerada: a aba segue acessível, mas não pede a camada dela.
   const candidatePendente = candidateModel === null;
-  // Nonce > 0 exibe o aviso de limite da comparação; cada tentativa reinicia
-  // o cronômetro de ocultação (por isso um contador, não um booleano).
+  // Nonce > 0 exibe o aviso de limite; cada tentativa reinicia o cronômetro,
+  // por isso um contador e não um booleano.
   const [compareLimitNotice, setCompareLimitNotice] = useState(0);
   const handledSelectionSequenceRef = useRef(0);
-  // Última seleção já considerada pela aba de comparação. Fica sincronizada
-  // enquanto a aba está fechada para nunca adicionar retroativamente o
-  // município que já estava selecionado quando a pessoa abriu a aba.
+  // Última seleção considerada pela aba de comparação. Sincronizada com a aba
+  // fechada para nunca adicionar retroativamente o município já selecionado.
   const compareHandledSequenceRef = useRef(0);
   const validIds = useMemo(
     () => new Set(Object.keys(dataset.municipalities)),
@@ -412,8 +406,8 @@ export function MunicipalityPanel({
 
     handledSelectionSequenceRef.current = selectionEvent.sequence;
     recordVisit(selectionEvent);
-    // Com a aba de comparação aberta, cliques no mapa e buscas não trocam de
-    // aba: o município é adicionado à comparação pelo efeito dedicado abaixo.
+    // Com a comparação aberta, clique e busca não trocam de aba: o município
+    // entra na comparação pelo efeito dedicado abaixo.
     if (activeTab === "compare" && MAP_OR_SEARCH_SOURCES.has(selectionEvent.source)) {
       setMobileOpen(true);
       return;
@@ -438,9 +432,8 @@ export function MunicipalityPanel({
   useEffect(() => {
     const sequence = selectionEvent?.sequence ?? 0;
     if (activeTab !== "compare") {
-      // Fora da aba, só mantém o ponteiro em dia: eventos anteriores à
-      // abertura da aba nunca são reprocessados (proteção contra o mount e
-      // contra idas e voltas entre abas).
+      // Fora da aba, só avança o ponteiro: eventos anteriores à abertura nunca
+      // são reprocessados (protege contra o mount e contra troca de abas).
       compareHandledSequenceRef.current = sequence;
       return;
     }
@@ -452,8 +445,7 @@ export function MunicipalityPanel({
     // Não duplica: quem já está na comparação é ignorado em silêncio.
     if (comparisonIds.includes(selectionEvent.id)) return;
     if (comparisonIds.length >= MAX_COMPARISON_ITEMS) {
-      // Cheio: em vez de adicionar, mostra um aviso discreto por alguns
-      // segundos dentro do painel de comparação.
+      // Cheio: mostra o aviso no painel de comparação em vez de adicionar.
       setCompareLimitNotice((nonce) => nonce + 1);
       return;
     }
@@ -509,8 +501,8 @@ export function MunicipalityPanel({
     setMobileOpen(true);
   }, [selectionOpenRequest]);
 
-  // Pedidos do menu "três linhas" do cabeçalho chegam por aqui. openTabRef
-  // evita reassinar o bus a cada render (openTab é recriada sempre).
+  // Pedidos do menu "três linhas" chegam por aqui. openTabRef evita reassinar
+  // o bus a cada render (openTab é recriada sempre).
   const openTabRef = useRef<(tab: SidebarTab) => void>(() => {});
   useEffect(() => assinarAbrirAba((aba) => openTabRef.current(aba)), []);
 
@@ -520,20 +512,15 @@ export function MunicipalityPanel({
     if (tab === "registrations") onMapLayerChange("registration");
     if (tab === "spectrum") onMapLayerChange("spectrum");
     if (tab === "polling") onMapLayerChange("polling");
-    // Abrir a aba dela pinta o mapa pelo desempenho dela, no pleito e na
-    // métrica escolhidos aqui. Com a trajetória pendente o MunicipalityLayer
-    // rebaixa o pedido para a camada padrão — camada sem dado não é camada.
-    // A aba de eleições com o histórico pendente não traz camada nenhuma:
-    // para efeito de saída da aba dela, conta como aba sem camada.
+    // Com a trajetória pendente, o MunicipalityLayer rebaixa o pedido para a
+    // camada padrão. Eleições com histórico pendente conta como aba sem camada.
     const destinoTemCamada =
       TABS_COM_CAMADA.has(tab) && !(tab === "elections" && electionsPendente);
     if (tab === "candidate") {
       onMapLayerChange("candidato");
     } else if (activeTab === "candidate" && !destinoTemCamada) {
-      // Sair da aba dela POR ESCOLHA devolve o mapa à camada padrão: a camada
-      // dela vive presa aos controles do painel dela. Trocas de aba causadas
-      // por clique no mapa não passam por aqui de propósito — abrir um
-      // município não pode apagar a camada que a pessoa acabou de pedir.
+      // Sair da aba dela POR ESCOLHA devolve o mapa à camada padrão. Trocas de
+      // aba vindas de clique no mapa não passam por aqui, de propósito.
       onMapLayerChange("analysis");
     }
     setActiveTab(tab);
@@ -599,9 +586,7 @@ export function MunicipalityPanel({
     onReset();
   };
 
-  // Badge de contagem de cada aba, compartilhado entre a fileira principal e
-  // os itens do menu hambúrguer (o item "Histórico e salvos" mantém o mesmo
-  // badge que a aba Histórico tinha).
+  // Badge de contagem por aba, compartilhado com o menu hambúrguer.
   const tabBadgeCount = (tabId: SidebarTab) =>
     tabId === "compare"
       ? workspace.comparison.length
@@ -759,8 +744,7 @@ export function MunicipalityPanel({
           />
         )}
 
-        {/* Anúncios e Redes não pedem camada ao mapa nem recebem props: são
-            módulos ainda sem fonte de dado, e o painel só explica isso. */}
+        {/* Anúncios e Redes não pedem camada nem props: ainda sem fonte de dado. */}
         {activeTab === "ads" && <PaidMediaPanel />}
 
         {activeTab === "social" && <SocialMediaPanel />}

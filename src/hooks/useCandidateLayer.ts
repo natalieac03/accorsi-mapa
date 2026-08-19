@@ -14,12 +14,9 @@ import {
 } from "../utils/candidateLayer";
 
 /**
- * Estado compartilhado entre a aba "Accorsi" e a camada do mapa.
- *
- * Vive AQUI, e não dentro do painel, por dois motivos: o mapa precisa do
- * mesmo pleito e da mesma métrica que o painel mostra (um par de controles
- * só), e a aba é desmontada quando a pessoa troca de aba — com o estado local
- * antigo, sair e voltar perdia a escolha.
+ * Estado compartilhado entre a aba "Accorsi" e a camada do mapa: os dois usam o
+ * mesmo pleito e a mesma métrica, e a aba é desmontada na troca de aba (com
+ * estado local, sair e voltar perdia a escolha).
  */
 
 const CANDIDATE_LAYER_STORAGE_KEY = "acqr:candidato:v1";

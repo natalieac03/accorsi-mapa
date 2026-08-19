@@ -5,22 +5,20 @@ import type {
 import { ANALYSIS_METRICS, getAnalysisMetric } from "./analysis.ts";
 
 /**
- * CATÁLOGO DE INDICADORES DO RELATÓRIO — metadados que o PDF usa sozinho.
+ * CATÁLOGO DE INDICADORES DO RELATÓRIO: metadados que o PDF usa sozinho.
  *
- * Este arquivo NÃO redefine indicador nenhum: ele ESTENDE `ANALYSIS_METRICS`,
- * que já carrega rótulo, descrição, unidade, fonte, URL oficial, ano de
- * referência e formato. O que se acrescenta aqui é o que um relatório precisa
- * e a tela não: denominador, método de cálculo, faixa esperada, limitação
- * conhecida e o texto de metodologia.
+ * NÃO redefine indicador: ESTENDE `ANALYSIS_METRICS` (rótulo, descrição,
+ * unidade, fonte, URL oficial, ano de referência e formato) acrescentando
+ * denominador, método de cálculo, faixa esperada, limitação conhecida e o texto
+ * de metodologia.
  *
- * Duas regras de projeto, e as duas são o ponto deste arquivo existir:
+ * Duas regras:
  *
- * 1. NADA é fixado por candidatura, partido, cargo, ano, UF ou indicador. A
- *    lista de indicadores do relatório é DERIVADA do catálogo e do que o
- *    recorte tem de dado — acrescentar um indicador em `analysis.ts` faz ele
- *    aparecer no PDF sem tocar aqui, com metadados padrão declarados.
- * 2. O filtro da tela não entra nesta lista. Quem escolhe o que é analisado é
- *    a disponibilidade de dado, não o que está selecionado na interface.
+ * 1. NADA é fixado por candidatura, partido, cargo, ano, UF ou indicador: a
+ *    lista é DERIVADA do catálogo e do dado do recorte (indicador novo em
+ *    `analysis.ts` aparece no PDF sem tocar aqui, com metadados padrão).
+ * 2. O filtro da tela não entra nesta lista: quem escolhe o que é analisado é a
+ *    disponibilidade de dado.
  */
 
 /** Como o indicador se comporta, para o relatório escolher gráfico e leitura. */
@@ -54,10 +52,7 @@ const LIMITACAO_AGREGADA =
   "O valor é do MUNICÍPIO, não de quem votou. Serve para achar associação " +
   "territorial, não para descrever o perfil de quem votou na candidatura.";
 
-/**
- * Metadados específicos. Indicador ausente daqui não some do relatório: recebe
- * os valores padrão de `metadataPadrao`, derivados do próprio catálogo.
- */
+/** Indicador ausente daqui não some do relatório: usa `metadataPadrao`. */
 const ESPECIFICOS: Partial<Record<AnalysisMetricId, Partial<IndicatorMetadata>>> = {
   electorate: {
     shape: "contagem",
@@ -244,9 +239,8 @@ const ANOS_TOLERADOS = 4;
 
 /**
  * Compara o ano da eleição com o do indicador e diz o que o relatório deve
- * declarar. Esconder a incompatibilidade seria o pior desfecho: o texto
- * automático passaria a tratar o eleitorado de um ano como se descrevesse
- * o de outro.
+ * declarar: esconder a incompatibilidade faria o texto automático tratar o dado
+ * de um ano como se descrevesse o de outro.
  */
 export function getTemporalCompatibility(
   electionYear: number,

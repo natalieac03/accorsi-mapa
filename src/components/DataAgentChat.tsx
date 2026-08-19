@@ -5,26 +5,17 @@ import type { EntradaContextoAgente } from "../utils/agentTools";
 import { formatarRespostaAgente, type TrechoAgente } from "../utils/agentText";
 
 /**
- * Botão flutuante + painel de conversa do agente de dados.
+ * Botão flutuante e painel de conversa do agente de dados.
  *
- * Regra que a interface precisa deixar visível: o agente responde SÓ com o que
- * está carregado na plataforma. A procedência do número (fonte, pleito e ano)
- * vem dentro do próprio texto da resposta — o system prompt obriga o modelo a
- * citá-la. O rodapé técnico com o nome das consultas saiu a pedido de quem usa:
- * "resultado_eleicao, espectro_submunicipal" é vocabulário do sistema, não de
- * quem lê. As ferramentas consultadas continuam registradas em
- * `mensagem.ferramentas`, para depuração; só não são mais desenhadas.
- *
- * Quando o servidor não tem chave configurada, nada disso aparece: o app inteiro
- * segue funcionando sem o agente.
+ * O agente responde só com o que está carregado na plataforma; a procedência
+ * (fonte, pleito e ano) vem no próprio texto, exigida pelo system prompt. As
+ * ferramentas consultadas ficam em `mensagem.ferramentas` só para depuração.
+ * Sem chave no servidor, o componente não renderiza nada.
  */
 
 /*
- * Sugestões prontas: só perguntas de GOIÁS e só o que as ferramentas do
- * contrato (shared/agent-tools.json) sabem responder — votação da própria
- * candidata por bairro, retrato de município, espectro submunicipal por
- * bairro, comparação de até 3 municípios e ranking do índice ideológico
- * estadual.
+ * Sugestões prontas: apenas Goiás e apenas o que as ferramentas do contrato
+ * (shared/agent-tools.json) respondem, incluindo comparação de até 3 municípios.
  */
 const SUGESTOES = [
   "Quais os três bairros que mais votam na Dra. Adriana em Goiânia?",
@@ -52,10 +43,8 @@ function Trechos(props: { trechos: TrechoAgente[] }) {
 /**
  * Resposta do agente em blocos legíveis.
  *
- * O modelo é instruído a responder em texto corrido com lista curta, mas ele
- * escorrega para Markdown de vez em quando. Em vez de exibir os asteriscos
- * crus na cara de quem lê, a resposta é convertida em elementos React — nunca
- * em HTML por string, porque o conteúdo vem de fora.
+ * O modelo às vezes devolve Markdown, então o texto vira elementos React.
+ * Nunca HTML por string: o conteúdo vem de fora.
  */
 function RespostaFormatada(props: { texto: string }) {
   const blocos = useMemo(() => formatarRespostaAgente(props.texto), [props.texto]);
@@ -117,8 +106,7 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [aberto]);
 
-  // Sem chave no servidor o recurso não existe para o usuário — melhor ausente
-  // do que um botão que só sabe dar erro.
+  // Sem chave no servidor, o recurso nem aparece.
   if (status.carregando || !status.disponivel) return null;
 
   const enviar = () => {
@@ -151,9 +139,7 @@ export function DataAgentChat(props: { dados: EntradaContextoAgente }) {
           role="dialog"
           aria-label="Agente de dados"
         >
-          {/* Sem título: quem abriu o painel sabe o que abriu, e o cabeçalho
-              custava três linhas de altura numa janela que é toda conversa.
-              Restam só as ações; o nome acessível fica no aria-label acima. */}
+          {/* Sem título: só ações. O nome acessível fica no aria-label acima. */}
           <header className="agent-panel__header agent-panel__header--enxuto">
             <div className="agent-panel__actions">
               {mensagens.length > 0 && (

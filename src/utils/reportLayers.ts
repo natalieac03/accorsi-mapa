@@ -23,15 +23,10 @@ import {
  * Relatórios das camadas do mapa (análise territorial, espectro, histórico
  * eleitoral e locais de votação).
  *
- * A modelagem das colunas REAPROVEITA a dos CSVs que já existem em cada motor
- * — mesmos campos, mesma ordem, mesma regra de ausência. A diferença é o
- * público: o CSV é para quem vai cruzar em outra ferramenta e por isso carrega
- * os códigos e todos os denominadores; a planilha e o PDF são para reunião, e
- * por isso os cabeçalhos são por extenso e as colunas técnicas ficam marcadas
- * como `pdfHidden` (continuam no Excel, saem do documento impresso).
- *
- * O CSV continua existindo em todos esses painéis: nenhum formato substitui
- * outro.
+ * As colunas REAPROVEITAM as dos CSVs de cada motor: mesmos campos, mesma
+ * ordem, mesma regra de ausência. Aqui os cabeçalhos são por extenso e as
+ * colunas técnicas ficam marcadas como `pdfHidden` (continuam no Excel, saem do
+ * documento impresso). O CSV continua existindo em todos esses painéis.
  */
 
 const ATRIBUICAO =
@@ -193,7 +188,7 @@ export function buildSpectrumTable(model: SpectrumModel): ReportTable {
       item.municipality.ibgeCode,
       item.municipality.tseCode,
       // Índice ausente = nenhum voto do município caiu em partido com nota.
-      // Vazio, jamais 0 — que na escala 0–10 significaria "extrema esquerda".
+      // Vazio, jamais 0: na escala 0–10, 0 significaria "extrema esquerda".
       item.index,
       ...(comparisonContest ? [item.comparisonIndex, item.shift] : []),
       item.blockSharePct.left,
@@ -441,8 +436,8 @@ export function buildPollingTable(model: PollingModel): ReportTable {
             { header: "Direita", format: "percentual", decimals: 1 },
             { header: "Cobertura", format: "percentual", decimals: 1 },
           ] satisfies ReportColumn[])),
-    // Numa tabela de voto dela, "votos apurados" (o total da urna, de todas as
-    // candidaturas) e "partido mais votado" descrevem outra pergunta.
+    // Numa tabela de voto dela, "votos apurados" (total da urna, de todas as
+    // candidaturas) e "partido mais votado" respondem outra pergunta.
     ...(porCandidata
       ? []
       : ([
@@ -466,17 +461,15 @@ export function buildPollingTable(model: PollingModel): ReportTable {
       unit.sectionCount,
       unit.electorate,
       ...(porCandidata
-        ? // Célula vazia = ela não era candidata ali; 0 é zero DE VERDADE, com
-          // ela na urna daquele local.
+        ? // Célula vazia = ela não era candidata ali; 0 é zero DE VERDADE.
           [
             unit.candidateVotes,
             unit.candidateVotesPerThousand,
             unit.candidateInScope ? "Sim" : "Não",
           ]
         : porPartido
-          ? // partyVotes 0 com voto apurado é zero DE VERDADE (a urna apurou e
-            // a sigla não teve voto); o que falta quando não há denominador é
-            // o percentual, e esse sai vazio.
+          ? // partyVotes 0 com voto apurado é zero DE VERDADE; sem
+            // denominador o que sai vazio é o percentual.
             [unit.partyVotes, unit.partySharePct]
           : [
               unit.index,
@@ -580,8 +573,7 @@ export function buildPollingReport(input: {
       },
       porCandidata && model.candidate
         ? {
-            // O número de confiança do recorte: quanto do voto dela ficou fora
-            // por não haver aquele local no cadastro.
+            // Quanto do voto dela ficou fora por não haver o local no cadastro.
             label: "Locais dela fora do cadastro",
             value: formatInteger(model.candidate.unmatchedPlaceCount),
             note: `${formatInteger(model.candidate.unmatchedVotes)} votos dela sem local no cadastro · ${formatInteger(model.candidate.matchedPlaceCount)} de ${formatInteger(model.candidate.placesInContest)} locais casaram`,
